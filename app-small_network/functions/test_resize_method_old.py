@@ -6,8 +6,6 @@ import tensorflow_datasets as tfds
 import matplotlib.pyplot as plt
 import time
 
-from tensorflow.keras import datasets, layers, models
-
 # Datasets
 train_paths = [
     '/home/ubuntu/tensorflow_datasets/cifar100_grey_16x16_AREA/train',
@@ -54,10 +52,10 @@ def format_set(train_set, test_set):
     # format and cache
     train_set_formatted = train_set.map(preprocess, num_parallel_calls=tf.data.AUTOTUNE)
     train_set_formatted = train_set_formatted.cache()
-    train_set_formatted = train_set_formatted.batch(512)
+    train_set_formatted = train_set_formatted.batch(256)
     train_set_formatted = train_set_formatted.prefetch(tf.data.AUTOTUNE)
     test_set_formatted = test_set.map(preprocess, num_parallel_calls=tf.data.AUTOTUNE)
-    test_set_formatted = test_set_formatted.batch(512)
+    test_set_formatted = test_set_formatted.batch(256)
     test_set_formatted = test_set_formatted.cache()
     test_set_formatted = test_set_formatted.prefetch(tf.data.AUTOTUNE)
     return train_set_formatted, test_set_formatted
@@ -75,27 +73,22 @@ class TimeHistory(tf.keras.callbacks.Callback):
 
 time_callback = TimeHistory()
 
-# Model taken from example (https://www.tensorflow.org/tutorials/images/cnn)
-def create_model():
-    model = models.Sequential()
-    model.add(layers.Conv2D(32, (2, 2), activation='relu')) # input_shape removed, (3, 3) -> (2, 2)
-    model.add(layers.MaxPooling2D((2, 2)))
-    model.add(layers.Conv2D(64, (2, 2), activation='relu')) # (3, 3) -> (2, 2)
-    model.add(layers.MaxPooling2D((2, 2)))
-    model.add(layers.Conv2D(64, (2, 2), activation='relu')) # (3, 3) -> (2, 2)
-    model.add(layers.Flatten())
-    model.add(layers.Dense(64, activation='relu'))
-    model.add(layers.Dense(100))  # changed from 10 to 100, due to amount of classes
-    return model
-    
-def compile_model(model):
-    model.compile(
-        optimizer='adam',
-        # loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
-        loss=tf.keras.losses.MeanSquaredError(),
-        metrics=['accuracy']
-    )
-    return model
+# Model 
+model = tf.keras.models.Sequential([
+    tf.keras.layers.Conv2D(64, (2, 2), activation='relu'),
+    tf.keras.layers.MaxPooling2D(pool_size=(2, 2)),
+    tf.keras.layers.Conv2D(32, (2, 2), activation='relu'),
+    tf.keras.layers.Flatten(),
+    tf.keras.layers.Dense(64, activation='relu'),
+    tf.keras.layers.Dense(100),
+    tf.keras.layers.Softmax()
+])
+
+model.compile(
+    optimizer='adam',
+    loss=tf.keras.losses.MeanSquaredError(),
+    metrics=['accuracy']
+)
 
 #train = tf.data.Dataset.load('/home/ubuntu/tensorflow_datasets/cifar100_grey_16x16/train')
 #test  = tf.data.Dataset.load('/home/ubuntu/tensorflow_datasets/cifar100_grey_16x16/test')
@@ -105,10 +98,6 @@ for i in range(len(csv_names)):
     train = tf.data.Dataset.load(train_paths[i])
     test  = tf.data.Dataset.load(test_paths[i])
     train, test = format_set(train, test)
-
-    # create model
-    model = create_model()
-    model = compile_model(model)
 
     # Train
     history = model.fit(train, epochs=250, validation_data=test, callbacks=[time_callback])
