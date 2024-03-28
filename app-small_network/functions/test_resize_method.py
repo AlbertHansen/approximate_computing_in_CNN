@@ -1,3 +1,9 @@
+#!/usr/bin/env python
+# coding: utf-8
+
+# In[1]:
+
+
 # import packages
 import numpy as np
 import pandas as pd
@@ -7,6 +13,10 @@ import matplotlib.pyplot as plt
 import time
 
 from tensorflow.keras import datasets, layers, models
+
+
+# In[2]:
+
 
 # Datasets
 train_paths = [
@@ -30,14 +40,14 @@ test_paths = [
     '/home/ubuntu/tensorflow_datasets/cifar100_grey_16x16_NEAREST_NEIGHBOR/test'   
 ]
 csv_names = [
-    '/home/ubuntu/approximate_computing_in_CNN/app-small_network/results/AREA.csv',
-    '/home/ubuntu/approximate_computing_in_CNN/app-small_network/results/BICUBIC.csv',
-    '/home/ubuntu/approximate_computing_in_CNN/app-small_network/results/BILINEAR.csv',
-    '/home/ubuntu/approximate_computing_in_CNN/app-small_network/results/GAUSSIAN.csv',
-    '/home/ubuntu/approximate_computing_in_CNN/app-small_network/results/LANCZOS3.csv',
-    '/home/ubuntu/approximate_computing_in_CNN/app-small_network/results/LANCZOS5.csv',
-    '/home/ubuntu/approximate_computing_in_CNN/app-small_network/results/MITCHELLCUBIC.csv',
-    '/home/ubuntu/approximate_computing_in_CNN/app-small_network/results/NEAREST_NEIGHBOR.csv'
+    '/home/ubuntu/approximate_computing_in_CNN/app-small_network/results/resize_methods/AREA.csv',
+    '/home/ubuntu/approximate_computing_in_CNN/app-small_network/results/resize_methods/BICUBIC.csv',
+    '/home/ubuntu/approximate_computing_in_CNN/app-small_network/results/resize_methods/BILINEAR.csv',
+    '/home/ubuntu/approximate_computing_in_CNN/app-small_network/results/resize_methods/GAUSSIAN.csv',
+    '/home/ubuntu/approximate_computing_in_CNN/app-small_network/results/resize_methods/LANCZOS3.csv',
+    '/home/ubuntu/approximate_computing_in_CNN/app-small_network/results/resize_methods/LANCZOS5.csv',
+    '/home/ubuntu/approximate_computing_in_CNN/app-small_network/results/resize_methods/MITCHELLCUBIC.csv',
+    '/home/ubuntu/approximate_computing_in_CNN/app-small_network/results/resize_methods/NEAREST_NEIGHBOR.csv'
 ]
 
 #train = tf.data.Dataset.load('/home/ubuntu/tensorflow_datasets/cifar100_grey_16x16/train')
@@ -62,6 +72,36 @@ def format_set(train_set, test_set):
     test_set_formatted = test_set_formatted.prefetch(tf.data.AUTOTUNE)
     return train_set_formatted, test_set_formatted
 
+
+# In[3]:
+
+
+'''
+# Get the first batch of images and labels from the training dataset
+images, labels = next(iter(train))
+
+# Create a figure
+plt.figure(figsize=(10,10))
+
+# Plot 25 images
+for i in range(25):
+    plt.subplot(5,5,i+1)
+    plt.xticks([])
+    plt.yticks([])
+    plt.grid(False)
+    # Reshape the image
+    image = np.reshape(images[i], (16, 16))
+    plt.imshow(image, cmap=plt.cm.binary)
+    # Get the label for the image
+    label = np.argmax(labels[i])
+    plt.xlabel(label)
+plt.show()
+'''
+
+
+# In[4]:
+
+
 # Keeping time
 class TimeHistory(tf.keras.callbacks.Callback):
     def on_train_begin(self, logs={}):
@@ -74,6 +114,10 @@ class TimeHistory(tf.keras.callbacks.Callback):
         self.times.append(time.time() - self.epoch_time_start)
 
 time_callback = TimeHistory()
+
+
+# In[5]:
+
 
 # Model taken from example (https://www.tensorflow.org/tutorials/images/cnn)
 def create_model():
@@ -97,6 +141,10 @@ def compile_model(model):
     )
     return model
 
+
+# In[6]:
+
+
 #train = tf.data.Dataset.load('/home/ubuntu/tensorflow_datasets/cifar100_grey_16x16/train')
 #test  = tf.data.Dataset.load('/home/ubuntu/tensorflow_datasets/cifar100_grey_16x16/test')
 
@@ -111,7 +159,7 @@ for i in range(len(csv_names)):
     model = compile_model(model)
 
     # Train
-    history = model.fit(train, epochs=250, validation_data=test, callbacks=[time_callback])
+    history = model.fit(train, epochs=2, validation_data=test, callbacks=[time_callback])
 
     # Convert the history.history dict to a pandas DataFrame
     hist_df = pd.DataFrame(history.history)
@@ -121,3 +169,4 @@ for i in range(len(csv_names)):
 
     # Save to csv
     hist_df.to_csv(csv_names[i])
+

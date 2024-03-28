@@ -19,39 +19,20 @@ from tensorflow.keras import datasets, layers, models
 
 
 # Datasets
-train_paths = [
-    '/home/ubuntu/tensorflow_datasets/cifar100_grey_16x16_AREA/train',
-    '/home/ubuntu/tensorflow_datasets/cifar100_grey_16x16_BICUBIC/train',
-    '/home/ubuntu/tensorflow_datasets/cifar100_grey_16x16_BILINEAR/train',
-    '/home/ubuntu/tensorflow_datasets/cifar100_grey_16x16_GAUSSIAN/train',
-    '/home/ubuntu/tensorflow_datasets/cifar100_grey_16x16_LANCZOS3/train',
-    '/home/ubuntu/tensorflow_datasets/cifar100_grey_16x16_LANCZOS5/train',
-    '/home/ubuntu/tensorflow_datasets/cifar100_grey_16x16_MITCHELLCUBIC/train',
-    '/home/ubuntu/tensorflow_datasets/cifar100_grey_16x16_NEAREST_NEIGHBOR/train'   
-]
-test_paths = [
-    '/home/ubuntu/tensorflow_datasets/cifar100_grey_16x16_AREA/test',
-    '/home/ubuntu/tensorflow_datasets/cifar100_grey_16x16_BICUBIC/test',
-    '/home/ubuntu/tensorflow_datasets/cifar100_grey_16x16_BILINEAR/test',
-    '/home/ubuntu/tensorflow_datasets/cifar100_grey_16x16_GAUSSIAN/test',
-    '/home/ubuntu/tensorflow_datasets/cifar100_grey_16x16_LANCZOS3/test',
-    '/home/ubuntu/tensorflow_datasets/cifar100_grey_16x16_LANCZOS5/test',
-    '/home/ubuntu/tensorflow_datasets/cifar100_grey_16x16_MITCHELLCUBIC/test',
-    '/home/ubuntu/tensorflow_datasets/cifar100_grey_16x16_NEAREST_NEIGHBOR/test'   
-]
+train_path = '/home/ubuntu/tensorflow_datasets/cifar100_grey_16x16_LANCZOS3/train'
+test_path =  '/home/ubuntu/tensorflow_datasets/cifar100_grey_16x16_LANCZOS3/test'
 csv_names = [
-    '/home/ubuntu/approximate_computing_in_CNN/app-small_network/results/AREA.csv',
-    '/home/ubuntu/approximate_computing_in_CNN/app-small_network/results/BICUBIC.csv',
-    '/home/ubuntu/approximate_computing_in_CNN/app-small_network/results/BILINEAR.csv',
-    '/home/ubuntu/approximate_computing_in_CNN/app-small_network/results/GAUSSIAN.csv',
-    '/home/ubuntu/approximate_computing_in_CNN/app-small_network/results/LANCZOS3.csv',
-    '/home/ubuntu/approximate_computing_in_CNN/app-small_network/results/LANCZOS5.csv',
-    '/home/ubuntu/approximate_computing_in_CNN/app-small_network/results/MITCHELLCUBIC.csv',
-    '/home/ubuntu/approximate_computing_in_CNN/app-small_network/results/NEAREST_NEIGHBOR.csv'
+    '/home/ubuntu/approximate_computing_in_CNN/app-small_network/results/optimizer/ADADELTA.csv',
+    '/home/ubuntu/approximate_computing_in_CNN/app-small_network/results/optimizer/ADAGRAD.csv',
+    '/home/ubuntu/approximate_computing_in_CNN/app-small_network/results/optimizer/ADAM.csv',
+    '/home/ubuntu/approximate_computing_in_CNN/app-small_network/results/optimizer/ADAMW.csv',
+    '/home/ubuntu/approximate_computing_in_CNN/app-small_network/results/optimizer/ADAMAX.csv',
+    '/home/ubuntu/approximate_computing_in_CNN/app-small_network/results/optimizer/FTRL.csv',
+    '/home/ubuntu/approximate_computing_in_CNN/app-small_network/results/optimizer/LION.csv',
+    '/home/ubuntu/approximate_computing_in_CNN/app-small_network/results/optimizer/NADAM.csv',
+    '/home/ubuntu/approximate_computing_in_CNN/app-small_network/results/optimizer/RMSPROP.csv',
+    '/home/ubuntu/approximate_computing_in_CNN/app-small_network/results/optimizer/SGD.csv'
 ]
-
-#train = tf.data.Dataset.load('/home/ubuntu/tensorflow_datasets/cifar100_grey_16x16/train')
-#test  = tf.data.Dataset.load('/home/ubuntu/tensorflow_datasets/cifar100_grey_16x16/test')
 
 def preprocess(example):
     image = example['image']
@@ -76,32 +57,6 @@ def format_set(train_set, test_set):
 # In[3]:
 
 
-'''
-# Get the first batch of images and labels from the training dataset
-images, labels = next(iter(train))
-
-# Create a figure
-plt.figure(figsize=(10,10))
-
-# Plot 25 images
-for i in range(25):
-    plt.subplot(5,5,i+1)
-    plt.xticks([])
-    plt.yticks([])
-    plt.grid(False)
-    # Reshape the image
-    image = np.reshape(images[i], (16, 16))
-    plt.imshow(image, cmap=plt.cm.binary)
-    # Get the label for the image
-    label = np.argmax(labels[i])
-    plt.xlabel(label)
-plt.show()
-'''
-
-
-# In[4]:
-
-
 # Keeping time
 class TimeHistory(tf.keras.callbacks.Callback):
     def on_train_begin(self, logs={}):
@@ -116,7 +71,7 @@ class TimeHistory(tf.keras.callbacks.Callback):
 time_callback = TimeHistory()
 
 
-# In[5]:
+# In[4]:
 
 
 # Model taken from example (https://www.tensorflow.org/tutorials/images/cnn)
@@ -132,34 +87,44 @@ def create_model():
     model.add(layers.Dense(100))  # changed from 10 to 100, due to amount of classes
     return model
     
-def compile_model(model):
-    model.compile(
-        optimizer='adam',
-        # loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
-        loss=tf.keras.losses.MeanSquaredError(),
-        metrics=['accuracy']
-    )
+def compile_model(model, model_optimizer : str):
+    if model_optimizer != 'adafactor':
+        model.compile(
+            optimizer=model_optimizer,
+            loss=tf.keras.losses.MeanSquaredError(),
+            metrics=['accuracy']
+        )
+    else:
+        lr_schedule = ExponentialDecay(
+            initial_learning_rate=1e-2,
+            decay_steps=10000,
+            decay_rate=0.9)
+        model.compile(
+            optimizer=Adafactor(learning_rate=lr_schedule),
+            loss=tf.keras.losses.MeanSquaredError(),
+            metrics=['accuracy']
+        )
     return model
 
 
-# In[6]:
+# In[5]:
 
 
-#train = tf.data.Dataset.load('/home/ubuntu/tensorflow_datasets/cifar100_grey_16x16/train')
-#test  = tf.data.Dataset.load('/home/ubuntu/tensorflow_datasets/cifar100_grey_16x16/test')
+# List of optimizers to iterate over
+optimizers = ('adadelta', 'adagrad', 'adam', 'adamw', 'adamax', 'ftrl', 'lion', 'nadam', 'rmsprop', 'sgd')
 
 for i in range(len(csv_names)):
     # fetch datasets
-    train = tf.data.Dataset.load(train_paths[i])
-    test  = tf.data.Dataset.load(test_paths[i])
+    train = tf.data.Dataset.load(train_path)
+    test  = tf.data.Dataset.load(test_path)
     train, test = format_set(train, test)
 
     # create model
     model = create_model()
-    model = compile_model(model)
+    model = compile_model(model, optimizers[i])
 
     # Train
-    history = model.fit(train, epochs=2, validation_data=test, callbacks=[time_callback])
+    history = model.fit(train, epochs=250, validation_data=test, callbacks=[time_callback])
 
     # Convert the history.history dict to a pandas DataFrame
     hist_df = pd.DataFrame(history.history)
@@ -169,4 +134,10 @@ for i in range(len(csv_names)):
 
     # Save to csv
     hist_df.to_csv(csv_names[i])
+
+
+# In[ ]:
+
+
+
 
