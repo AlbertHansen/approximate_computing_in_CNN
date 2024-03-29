@@ -15,23 +15,28 @@ import time
 from tensorflow.keras import datasets, layers, models
 
 
-# In[2]:
+# In[8]:
 
 
 # Datasets
 train_path = '/home/ubuntu/tensorflow_datasets/cifar100_grey_16x16_LANCZOS3/train'
 test_path =  '/home/ubuntu/tensorflow_datasets/cifar100_grey_16x16_LANCZOS3/test'
 csv_names = [
-    '/home/ubuntu/approximate_computing_in_CNN/app-small_network/results/loss/ADADELTA.csv',
-    '/home/ubuntu/approximate_computing_in_CNN/app-small_network/results/loss/ADAGRAD.csv',
-    '/home/ubuntu/approximate_computing_in_CNN/app-small_network/results/loss/ADAM.csv',
-    '/home/ubuntu/approximate_computing_in_CNN/app-small_network/results/loss/ADAMW.csv',
-    '/home/ubuntu/approximate_computing_in_CNN/app-small_network/results/loss/ADAMAX.csv',
-    '/home/ubuntu/approximate_computing_in_CNN/app-small_network/results/loss/FTRL.csv',
-    '/home/ubuntu/approximate_computing_in_CNN/app-small_network/results/loss/LION.csv',
-    '/home/ubuntu/approximate_computing_in_CNN/app-small_network/results/loss/NADAM.csv',
-    '/home/ubuntu/approximate_computing_in_CNN/app-small_network/results/loss/RMSPROP.csv',
-    '/home/ubuntu/approximate_computing_in_CNN/app-small_network/results/loss/SGD.csv'
+    '/home/ubuntu/approximate_computing_in_CNN/app-small_network/results/loss/BinaryCrossentropy.csv',
+    '/home/ubuntu/approximate_computing_in_CNN/app-small_network/results/loss/BinaryFocalCrossentropy.csv',
+    '/home/ubuntu/approximate_computing_in_CNN/app-small_network/results/loss/CategoricalCrossentropy.csv',
+    '/home/ubuntu/approximate_computing_in_CNN/app-small_network/results/loss/CategoricalFocalCrossentropy.csv',
+    '/home/ubuntu/approximate_computing_in_CNN/app-small_network/results/loss/CategoricalHinge.csv',
+    '/home/ubuntu/approximate_computing_in_CNN/app-small_network/results/loss/CosineSimilarity.csv',
+    '/home/ubuntu/approximate_computing_in_CNN/app-small_network/results/loss/Hinge.csv',
+    '/home/ubuntu/approximate_computing_in_CNN/app-small_network/results/loss/Huber.csv',
+    '/home/ubuntu/approximate_computing_in_CNN/app-small_network/results/loss/LogCosh.csv',
+    '/home/ubuntu/approximate_computing_in_CNN/app-small_network/results/loss/MeanAbsolutePercentageError.csv',
+    '/home/ubuntu/approximate_computing_in_CNN/app-small_network/results/loss/MeanSquaredError.csv',
+    '/home/ubuntu/approximate_computing_in_CNN/app-small_network/results/loss/MeanSquaredLogarithmicError.csv',
+    #'/home/ubuntu/approximate_computing_in_CNN/app-small_network/results/loss/Poisson.csv',
+    #'/home/ubuntu/approximate_computing_in_CNN/app-small_network/results/loss/SparseCategoricalCrossentropy.csv',
+    '/home/ubuntu/approximate_computing_in_CNN/app-small_network/results/loss/SquaredHinge.csv'
 ]
 
 def preprocess(example):
@@ -96,7 +101,7 @@ def compile_model(model, loss_function):
     return model
 
 
-# In[6]:
+# In[9]:
 
 
 # List of optimizers to iterate over
@@ -115,12 +120,16 @@ losses = (
     tf.keras.losses.MeanAbsolutePercentageError(),
     tf.keras.losses.MeanSquaredError(),
     tf.keras.losses.MeanSquaredLogarithmicError(),
-    tf.keras.losses.Poisson(),
-    tf.keras.losses.SparseCategoricalCrossentropy(),
+    #tf.keras.losses.Poisson(),
+    #tf.keras.losses.SparseCategoricalCrossentropy(),
     tf.keras.losses.SquaredHinge()
 )
 
 for i in range(len(csv_names)):
+    print("-------------------\n")
+    print(losses[i])
+    print("-------------------\n")
+    
     # fetch datasets
     train = tf.data.Dataset.load(train_path)
     test  = tf.data.Dataset.load(test_path)
