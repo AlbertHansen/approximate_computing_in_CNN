@@ -15,7 +15,7 @@ import time
 from tensorflow.keras import datasets, layers, models
 
 
-# In[8]:
+# In[2]:
 
 
 # Datasets
@@ -30,12 +30,11 @@ csv_names = [
     '/home/ubuntu/approximate_computing_in_CNN/app-small_network/results/loss/CosineSimilarity.csv',
     '/home/ubuntu/approximate_computing_in_CNN/app-small_network/results/loss/Hinge.csv',
     '/home/ubuntu/approximate_computing_in_CNN/app-small_network/results/loss/Huber.csv',
+    '/home/ubuntu/approximate_computing_in_CNN/app-small_network/results/loss/KLDivergence.csv',
     '/home/ubuntu/approximate_computing_in_CNN/app-small_network/results/loss/LogCosh.csv',
     '/home/ubuntu/approximate_computing_in_CNN/app-small_network/results/loss/MeanAbsolutePercentageError.csv',
     '/home/ubuntu/approximate_computing_in_CNN/app-small_network/results/loss/MeanSquaredError.csv',
     '/home/ubuntu/approximate_computing_in_CNN/app-small_network/results/loss/MeanSquaredLogarithmicError.csv',
-    #'/home/ubuntu/approximate_computing_in_CNN/app-small_network/results/loss/Poisson.csv',
-    #'/home/ubuntu/approximate_computing_in_CNN/app-small_network/results/loss/SparseCategoricalCrossentropy.csv',
     '/home/ubuntu/approximate_computing_in_CNN/app-small_network/results/loss/SquaredHinge.csv'
 ]
 
@@ -101,14 +100,13 @@ def compile_model(model, loss_function):
     return model
 
 
-# In[9]:
+# In[5]:
 
 
 # List of optimizers to iterate over
 losses = (
     tf.keras.losses.BinaryCrossentropy(),
     tf.keras.losses.BinaryFocalCrossentropy(),
-    #tf.keras.losses.CTC(),
     tf.keras.losses.CategoricalCrossentropy(),
     tf.keras.losses.CategoricalFocalCrossentropy(),
     tf.keras.losses.CategoricalHinge(),
@@ -120,14 +118,13 @@ losses = (
     tf.keras.losses.MeanAbsolutePercentageError(),
     tf.keras.losses.MeanSquaredError(),
     tf.keras.losses.MeanSquaredLogarithmicError(),
-    #tf.keras.losses.Poisson(),
-    #tf.keras.losses.SparseCategoricalCrossentropy(),
     tf.keras.losses.SquaredHinge()
 )
 
 for i in range(len(csv_names)):
     print("-------------------\n")
     print(losses[i])
+    print(csv_names[i])
     print("-------------------\n")
     
     # fetch datasets
