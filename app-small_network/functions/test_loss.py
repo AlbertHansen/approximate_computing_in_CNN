@@ -121,7 +121,7 @@ losses = (
     tf.keras.losses.SquaredHinge()
 )
 
-for i in range(len(csv_names)):
+for i in range(2, len(csv_names)):
     print("-------------------\n")
     print(losses[i])
     print(csv_names[i])
