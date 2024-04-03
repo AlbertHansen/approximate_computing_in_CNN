@@ -174,7 +174,7 @@ int main() {
             actual.at(adderInputRange*a+b) = a+b;
             aInput.at(adderInputRange*a+b) = a;
             bInput.at(adderInputRange*a+b) = b;
-            std::cout << "HEJ";
+            //std::cout << "HEJ";
         }
     }
     writeArrayToCSV(expected, FileName);
