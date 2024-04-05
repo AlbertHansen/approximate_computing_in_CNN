@@ -81,11 +81,11 @@ time_callback = TimeHistory()
 # Model taken from example (https://www.tensorflow.org/tutorials/images/cnn)
 def create_model():
     model = models.Sequential()
-    model.add(layers.Conv2D(32, (2, 2), activation='relu')) # input_shape removed, (3, 3) -> (2, 2)
+    model.add(layers.Conv2D(32, (3, 3), activation='relu')) # input_shape removed, (3, 3) -> (2, 2)
     model.add(layers.MaxPooling2D((2, 2)))
-    model.add(layers.Conv2D(64, (2, 2), activation='relu')) # (3, 3) -> (2, 2)
+    model.add(layers.Conv2D(64, (3, 3), activation='relu')) # (3, 3) -> (2, 2)
     model.add(layers.MaxPooling2D((2, 2)))
-    model.add(layers.Conv2D(64, (2, 2), activation='relu')) # (3, 3) -> (2, 2)
+    model.add(layers.Conv2D(64, (3, 3), activation='relu')) # (3, 3) -> (2, 2)
     model.add(layers.Flatten())
     model.add(layers.Dense(64, activation='relu'))
     model.add(layers.Dense(100))  # changed from 10 to 100, due to amount of classes
@@ -146,7 +146,7 @@ for i in range(2, len(csv_names)):
     hist_df['time'] = time_callback.times
 
     # Save to csv
-    hist_df.to_csv(csv_names[i])
+    # hist_df.to_csv(csv_names[i])
 
 
 # In[ ]:

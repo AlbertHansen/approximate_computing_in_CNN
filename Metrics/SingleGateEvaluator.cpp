@@ -129,9 +129,11 @@ constexpr size_t adderInputSize = 8;
 constexpr size_t adderInputRange = pow(2,adderInputSize);
 constexpr size_t adderOutputRange = pow(adderInputRange,2);
 
+constexpr uint8_t TEST = 255;
+
 std::string FileName = "add8u_6P8.csv";
 
-std::array<uint16_t, adderOutputRange> expected;
+std::array<uint16_t, adderOutputRange+1> expected;
 std::array<uint16_t, adderOutputRange> actual;
 std::array<uint8_t, adderOutputRange> aInput;
 std::array<uint8_t, adderOutputRange> bInput;
@@ -164,11 +166,12 @@ void writeArrayToCSV(const std::array<T, N>& arr, const std::string& filename)
 /**************************************************************************/
 
 int main() {
-    
-    for (uint8_t a = 3; a < adderInputRange; a++)
+    std::cout << "HEJ";
+    for (uint16_t a = 0; a <= TEST; a++)
     {
-        
-        for (uint8_t b = 3; b < adderInputRange; b++)
+        uint8_t a1
+        //std::cout << a;
+        for (uint8_t b = 0; b <= TEST; b++)
         {
             expected.at(adderInputRange*a+b) = add8u_6P8(a,b);
             actual.at(adderInputRange*a+b) = a+b;
@@ -177,6 +180,7 @@ int main() {
             //std::cout << "HEJ";
         }
     }
+    //expected.at(1) = add8u_6P8(255,255);
     writeArrayToCSV(expected, FileName);
     //Evaluator addu8_6P8_eval();
     return 0;
