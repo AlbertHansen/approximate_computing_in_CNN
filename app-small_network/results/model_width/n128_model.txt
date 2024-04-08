@@ -2,10 +2,9 @@ Conv2D
 MaxPooling2D
 Conv2D
 MaxPooling2D
-Conv2D
 Flatten
 Dense
 Dense
-Total params: 210532
-Trainable params: 210532
+Total params: 226788
+Trainable params: 226788
 Non-trainable params: 0
