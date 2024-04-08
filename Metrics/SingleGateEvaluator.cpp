@@ -7,122 +7,46 @@
 #include <cmath>
 #include "Evaluator.h"
 
-uint16_t add8u_6P8(uint8_t a, uint8_t b)
-{
-  uint16_t c = 0;
-  uint8_t n0 = (a >> 0) & 0x1;
-  uint8_t n2 = (a >> 1) & 0x1;
-  uint8_t n4 = (a >> 2) & 0x1;
-  uint8_t n6 = (a >> 3) & 0x1;
-  uint8_t n8 = (a >> 4) & 0x1;
-  uint8_t n10 = (a >> 5) & 0x1;
-  uint8_t n12 = (a >> 6) & 0x1;
-  uint8_t n14 = (a >> 7) & 0x1;
-  uint8_t n16 = (b >> 0) & 0x1;
-  uint8_t n18 = (b >> 1) & 0x1;
-  uint8_t n20 = (b >> 2) & 0x1;
-  uint8_t n22 = (b >> 3) & 0x1;
-  uint8_t n24 = (b >> 4) & 0x1;
-  uint8_t n26 = (b >> 5) & 0x1;
-  uint8_t n28 = (b >> 6) & 0x1;
-  uint8_t n30 = (b >> 7) & 0x1;
-  uint8_t n33;
-  uint8_t n35;
-  uint8_t n37;
-  uint8_t n38;
-  uint8_t n43;
-  uint8_t n46;
-  uint8_t n50;
-  uint8_t n56;
-  uint8_t n58;
-  uint8_t n59;
-  uint8_t n68;
-  uint8_t n69;
-  uint8_t n77;
-  uint8_t n78;
-  uint8_t n79;
-  uint8_t n84;
-  uint8_t n86;
-  uint8_t n87;
-  uint8_t n92;
-  uint8_t n96;
-  uint8_t n97;
-  uint8_t n110;
-  uint8_t n122;
-  uint8_t n127;
-  uint8_t n134;
-  uint8_t n152;
-  uint8_t n162;
-  uint8_t n171;
-  uint8_t n180;
-  uint8_t n198;
-  uint8_t n199;
-  uint8_t n226;
-  uint8_t n240;
-  uint8_t n244;
-  uint8_t n254;
-  uint8_t n272;
-  uint8_t n391;
-  uint8_t n394;
-  uint8_t n404;
-  uint8_t n412;
-  uint8_t n413;
-  uint8_t n423;
-
-  n33 = n12 | n28;
-  n35 = n0 | n16;
-  n37 = ~(n4 & n20);
-  n38 = ~n37;
-  n43 = n38;
-  n46 = ~(n18 | n2);
-  n50 = n4 ^ n20;
-  n56 = n43;
-  n58 = (n6 ^ n22) ^ n56;
-  n59 = (n6 & n22) | (n22 & n56) | (n6 & n56);
-  n68 = n8 ^ n24;
-  n69 = n8 & n24;
-  n77 = n68;
-  n78 = n10 ^ n26;
-  n79 = n10 & n26;
-  n84 = n59;
-  n86 = n12 ^ n28;
-  n87 = n12 & n28;
-  n92 = n78;
-  n96 = n14 ^ n30;
-  n97 = n14 & n30;
-  n110 = ~n46;
-  n122 = n77;
-  n127 = n69;
-  n134 = n77 & n84;
-  n152 = n127 | n134;
-  n162 = n33 & n79;
-  n171 = n86 & n78;
-  n180 = n87 | n162;
-  n198 = n152;
-  n199 = n152;
-  n226 = n92 & n199;
-  n240 = ~n84;
-  n244 = n79 | n226;
-  n254 = n171 & n198;
-  n272 = n180 | n254;
-  n391 = ~(n240 ^ n122);
-  n394 = n78 ^ n198;
-  n404 = n86 ^ n244;
-  n412 = n96 ^ n272;
-  n413 = n96 & n272;
-  n423 = n97 | n413;
-
-  c |= (n35 & 0x1) << 0;
-  c |= (n110 & 0x1) << 1;
-  c |= (n50 & 0x1) << 2;
-  c |= (n58 & 0x1) << 3;
-  c |= (n391 & 0x1) << 4;
-  c |= (n394 & 0x1) << 5;
-  c |= (n404 & 0x1) << 6;
-  c |= (n412 & 0x1) << 7;
-  c |= (n423 & 0x1) << 8;
-
-  return c;
+uint64_t add8u_00M(uint64_t a, uint64_t b) {
+  int wa[8];
+  int wb[8];
+  uint64_t y = 0;
+  wa[0] = (a >> 0) & 0x01;
+  wb[0] = (b >> 0) & 0x01;
+  wa[1] = (a >> 1) & 0x01;
+  wb[1] = (b >> 1) & 0x01;
+  wa[2] = (a >> 2) & 0x01;
+  wb[2] = (b >> 2) & 0x01;
+  wa[3] = (a >> 3) & 0x01;
+  wb[3] = (b >> 3) & 0x01;
+  wa[4] = (a >> 4) & 0x01;
+  wb[4] = (b >> 4) & 0x01;
+  wa[5] = (a >> 5) & 0x01;
+  wb[5] = (b >> 5) & 0x01;
+  wa[6] = (a >> 6) & 0x01;
+  wb[6] = (b >> 6) & 0x01;
+  wa[7] = (a >> 7) & 0x01;
+  wb[7] = (b >> 7) & 0x01;
+  int sig_16 = wa[6] & wb[6];
+  int sig_26 = 0;
+  int sig_32 = ~(wa[6] | wb[6]);
+  int sig_45 = wb[7];
+  int sig_47 = wb[6] | wa[6];
+  int sig_48 = wa[7] ^ wb[7];
+  int sig_49 = wa[7] & wb[7];
+  int sig_50 = sig_48 & sig_47;
+  int sig_51 = sig_48 ^ sig_47;
+  int sig_52 = sig_49 | sig_50;
+  y |=  (sig_52 & 0x01) << 0; // default output
+  y |=  (wa[3] & 0x01) << 1; // default output
+  y |=  (wa[7] & 0x01) << 2; // default output
+  y |=  (sig_26 & 0x01) << 3; // default output
+  y |=  (sig_45 & 0x01) << 4; // default output
+  y |=  (sig_16 & 0x01) << 5; // default output
+  y |=  (sig_32 & 0x01) << 6; // default output
+  y |=  (sig_51 & 0x01) << 7; // default output
+  y |=  (sig_52 & 0x01) << 8; // default output
+   return y;
 }
 
 constexpr size_t adderInputSize = 8;
@@ -173,7 +97,7 @@ int main() {
         
         for (uint16_t b = 0; b < adderInputRange; b++)
         {
-            expected.at(adderInputRange*a+b) = add8u_6P8(a,b);
+            expected.at(adderInputRange*a+b) = add8u_00M(a,b);
             actual.at(adderInputRange*a+b) = a+b;
             aInput.at(adderInputRange*a+b) = a;
             bInput.at(adderInputRange*a+b) = b;
