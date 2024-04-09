@@ -97,9 +97,9 @@ oneofeach_model.add(layers.Dense(100))  # changed from 10 to 100, due to amount 
 
 # 2 of each
 twoofeach_model = models.Sequential()
-twoofeach_model.add(layers.Conv2D(32, (3, 3), activation='relu')) # input_shape removed, (3, 3) -> (2, 2)
+twoofeach_model.add(layers.Conv2D(32, (2, 2), activation='relu')) # input_shape removed, (3, 3) -> (2, 2)
 twoofeach_model.add(layers.MaxPooling2D((2, 2)))
-twoofeach_model.add(layers.Conv2D(64, (3, 3), activation='relu')) # (3, 3) -> (2, 2)
+twoofeach_model.add(layers.Conv2D(64, (2, 2), activation='relu')) # (3, 3) -> (2, 2)
 twoofeach_model.add(layers.MaxPooling2D((2, 2)))
 twoofeach_model.add(layers.Flatten())
 twoofeach_model.add(layers.Dense(64, activation='relu'))
@@ -161,7 +161,7 @@ def myprint(s):
         print(s, file=f)
 
 
-# In[11]:
+# In[6]:
 
 
 # List of optimizers to iterate over
@@ -175,6 +175,7 @@ for i in range(len(csv_names)):
     model = dnn_models[i]
     model = compile_model(model)
     model.build((None, 16, 16, 1))
+    model.summary()
 
     # Train
     history = model.fit(train, epochs=250, validation_data=test, callbacks=[time_callback])
