@@ -5,6 +5,6 @@ MaxPooling2D
 Flatten
 Dense
 Dense
-Total params: 41764
-Trainable params: 41764
+Total params: 51844
+Trainable params: 51844
 Non-trainable params: 0
