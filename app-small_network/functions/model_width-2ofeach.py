@@ -106,7 +106,6 @@ base_model.add(layers.Conv2D(32, (2, 2), activation='relu')) # input_shape remov
 base_model.add(layers.MaxPooling2D((2, 2)))
 base_model.add(layers.Conv2D(64, (2, 2), activation='relu')) # (3, 3) -> (2, 2)
 base_model.add(layers.MaxPooling2D((2, 2)))
-base_model.add(layers.Conv2D(64, (2, 2), activation='relu')) # (3, 3) -> (2, 2)
 base_model.add(layers.Flatten())
 base_model.add(layers.Dense(64, activation='relu'))
 base_model.add(layers.Dense(100))  # changed from 10 to 100, due to amount of classes
@@ -116,7 +115,6 @@ n16_model.add(layers.Conv2D(16, (2, 2), activation='relu')) # input_shape remove
 n16_model.add(layers.MaxPooling2D((2, 2)))
 n16_model.add(layers.Conv2D(16, (2, 2), activation='relu')) # (3, 3) -> (2, 2)
 n16_model.add(layers.MaxPooling2D((2, 2)))
-n16_model.add(layers.Conv2D(16, (2, 2), activation='relu')) # (3, 3) -> (2, 2)
 n16_model.add(layers.Flatten())
 n16_model.add(layers.Dense(16, activation='relu'))
 n16_model.add(layers.Dense(100))  # changed from 10 to 100, due to amount of 
@@ -126,7 +124,6 @@ n24_model.add(layers.Conv2D(24, (2, 2), activation='relu')) # input_shape remove
 n24_model.add(layers.MaxPooling2D((2, 2)))
 n24_model.add(layers.Conv2D(24, (2, 2), activation='relu')) # (3, 3) -> (2, 2)
 n24_model.add(layers.MaxPooling2D((2, 2)))
-n24_model.add(layers.Conv2D(24, (2, 2), activation='relu')) # (3, 3) -> (2, 2)
 n24_model.add(layers.Flatten())
 n24_model.add(layers.Dense(24, activation='relu'))
 n24_model.add(layers.Dense(100))  # changed from 10 to 100, due to amount of 
@@ -136,7 +133,6 @@ n32_model.add(layers.Conv2D(32, (2, 2), activation='relu')) # input_shape remove
 n32_model.add(layers.MaxPooling2D((2, 2)))
 n32_model.add(layers.Conv2D(32, (2, 2), activation='relu')) # (3, 3) -> (2, 2)
 n32_model.add(layers.MaxPooling2D((2, 2)))
-n32_model.add(layers.Conv2D(32, (2, 2), activation='relu')) # (3, 3) -> (2, 2)
 n32_model.add(layers.Flatten())
 n32_model.add(layers.Dense(32, activation='relu'))
 n32_model.add(layers.Dense(100))  # changed from 10 to 100, due to amount of 
@@ -146,7 +142,6 @@ n40_model.add(layers.Conv2D(40, (2, 2), activation='relu')) # input_shape remove
 n40_model.add(layers.MaxPooling2D((2, 2)))
 n40_model.add(layers.Conv2D(40, (2, 2), activation='relu')) # (3, 3) -> (2, 2)
 n40_model.add(layers.MaxPooling2D((2, 2)))
-n40_model.add(layers.Conv2D(40, (2, 2), activation='relu')) # (3, 3) -> (2, 2)
 n40_model.add(layers.Flatten())
 n40_model.add(layers.Dense(40, activation='relu'))
 n40_model.add(layers.Dense(100))  # changed from 10 to 100, due to amount of classes
@@ -156,7 +151,6 @@ n48_model.add(layers.Conv2D(48, (2, 2), activation='relu')) # input_shape remove
 n48_model.add(layers.MaxPooling2D((2, 2)))
 n48_model.add(layers.Conv2D(48, (2, 2), activation='relu')) # (3, 3) -> (2, 2)
 n48_model.add(layers.MaxPooling2D((2, 2)))
-n48_model.add(layers.Conv2D(48, (2, 2), activation='relu')) # (3, 3) -> (2, 2)
 n48_model.add(layers.Flatten())
 n48_model.add(layers.Dense(48, activation='relu'))
 n48_model.add(layers.Dense(100))  # changed from 10 to 100, due to amount of classes
@@ -166,7 +160,6 @@ n56_model.add(layers.Conv2D(56, (2, 2), activation='relu')) # input_shape remove
 n56_model.add(layers.MaxPooling2D((2, 2)))
 n56_model.add(layers.Conv2D(56, (2, 2), activation='relu')) # (3, 3) -> (2, 2)
 n56_model.add(layers.MaxPooling2D((2, 2)))
-n56_model.add(layers.Conv2D(56, (2, 2), activation='relu')) # (3, 3) -> (2, 2)
 n56_model.add(layers.Flatten())
 n56_model.add(layers.Dense(56, activation='relu'))
 n56_model.add(layers.Dense(100))  # changed from 10 to 100, due to amount of classes
@@ -176,7 +169,6 @@ n64_model.add(layers.Conv2D(64, (2, 2), activation='relu')) # input_shape remove
 n64_model.add(layers.MaxPooling2D((2, 2)))
 n64_model.add(layers.Conv2D(64, (2, 2), activation='relu')) # (3, 3) -> (2, 2)
 n64_model.add(layers.MaxPooling2D((2, 2)))
-n64_model.add(layers.Conv2D(64, (2, 2), activation='relu')) # (3, 3) -> (2, 2)
 n64_model.add(layers.Flatten())
 n64_model.add(layers.Dense(64, activation='relu'))
 n64_model.add(layers.Dense(100))  # changed from 10 to 100, due to amount of classes
@@ -186,7 +178,6 @@ n72_model.add(layers.Conv2D(72, (2, 2), activation='relu')) # input_shape remove
 n72_model.add(layers.MaxPooling2D((2, 2)))
 n72_model.add(layers.Conv2D(72, (2, 2), activation='relu')) # (3, 3) -> (2, 2)
 n72_model.add(layers.MaxPooling2D((2, 2)))
-n72_model.add(layers.Conv2D(72, (2, 2), activation='relu')) # (3, 3) -> (2, 2)
 n72_model.add(layers.Flatten())
 n72_model.add(layers.Dense(72, activation='relu'))
 n72_model.add(layers.Dense(100))  # changed from 10 to 100, due to amount of classes
@@ -196,7 +187,6 @@ n80_model.add(layers.Conv2D(80, (2, 2), activation='relu')) # input_shape remove
 n80_model.add(layers.MaxPooling2D((2, 2)))
 n80_model.add(layers.Conv2D(80, (2, 2), activation='relu')) # (3, 3) -> (2, 2)
 n80_model.add(layers.MaxPooling2D((2, 2)))
-n80_model.add(layers.Conv2D(80, (2, 2), activation='relu')) # (3, 3) -> (2, 2)
 n80_model.add(layers.Flatten())
 n80_model.add(layers.Dense(80, activation='relu'))
 n80_model.add(layers.Dense(100))  # changed from 10 to 100, due to amount of classes
@@ -206,7 +196,6 @@ n88_model.add(layers.Conv2D(88, (2, 2), activation='relu')) # input_shape remove
 n88_model.add(layers.MaxPooling2D((2, 2)))
 n88_model.add(layers.Conv2D(88, (2, 2), activation='relu')) # (3, 3) -> (2, 2)
 n88_model.add(layers.MaxPooling2D((2, 2)))
-n88_model.add(layers.Conv2D(88, (2, 2), activation='relu')) # (3, 3) -> (2, 2)
 n88_model.add(layers.Flatten())
 n88_model.add(layers.Dense(88, activation='relu'))
 n88_model.add(layers.Dense(100))  # changed from 10 to 100, due to amount of classes
@@ -216,7 +205,6 @@ n96_model.add(layers.Conv2D(96, (2, 2), activation='relu')) # input_shape remove
 n96_model.add(layers.MaxPooling2D((2, 2)))
 n96_model.add(layers.Conv2D(96, (2, 2), activation='relu')) # (3, 3) -> (2, 2)
 n96_model.add(layers.MaxPooling2D((2, 2)))
-n96_model.add(layers.Conv2D(96, (2, 2), activation='relu')) # (3, 3) -> (2, 2)
 n96_model.add(layers.Flatten())
 n96_model.add(layers.Dense(96, activation='relu'))
 n96_model.add(layers.Dense(100))  # changed from 10 to 100, due to amount of classes
@@ -226,7 +214,6 @@ n104_model.add(layers.Conv2D(104, (2, 2), activation='relu')) # input_shape remo
 n104_model.add(layers.MaxPooling2D((2, 2)))
 n104_model.add(layers.Conv2D(104, (2, 2), activation='relu')) # (3, 3) -> (2, 2)
 n104_model.add(layers.MaxPooling2D((2, 2)))
-n104_model.add(layers.Conv2D(104, (2, 2), activation='relu')) # (3, 3) -> (2, 2)
 n104_model.add(layers.Flatten())
 n104_model.add(layers.Dense(104, activation='relu'))
 n104_model.add(layers.Dense(100))  # changed from 10 to 100, due to amount of classes
@@ -236,7 +223,6 @@ n112_model.add(layers.Conv2D(112, (2, 2), activation='relu')) # input_shape remo
 n112_model.add(layers.MaxPooling2D((2, 2)))
 n112_model.add(layers.Conv2D(112, (2, 2), activation='relu')) # (3, 3) -> (2, 2)
 n112_model.add(layers.MaxPooling2D((2, 2)))
-n112_model.add(layers.Conv2D(112, (2, 2), activation='relu')) # (3, 3) -> (2, 2)
 n112_model.add(layers.Flatten())
 n112_model.add(layers.Dense(112, activation='relu'))
 n112_model.add(layers.Dense(100))  # changed from 10 to 100, due to amount of classes
@@ -246,7 +232,6 @@ n120_model.add(layers.Conv2D(120, (2, 2), activation='relu')) # input_shape remo
 n120_model.add(layers.MaxPooling2D((2, 2)))
 n120_model.add(layers.Conv2D(120, (2, 2), activation='relu')) # (3, 3) -> (2, 2)
 n120_model.add(layers.MaxPooling2D((2, 2)))
-n120_model.add(layers.Conv2D(120, (2, 2), activation='relu')) # (3, 3) -> (2, 2)
 n120_model.add(layers.Flatten())
 n120_model.add(layers.Dense(120, activation='relu'))
 n120_model.add(layers.Dense(100))  # changed from 10 to 100, due to amount of classes
@@ -256,7 +241,6 @@ n128_model.add(layers.Conv2D(128, (2, 2), activation='relu')) # input_shape remo
 n128_model.add(layers.MaxPooling2D((2, 2)))
 n128_model.add(layers.Conv2D(128, (2, 2), activation='relu')) # (3, 3) -> (2, 2)
 n128_model.add(layers.MaxPooling2D((2, 2)))
-n128_model.add(layers.Conv2D(128, (2, 2), activation='relu')) # (3, 3) -> (2, 2)
 n128_model.add(layers.Flatten())
 n128_model.add(layers.Dense(128, activation='relu'))
 n128_model.add(layers.Dense(100))  # changed from 10 to 100, due to amount of classes
@@ -310,7 +294,7 @@ for i in range(len(csv_names)):
     model.build((None, 16, 16, 1))
 
     # Train
-    history = model.fit(train, epochs=1, validation_data=test, callbacks=[time_callback])
+    history = model.fit(train, epochs=250, validation_data=test, callbacks=[time_callback])
 
     # Convert the history.history dict to a pandas DataFrame
     hist_df = pd.DataFrame(history.history)
