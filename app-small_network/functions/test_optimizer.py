@@ -122,6 +122,8 @@ for i in range(len(csv_names)):
     # create model
     model = create_model()
     model = compile_model(model, optimizers[i])
+    model.build((None, 16, 16, 1))
+    model.summary()
 
     # Train
     history = model.fit(train, epochs=250, validation_data=test, callbacks=[time_callback])
@@ -133,7 +135,7 @@ for i in range(len(csv_names)):
     hist_df['time'] = time_callback.times
 
     # Save to csv
-    hist_df.to_csv(csv_names[i])
+    #hist_df.to_csv(csv_names[i])
 
 
 # In[ ]:
