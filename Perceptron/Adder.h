@@ -6,6 +6,13 @@
 class Adder {
 public:
     // Add two numbers
+    /*
+    size_t add(size_t a, size_t b)
+    {
+        return a+b;
+    }*/
+
+    
     uint16_t add(uint8_t a, uint8_t b) 
     {
         uint16_t c = 0;
