@@ -140,9 +140,11 @@ def epoch(model, dataset):
 
 #%% test
 # epoch(model, train)
-batch = train
-for image, label in batch:
-    tensor_to_csv(image, 'test.txt')
+train
+for batch_index, (image_batch, label_batch) in enumerate(train):
+    image_batch = image_batch.numpy()    
+    for i in range(image_batch.shape[0]):
+        np.savetxt(f"tensor_{i}.csv", image_batch[i, :, :, 0], delimiter=",")
 
 
 # %%
