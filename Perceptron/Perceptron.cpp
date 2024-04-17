@@ -18,11 +18,10 @@ void Perceptron::setMultiplier(Multiplier multiplier) {
 }
 
 intmax_t Perceptron::compute(intmax_t bias) {
-    //intmax_t result = bias;
-    size_t result=bias;
+    intmax_t result = bias;
     for (uint16_t i = 0; i < weights.size(); ++i) {
         result = adder.add(result, multiplier.multiply(weights.at(i), inputs.at(i)));
-        std::cout << "HEJ: " << result<< std::endl;
+        
     }
     return result;
 }

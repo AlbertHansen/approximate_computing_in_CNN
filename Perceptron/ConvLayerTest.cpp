@@ -5,6 +5,15 @@
 #include "Adder.h"
 #include <vector>
 
+template <typename T>
+void printBits(T value) {
+    const int totalBits = sizeof(T) * 8;
+    for (int i = totalBits - 1; i >= 0; --i) {
+        std::cout << ((value >> i) & 1);
+    }
+    std::cout << std::endl;
+}
+
 int main()
 {
     
@@ -14,9 +23,9 @@ int main()
                                             5,2,1,4,4,
                                             1,1,2,2,3};
     
-    std::vector<intmax_t> flattenedFilter1 =   {1,-2,-3,
-                                              -3,1,2,
-                                              -3,1,1};
+    std::vector<intmax_t> flattenedFilter1 =   {100,-25,-36,
+                                              -390,10,29,
+                                              -39,19,19};
     std::vector<intmax_t> flattenedFilter2 =   {1,1,1,
                                               1,1,1,
                                               1,1,1};
@@ -37,17 +46,24 @@ int main()
 
     layer1.updateFilters(newfilters);
 
-    std::vector<intmax_t> w = {-2,-2};
-    std::vector<intmax_t> I = {2,2};
-
-    intmax_t a = -2;
-    intmax_t b = -2;
-
-    Perceptron percept(w,I);
     Adder adder;
-    std::cout << "ADD: " << adder.add(a,b) << std::endl;
-    std::cout << "PERCEPT: " << percept.compute(0) << std::endl;
+    //std::vector<intmax_t> w = {-2,-2};
+    //std::vector<intmax_t> I = {2,2};
+
+    //std::cout << "Binary representation of " <<  << " (int): ";
+    
+    //Perceptron percept(w,I);
+    //intmax_t d = percept.compute(0);
+    //std::cout << "ADD: " << (int8_t)adder.add(a,b) << std::endl;
+    
+    //std::cout << "PERCEPT: " << (int16_t)d << std::endl;
+    intmax_t a = 40000;
+    intmax_t b = 40000;
+    printBits(a);
+    printBits(b);
+    printBits(adder.add(a,b));
     /*
+
     std::vector<Matrix> result = layer1.applyConvolution(inputMatrix);
     for (size_t k = 0 ; k < result.size(); k++)
     {
@@ -55,10 +71,11 @@ int main()
     
         for (size_t i = 0; i < resultFlat.size(); i++)
         {
-            std::cout << resultFlat.at(i) << " Size: " << sizeof(resultFlat.at(i)) << " ";
+            printBits(resultFlat.at(i));
         }
         std::cout << std::endl;
     }*/
+
     //std::cout << (int)layer1.filters[0].numRows();
     
 }
