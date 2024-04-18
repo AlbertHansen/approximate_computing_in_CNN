@@ -7,6 +7,11 @@ ConvolutionalLayer::ConvolutionalLayer(size_t inputSizeX, size_t inputSizeY, siz
     filters.resize(sizes.filterSizeX*sizes.filterSizeY);
 }
 
+void ConvolutionalLayer::setRelu(Relu<intmax_t> relu)
+{
+    this->relu = relu;
+}
+
 // Apply convolution using the initialized filters
 std::vector<Matrix> ConvolutionalLayer::applyConvolution(const Matrix& input) 
 {
@@ -26,7 +31,7 @@ std::vector<Matrix> ConvolutionalLayer::applyConvolution(const Matrix& input)
                 Matrix inputSubMatrix = input.extractSubMatrix(i,j,sizes.filterSizeX,sizes.filterSizeY);
                 std::vector<intmax_t> perceptronInput = inputSubMatrix.flatten();
                 Perceptron perceptron(filters.at(k),perceptronInput);
-                featureMap(i,j) = perceptron.compute(0);
+                featureMap(i,j) = relu.ReLU(perceptron.compute(0));
             }
             
         }

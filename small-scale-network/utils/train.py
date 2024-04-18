@@ -2,6 +2,34 @@ import tensorflow as tf
 import numpy as np
 from sklearn.metrics import accuracy_score
 
+def iteration_approx(model, batch, labels_approximated):
+    """
+    Perform one iteration of approximate computing in a convolutional neural network.
+
+    Args:
+        model (tf.keras.Model): The CNN model.
+        batch (tuple): A tuple containing the input images and corresponding labels.
+        labels_approximated (tf.Tensor): The approximated labels.
+
+    Returns:
+        None
+    """
+    # unpack batch
+    images, labels = batch
+
+    # Use GradientTape() for auto differentiation, FORWARD PASS(ES)
+    with tf.GradientTape() as tape:     # OBS! tape will not be destroyed when exiting this scope
+        labels_predicted = model(images)
+        diff             = labels_predicted - labels_approximated
+        diff             = obscure_tensor(diff) # remove dependencies from weights to diff
+        labels_predicted = labels_predicted - diff
+        loss_value       = model.compute_loss(images, labels, labels_predicted)
+
+    # Perform gradient descent, BACKWARD PASS(ES)
+    grads = tape.gradient(loss_value, model.trainable_weights)
+    print(grads)
+    model.optimizer.apply_gradients(zip(grads, model.trainable_weights))
+
 #def iteration(model, batch, labels_approximated):
 def iteration(model, batch):
     """
@@ -20,12 +48,11 @@ def iteration(model, batch):
     # Use GradientTape() for auto differentiation, FORWARD PASS(ES)
     with tf.GradientTape() as tape:     # OBS! tape will not be destroyed when exiting this scope
         labels_predicted = model(images)
-        # diff = labels_predicted - labels_approximated # HVAD HVIS DEN SET AT labels_predicted BLIVER TRUKKET FRA labels_predicted?????????
-        # labels_predicted = labels_predicted - diff
         loss_value       = model.compute_loss(images, labels, labels_predicted)
 
     # Perform gradient descent, BACKWARD PASS(ES)
     grads = tape.gradient(loss_value, model.trainable_weights)
+    print(grads)
     model.optimizer.apply_gradients(zip(grads, model.trainable_weights))
 
 def evaluate_model(model, dataset):
@@ -80,3 +107,17 @@ def epoch(model, dataset):
     """
     for batch in dataset:
         iteration(model, batch)
+
+def obscure_tensor(tensor):
+    """
+    Converts a TensorFlow tensor to a NumPy array and then converts it back to a TensorFlow tensor.
+
+    Args:
+        tensor (tf.Tensor): The input TensorFlow tensor.
+
+    Returns:
+        tf.Tensor: The converted TensorFlow tensor.
+
+    """
+    numpy_array = tensor.numpy()
+    return tf.convert_to_tensor(numpy_array, dtype=tf.float32)
