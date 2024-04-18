@@ -1,14 +1,15 @@
-#%%
+#%% Import
 import tensorflow as tf
 import numpy as np
 
+#%% Process
 # Create a 3x3x3 image
 image = np.random.rand(1, 3, 3, 3).astype(np.float32)
-print(image)
+#print(image)
 
 # Create a placeholder for the image
 input_image = tf.convert_to_tensor(image, dtype=tf.float32)
-print(input_image)
+#print(input_image)
 
 # Create a Conv2D layer
 conv2d_layer = tf.keras.layers.Conv2D(filters=1, kernel_size=(2, 2), activation='relu')
@@ -22,4 +23,18 @@ conv2d_layer.set_weights(weights)
 
 # Apply the Conv2D layer to the image
 output = conv2d_layer(input_image)
-print(output)
+#print(output)
+
+#%% Verification
+
+index = np.array([[
+    np.sum(image[0, 0:2, 0:2, :]),
+    np.sum(image[0, 0:2, 1:3, :])
+], [
+    np.sum(image[0, 1:3, 0:2, :]),
+    np.sum(image[0, 1:3, 1:3, :])
+]])
+print(index)
+print(output.numpy().reshape(2, 2))
+
+# %%
