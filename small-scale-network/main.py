@@ -36,7 +36,7 @@ model = models.Sequential([
     layers.MaxPooling2D((2, 2)),
     layers.Conv2D(40, (2, 2), activation='relu'),
     layers.Flatten(),
-    layers.Dense(40, activation='relu'),
+    layers.Dense(20, activation='relu'),
     layers.Dense(num_classes, activation='relu'),       # OBS!!! last layer will be changed to accommodate no of classes
 ])
 
@@ -46,9 +46,27 @@ model.summary()
 
     
 #%% test
-for i in range(5):
-    utils.train.epoch(model, train)
-    acc = utils.train.evaluate_model(model, test)
+
+for i, layer in enumerate(model.layers):
+    print(f"---------- LAYER {i} ----------")
+    if i == 0:
+        weights = layer.get_weights()
+        for l, weight in enumerate(weights):
+            if l == 0:
+                print(weight.shape)
+                for k in range(weight.shape[2]):
+                    for j in range(weight.shape[3]):
+                        np.savetxt(f"weights/weight_{k}_{j}.csv", weight[:, :, k, j], delimiter=",")
+        # fprint(weight)
+    
+    #biases = weights[1]
+    #weights = weights[0]
+    #print(biases)
+    #print(weights)
+
+# utils.csv.weights_to_csv(model, 'weights/weights')
+# utils.train.epoch(model, train)
+# acc = utils.train.evaluate_model(model, test)
 
 
 
@@ -86,3 +104,4 @@ with open(summary_names[i], 'w') as f:
 
 print_versions(globals())
 '''
+# %%

@@ -4,11 +4,15 @@
 #include "Matrix.h"
 #include "Adder.h"
 #include <vector>
+#include "FixedPointConverter.h"
+#include "Pooling.h"
 
 template <typename T>
-void printBits(T value) {
+void printBits(T value) 
+{
     const int totalBits = sizeof(T) * 8;
-    for (int i = totalBits - 1; i >= 0; --i) {
+    for (int i = totalBits - 1; i >= 0; --i) 
+    {
         std::cout << ((value >> i) & 1);
     }
     std::cout << std::endl;
@@ -17,22 +21,34 @@ void printBits(T value) {
 int main()
 {
     
-    std::vector<intmax_t> flattenedInput =   {1,3,2,5,2,
-                                            1,2,5,4,1,
-                                            1,2,3,4,5,
-                                            5,2,1,4,4,
-                                            1,1,2,2,3};
+    std::vector<float> flattenedInput =     {-3.5, -1.5, -1.0, 5.1, 2.1,
+                                                1.0, 1.0, 1.0, 4.1, 1.1,
+                                                1.0, 1.0, 1.0, 4.1, 5.1,
+                                                5.1, 2.1, 1.1, 4.1, 4.1,
+                                                1.1, 1.1, 2.1, 2.1, 3.1};
     
-    std::vector<intmax_t> flattenedFilter1 =   {100,-25,-36,
-                                              -390,10,29,
-                                              -39,19,19};
-    std::vector<intmax_t> flattenedFilter2 =   {1,1,1,
-                                              1,1,1,
-                                              1,1,1};
+    std::vector<float> flattenedFilter1 =   {1.0, 1.0, 1.0,
+                                                1.0, 1.0, 1.0,
+                                                1.0, 1.0, 1.0};
+    std::vector<float> flattenedFilter2 =   {1.0, 1.0, 1.0,
+                                                1.0, 1.0, 1.0,
+                                                1.0, 1.0, 1.0};
     
-    Matrix inputMatrix(5,5,flattenedInput);
-    Matrix filterMatrix1(3,3,flattenedFilter1);
-    Matrix filterMatrix2(3,3,flattenedFilter2);
+
+    FixedPointConverter<int> converter(4, 4); // int type, 0 decimal bits, 8 fractional bits
+
+    
+    std::vector<int> fixedInput = converter.convertToFixedPoint(flattenedInput);
+    std::vector<int> fixedFilt1 = converter.convertToFixedPoint(flattenedFilter1);
+    std::vector<int> fixedFilt2 = converter.convertToFixedPoint(flattenedFilter2);    
+    
+    
+    Matrix inputMatrix(5,5,fixedInput);
+    Matrix filterMatrix1(3,3,fixedFilt1);
+    Matrix filterMatrix2(3,3,fixedFilt2);
+    std::vector<Matrix> newfilters = {filterMatrix1,filterMatrix2};
+
+    
 
     size_t inputX = inputMatrix.numCols();
     size_t inputY = inputMatrix.numRows();
@@ -41,30 +57,10 @@ int main()
     size_t kernelY = filterMatrix1.numRows();
 
     ConvolutionalLayer layer1(inputX,inputY,numKernels,kernelX,kernelY);
-
-    std::vector<Matrix> newfilters = {filterMatrix1,filterMatrix2};
-
     layer1.updateFilters(newfilters);
 
-    Adder adder;
-    //std::vector<intmax_t> w = {-2,-2};
-    //std::vector<intmax_t> I = {2,2};
-
-    //std::cout << "Binary representation of " <<  << " (int): ";
-    
-    //Perceptron percept(w,I);
-    //intmax_t d = percept.compute(0);
-    //std::cout << "ADD: " << (int8_t)adder.add(a,b) << std::endl;
-    
-    //std::cout << "PERCEPT: " << (int16_t)d << std::endl;
-    intmax_t a = 40000;
-    intmax_t b = 40000;
-    printBits(a);
-    printBits(b);
-    printBits(adder.add(a,b));
-    /*
-
     std::vector<Matrix> result = layer1.applyConvolution(inputMatrix);
+    
     for (size_t k = 0 ; k < result.size(); k++)
     {
         std::vector<intmax_t> resultFlat = result.at(k).flatten();
@@ -72,10 +68,11 @@ int main()
         for (size_t i = 0; i < resultFlat.size(); i++)
         {
             printBits(resultFlat.at(i));
+            std::cout << "int value: " << resultFlat.at(i) << std::endl;
         }
         std::cout << std::endl;
-    }*/
-
+    }
+    
     //std::cout << (int)layer1.filters[0].numRows();
     
 }

@@ -6,14 +6,14 @@
 class Adder {
 public:
     // Add two numbers
-    /*
+    
     size_t add(size_t a, size_t b)
     {
         return a+b;
-    }*/
+    }
 
-    
-uint64_t add(const uint64_t A /* 8-bit signed operand */, const uint64_t B /* 8-bit signed operand */)
+    /*
+uint64_t add(const uint64_t A /* 8-bit signed operand *, const uint64_t B /* 8-bit signed operand *)
 {
    uint64_t dout_16, dout_18, dout_19, dout_20, dout_21, dout_22, dout_23, dout_24, dout_25, dout_26, dout_27, dout_28, dout_29, dout_30, dout_31, dout_33, dout_34, dout_35, dout_36, dout_37, dout_38, dout_39, dout_40, dout_41, dout_42, dout_43, dout_44, dout_45, dout_46, dout_47, dout_48, dout_50, dout_51, dout_52, dout_53, dout_54, dout_56, dout_57, dout_58, dout_59, dout_60, dout_61;
    uint64_t O;
@@ -71,7 +71,7 @@ uint64_t add(const uint64_t A /* 8-bit signed operand */, const uint64_t B /* 8-
    O |= (dout_60&1) << 6;
    O |= (dout_61&1) << 7;
    return O;
-}
+}*/
 
 };
 

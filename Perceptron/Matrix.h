@@ -12,7 +12,7 @@ private:
 
 public:
     Matrix(size_t rows, size_t cols);
-    Matrix(size_t rows, size_t cols, const std::vector<intmax_t>& values);
+    Matrix(size_t rows, size_t cols, const std::vector<int>& values);
 
     size_t numRows() const { return rows; }
     size_t numCols() const { return cols; }
