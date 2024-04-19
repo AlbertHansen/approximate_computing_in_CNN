@@ -44,6 +44,7 @@ def batch_to_csv(batch, path):
     for i in range(batch.shape[0]):
         np.savetxt(f"{path}_{i}.csv", batch[i, :, :, 0], delimiter=",")
 
+'''
 def weights_to_csv(model, path):
     """
     Converts the weights of a model to CSV files and saves them to the specified path.
@@ -58,6 +59,8 @@ def weights_to_csv(model, path):
     for i, layer in enumerate(model.layers):
         if layer.trainable:
             weights = layer.get_weights()
+            print("-----------------")
             print(weights)
-            for j, weight in enumerate(weights):
-                np.savetxt(f"{path}_layer_{i}_weight_{j}.csv", weight, delimiter=",")
+            #for j, weight in enumerate(weights):
+            #    np.savetxt(f"{path}_layer_{i}_weight_{j}.csv", weight, delimiter=",")
+'''
