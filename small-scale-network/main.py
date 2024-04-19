@@ -55,11 +55,15 @@ def weights_to_csv(model, path):
                 path_weight = f"{path}/layer_{i}/weights.csv"
                 with open(path_weight, 'w', newline='') as file:
                     writer = csv.writer(file)
-                    writer.writerow(np.asarray(weights[0]))
+                    print(weights[0].shape)
+                    for j in range(weights[0].shape[-1]):
+                        temp = weights[0][:, :, :, j]
+                        writer.writerow(temp.flatten())
                 path_bias = f"{path}/layer_{i}/biases.csv"
                 with open(path_bias, 'w', newline='') as file:
                     writer = csv.writer(file)
-                    writer.writerow(weights[1])
+                    writer.writerow(weights[1].flatten())
+
 
 
 weights_to_csv(model, 'weights')

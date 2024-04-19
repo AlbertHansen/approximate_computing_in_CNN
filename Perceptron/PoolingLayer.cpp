@@ -9,11 +9,12 @@ std::vector<Matrix> PoolingLayer::applyMaxPooling(const std::vector<Matrix>& inp
     size_t inputSizeX = input.at(0).numRows();
     size_t inputSizeY = input.at(0).numCols();
 
-    std::vector<Matrix> pooledOutput(inputSizeX / poolSizeX, inputSizeY / poolSizeY);
+    std::vector<Matrix> pooledOutput;
 
     // Apply max pooling
     for (size_t k = 0; k < input.size(); k++)
     {
+        pooledOutput.at(k)(inputSizeX / poolSizeX, inputSizeY / poolSizeY);
         for (size_t i = 0; i < inputSizeX; i += poolSizeX) 
         {
             for (size_t j = 0; j < inputSizeY; j += poolSizeY) 
@@ -30,7 +31,7 @@ std::vector<Matrix> PoolingLayer::applyMaxPooling(const std::vector<Matrix>& inp
                 }
 
             // Assign the maximum value to the corresponding position in the output
-            pooledOutput(i / poolSizeX, j / poolSizeY) = maxVal;
+            pooledOutput.at(k)(i / poolSizeX, j / poolSizeY) = maxVal;
             }
         }
     }
