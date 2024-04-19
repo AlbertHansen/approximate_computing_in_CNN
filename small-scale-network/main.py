@@ -5,6 +5,7 @@ import pandas as pd
 import tensorflow as tf
 import tensorflow_datasets as tfds
 import subprocess
+import csv
 
 from print_versions import print_versions
 from contextlib import redirect_stdout
@@ -46,7 +47,27 @@ model.summary()
 
     
 #%% test
+def weights_to_csv(model, path):
+    for i, layer in enumerate(model.layers):
+        if layer.trainable:
+            weights = layer.get_weights()
+            if weights:  # Check if weights is not empty
+                path_weight = f"{path}/layer_{i}/weights.csv"
+                with open(path_weight, 'w', newline='') as file:
+                    writer = csv.writer(file)
+                    writer.writerow(np.asarray(weights[0]))
+                path_bias = f"{path}/layer_{i}/biases.csv"
+                with open(path_bias, 'w', newline='') as file:
+                    writer = csv.writer(file)
+                    writer.writerow(weights[1])
 
+
+weights_to_csv(model, 'weights')
+
+
+#%%
+
+'''
 for i, layer in enumerate(model.layers):
     print(f"---------- LAYER {i} ----------")
     if i == 0:
@@ -67,7 +88,7 @@ for i, layer in enumerate(model.layers):
 # utils.csv.weights_to_csv(model, 'weights/weights')
 # utils.train.epoch(model, train)
 # acc = utils.train.evaluate_model(model, test)
-
+'''
 
 
 # %%
