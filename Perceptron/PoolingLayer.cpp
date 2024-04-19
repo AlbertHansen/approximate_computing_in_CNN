@@ -14,7 +14,7 @@ std::vector<Matrix> PoolingLayer::applyMaxPooling(const std::vector<Matrix>& inp
     // Apply max pooling
     for (size_t k = 0; k < input.size(); k++)
     {
-        pooledOutput.at(k)(inputSizeX / poolSizeX, inputSizeY / poolSizeY);
+        Matrix pooledOutputIntermediate(inputSizeX / poolSizeX, inputSizeY / poolSizeY);
         for (size_t i = 0; i < inputSizeX; i += poolSizeX) 
         {
             for (size_t j = 0; j < inputSizeY; j += poolSizeY) 
