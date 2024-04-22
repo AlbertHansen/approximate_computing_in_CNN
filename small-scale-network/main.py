@@ -16,7 +16,7 @@ import utils
 
 #%% Datasets
 # Classes
-num_classes = 20
+num_classes = 100
 classes_to_keep = range(num_classes)
 
 # which classes are left?
@@ -37,7 +37,7 @@ model = models.Sequential([
     layers.MaxPooling2D((2, 2)),
     layers.Conv2D(40, (2, 2), activation='relu'),
     layers.Flatten(),
-    layers.Dense(20, activation='relu'),
+    layers.Dense(ove, activation='relu'),
     layers.Dense(num_classes, activation='relu'),       # OBS!!! last layer will be changed to accommodate no of classes
 ])
 
