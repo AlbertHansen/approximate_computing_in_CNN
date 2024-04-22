@@ -50,15 +50,17 @@ int main()
 
     size_t inputX = inputMatrix.numCols();
     size_t inputY = inputMatrix.numRows();
-    size_t numKernels = 2;
+    size_t numKernels = 40;
     size_t kernelX = filterMatrix1.numCols();
     size_t kernelY = filterMatrix1.numRows();
 
-    ConvolutionalLayer layer1(inputX,inputY,numKernels,kernelX,kernelY);
-    PoolingLayer poolLayer1(2,2);
-    layer1.updateFilters(newfilters);
+    ConvolutionalLayer conv2d(inputX,inputY,numKernels,kernelX,kernelY);
+    PoolingLayer max_pooling2d(2,2);
+    ConvolutionalLayer conv2d_1(7,7,numKernels,kernelX,kernelY); 
+    ConvolutionalLayer conv2d_1(7,7,numKernels,kernelX,kernelY); 
+    conv2d.updateFilters(newfilters);
 
-    std::vector<Matrix> result = layer1.applyConvolution(inputMatrix);
+    std::vector<Matrix> result = conv2d.applyConvolution(inputMatrix);
 
     std::vector<Matrix> poolOut = poolLayer1.applyMaxPooling(result);
 
