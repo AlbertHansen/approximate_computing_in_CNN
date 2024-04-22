@@ -31,9 +31,10 @@ std::vector<Matrix> PoolingLayer::applyMaxPooling(const std::vector<Matrix>& inp
                 }
 
             // Assign the maximum value to the corresponding position in the output
-            pooledOutput.at(k)(i / poolSizeX, j / poolSizeY) = maxVal;
+            pooledOutputIntermediate(i / poolSizeX, j / poolSizeY) = maxVal;
             }
         }
+        pooledOutput.push_back(pooledOutputIntermediate);
     }
     
 

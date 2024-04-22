@@ -46,87 +46,28 @@ model.build((None, 16, 16, 1))
 model.summary()
 
     
-#%% test
-def weights_to_csv(model, path):
-    for i, layer in enumerate(model.layers):
-        if layer.trainable:
-            weights = layer.get_weights()
-            if weights:  # Check if weights is not empty
-                path_weight = f"{path}/layer_{i}/weights.csv"
-                with open(path_weight, 'w', newline='') as file:
-                    writer = csv.writer(file)
-                    print(weights[0].shape)
-                    for j in range(weights[0].shape[-1]):
-                        temp = weights[0][:, :, :, j]
-                        writer.writerow(temp.flatten())
-                path_bias = f"{path}/layer_{i}/biases.csv"
-                with open(path_bias, 'w', newline='') as file:
-                    writer = csv.writer(file)
-                    writer.writerow(weights[1].flatten())
+#%% testing area
+import random
 
+# Define the number of rows and columns
+rows = 32
+columns = 20
 
-
-weights_to_csv(model, 'weights')
-
-
-#%%
-
-'''
-for i, layer in enumerate(model.layers):
-    print(f"---------- LAYER {i} ----------")
-    if i == 0:
-        weights = layer.get_weights()
-        for l, weight in enumerate(weights):
-            if l == 0:
-                print(weight.shape)
-                for k in range(weight.shape[2]):
-                    for j in range(weight.shape[3]):
-                        np.savetxt(f"weights/weight_{k}_{j}.csv", weight[:, :, k, j], delimiter=",")
-        # fprint(weight)
+# Open the CSV file in write mode
+with open('random_numbers.csv', 'w', newline='') as file:
+    writer = csv.writer(file)
     
-    #biases = weights[1]
-    #weights = weights[0]
-    #print(biases)
-    #print(weights)
+    # Loop over the number of rows
+    for _ in range(rows):
+        # Generate a list of random numbers for each row
+        row = [random.uniform(0, 100) for _ in range(columns)]
+        
+        # Write the row to the CSV file
+        writer.writerow(row)
 
-# utils.csv.weights_to_csv(model, 'weights/weights')
-# utils.train.epoch(model, train)
-# acc = utils.train.evaluate_model(model, test)
-'''
+test_tensor = utils.my_csv.csv_to_tensor('random_numbers.csv')
+print(tf.expand_dims(test_tensor, axis=0))
 
+utils.train.epoch(model, train)
 
-# %%
-# Save information
-# Train
-# time_callback = TimeHistory()
-# history = model.fit(train, epochs=50, validation_data=test, callbacks=[time_callback])
-
-
-'''
-# Convert the history.history dict to a pandas DataFrame
-hist_df = pd.DataFrame(history.history)
-
-# Add epoch times
-hist_df['time'] = time_callback.times
-
-# Save model summary
-with open(summary_names[i], 'w') as f:
-    for layer in model.layers:
-        print(type(layer).__name__, file=f)
-
-    # print params
-    total_params         = model.count_params()
-    trainable_params     = sum([tf.size(w_matrix).numpy() for w_matrix in model.trainable_weights])
-    non_trainable_params = sum([tf.size(w_matrix).numpy() for w_matrix in model.non_trainable_weights])
-    #optimizer_params     = sum([tf.size(w_matrix).numpy() for w_matrix in model.optimizer.weights])
-    print(f'Total params: {total_params}', file=f)
-    print(f'Trainable params: {trainable_params}', file=f)
-    print(f'Non-trainable params: {non_trainable_params}', file=f)
-    # print(f'Optimizer params: {optimizer_params} \n', file=f)
-
-# Save to csv
-# hist_df.to_csv(csv_names[i])
-
-print_versions(globals())
-'''
 # %%
