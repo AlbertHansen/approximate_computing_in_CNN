@@ -60,18 +60,27 @@ def weights_to_csv(model, path):
     for i, layer in enumerate(model.layers):
         if layer.trainable:
             weights = layer.get_weights()
-            if weights:  # Check if weights is not empty
-                path_weight = f"{path}/layer_{i}/weights.csv"
-                with open(path_weight, 'w', newline='') as file:
-                    writer = csv.writer(file)
-                    print(weights[0].shape)
+            if not weights:  # Check if weights is not empty
+                continue
+            
+            path_weight = f"{path}/layer_{i}/weights.csv"
+            with open(path_weight, 'w', newline='') as file:
+                writer = csv.writer(file)
+                if len(weights[0].shape) == 4:
                     for j in range(weights[0].shape[-1]):
                         temp = weights[0][:, :, :, j]
                         writer.writerow(temp.flatten())
-                path_bias = f"{path}/layer_{i}/biases.csv"
-                with open(path_bias, 'w', newline='') as file:
-                    writer = csv.writer(file)
-                    writer.writerow(weights[1].flatten())
+                elif len(weights[0].shape) == 2:
+                    for j in range(weights[0].shape[-1]):
+                        writer.writerow(weights[0][:, j])
+                else:
+                    print("The weights have an unexpected shape.")
+
+            # Save the biases
+            path_bias = f"{path}/layer_{i}/biases.csv"
+            with open(path_bias, 'w', newline='') as file:
+                writer = csv.writer(file)
+                writer.writerow(weights[1].flatten())
 
 def get_approximate_predictions(path):
     """

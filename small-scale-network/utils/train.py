@@ -49,9 +49,9 @@ def iteration(model, batch):
     # Use GradientTape() for auto differentiation, FORWARD PASS(ES)
     with tf.GradientTape() as tape:     # OBS! tape will not be destroyed when exiting this scope
         labels_predicted = model(images)
-        labels_approx    = my_csv.csv_to_tensor('random_numbers.csv')
-        labels_predicted = labels_predicted - labels_approx
-        print(labels_predicted.shape)
+        #labels_approx    = my_csv.csv_to_tensor('random_numbers.csv')
+        #labels_predicted = labels_predicted - labels_approx
+        #print(labels_predicted.shape)
         loss_value       = model.compute_loss(images, labels, labels_predicted)
 
     # Perform gradient descent, BACKWARD PASS(ES)

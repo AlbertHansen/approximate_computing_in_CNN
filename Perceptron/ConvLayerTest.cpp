@@ -27,10 +27,12 @@ int main()
                                                 5.1, 2.1, 1.1, 4.1, 4.1,
                                                 1.1, 1.1, 2.1, 2.1, 3.1};
     
-    std::vector<float> flattenedFilter1 =   {1.0, 1.0,
-                                                1.0, 1.0};
-    std::vector<float> flattenedFilter2 =   {1.0, 1.0, 
-                                                1.0, 1.0};
+    std::vector<float> flattenedFilter1 =   {1.0, 1.0, 1.0,
+                                             1.0, 1.0, 1.0,
+                                             1.0, 1.0, 1.0};
+    std::vector<float> flattenedFilter2 =   {1.0, 1.0, 1.0,
+                                             1.0, 1.0, 1.0,
+                                             1.0, 1.0, 1.0};
     
 
     FixedPointConverter<int> converter(4, 4); // int type, 4 decimal bits, 4 fractional bits
@@ -42,13 +44,13 @@ int main()
     
     
     Matrix inputMatrix(5,5,fixedInput);
-    Matrix filterMatrix1(2,2,fixedFilt1);
-    Matrix filterMatrix2(2,2,fixedFilt2);
+    Matrix filterMatrix1(3,3,fixedFilt1);
+    Matrix filterMatrix2(3,3,fixedFilt2);
     std::vector<Matrix> newfilters = {filterMatrix1,filterMatrix2};
 
     size_t inputX = inputMatrix.numCols();
     size_t inputY = inputMatrix.numRows();
-    size_t numKernels = 40;
+    size_t numKernels = 2;
     size_t kernelX = filterMatrix1.numCols();
     size_t kernelY = filterMatrix1.numRows();
 
