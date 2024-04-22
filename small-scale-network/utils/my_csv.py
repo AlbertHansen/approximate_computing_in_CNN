@@ -42,9 +42,21 @@ def batch_to_csv(batch, path):
     Returns:
         None
     """
-    batch = batch.numpy()    
-    for i in range(batch.shape[0]):
-        np.savetxt(f"{path}_{i}.csv", batch[i, :, :, 0], delimiter=",")
+    images, labels = batch
+
+    # 1 CSV file per image
+    #images = images.numpy()    
+    #for i in range(batch.shape[0]):
+    #    np.savetxt(f"{path}_{i}.csv", batch[i, :, :, 0], delimiter=",")
+    images = images.numpy()
+
+    # 1 csv file per batch
+    path = f"{path}.csv"
+    with open(path, 'w', newline='') as file:
+        writer = csv.writer(file)
+        print(images.shape)
+        for j in range(images.shape[0]):    # (batch_size, 16, 16, 1)
+            writer.writerow(images[j, :, :, :].flatten())
 
 def weights_to_csv(model, path):
     """

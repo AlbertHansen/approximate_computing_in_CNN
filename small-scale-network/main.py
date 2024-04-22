@@ -37,7 +37,7 @@ model = models.Sequential([
     layers.MaxPooling2D((2, 2)),
     layers.Conv2D(40, (2, 2), activation='relu'),
     layers.Flatten(),
-    layers.Dense(ove, activation='relu'),
+    layers.Dense(40, activation='relu'),
     layers.Dense(num_classes, activation='relu'),       # OBS!!! last layer will be changed to accommodate no of classes
 ])
 
@@ -53,8 +53,16 @@ import random
 rows = 32
 columns = 20
 
-utils.my_csv.weights_to_csv(model, 'before')
-utils.train.epoch(model, train)
-utils.my_csv.weights_to_csv(model, 'after')
+for i, batch in enumerate(train):
+    if i != 0:
+        continue
+    
+    # take first batch and save
+    utils.my_csv.batch_to_csv(batch, 'batch_test')
+    utils.my_csv.weights_to_csv(model, 'before')
+    utils.train.iteration(model, batch)
+    utils.my_csv.weights_to_csv(model, 'after')
+
+
 
 # %%
