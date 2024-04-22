@@ -53,21 +53,8 @@ import random
 rows = 32
 columns = 20
 
-# Open the CSV file in write mode
-with open('random_numbers.csv', 'w', newline='') as file:
-    writer = csv.writer(file)
-    
-    # Loop over the number of rows
-    for _ in range(rows):
-        # Generate a list of random numbers for each row
-        row = [random.uniform(0, 100) for _ in range(columns)]
-        
-        # Write the row to the CSV file
-        writer.writerow(row)
-
-test_tensor = utils.my_csv.csv_to_tensor('random_numbers.csv')
-print(tf.expand_dims(test_tensor, axis=0))
-
+utils.my_csv.weights_to_csv(model, 'before')
 utils.train.epoch(model, train)
+utils.my_csv.weights_to_csv(model, 'after')
 
 # %%
