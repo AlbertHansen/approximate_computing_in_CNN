@@ -1,0 +1,67 @@
+{
+    "creator": "Yosys 0.38 (git sha1 543faed9c, gcc 13.2.1 -march=x86-64 -mtune=generic -O2 -fno-plt -fexceptions -fstack-clash-protection -fcf-protection -ffile-prefix-map=/build/yosys/src=/usr/src/debug/yosys -fPIC -Os)",
+    "invocation": "stat -json ",
+    "modules": {
+        "\\PDKGENFAX1": {
+            "num_wires": 10,
+            "num_wire_bits": 10,
+            "num_pub_wires": 5,
+            "num_pub_wire_bits": 5,
+            "num_memories": 0,
+            "num_memory_bits": 0,
+            "num_processes": 0,
+            "num_cells": 7,
+            "num_cells_by_type": {
+                "$_AND_": 3,
+                "$_OR_": 2,
+                "$_XOR_": 2
+            }
+        },
+        "\\PDKGENHAX1": {
+            "num_wires": 4,
+            "num_wire_bits": 4,
+            "num_pub_wires": 4,
+            "num_pub_wire_bits": 4,
+            "num_memories": 0,
+            "num_memory_bits": 0,
+            "num_processes": 0,
+            "num_cells": 2,
+            "num_cells_by_type": {
+                "$_AND_": 1,
+                "$_XOR_": 1
+            }
+        },
+        "\\mul8s_1KVA": {
+            "num_wires": 190,
+            "num_wire_bits": 219,
+            "num_pub_wires": 135,
+            "num_pub_wire_bits": 164,
+            "num_memories": 0,
+            "num_memory_bits": 0,
+            "num_processes": 0,
+            "num_cells": 124,
+            "num_cells_by_type": {
+                "$_AND_": 47,
+                "$_NAND_": 14,
+                "PDKGENFAX1": 48,
+                "PDKGENHAX1": 15
+            }
+        }
+    },
+    "design": {
+        "num_wires": 730,
+        "num_wire_bits": 759,
+        "num_pub_wires": 435,
+        "num_pub_wire_bits": 464,
+        "num_memories": 0,
+        "num_memory_bits": 0,
+        "num_processes": 0,
+        "num_cells": 427,
+        "num_cells_by_type": {
+            "$_AND_": 206,
+            "$_NAND_": 14,
+            "$_OR_": 96,
+            "$_XOR_": 111
+        }
+    }
+}
