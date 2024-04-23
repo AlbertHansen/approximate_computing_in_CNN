@@ -1,4 +1,7 @@
-// FixedPointConverter.cpp
+// FixedPointConverter.tpp
+#ifndef FIXED_POINT_CONVERTER_TPP
+#define FIXED_POINT_CONVERTER_TPP
+
 #include "FixedPointConverter.h"
 #include <cmath>
 
@@ -19,5 +22,4 @@ std::vector<T> FixedPointConverter<T>::convertToFixedPoint(const std::vector<flo
     return fixedPointValues;
 }
 
-// Explicit template instantiation for int type
-template class FixedPointConverter<int>;
+#endif // FIXED_POINT_CONVERTER_TPP
