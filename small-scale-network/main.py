@@ -46,6 +46,7 @@ model.build((None, 16, 16, 1))
 model.summary()
 
     
+
 #%% testing area
 import random
 
