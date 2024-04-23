@@ -54,7 +54,6 @@ def batch_to_csv(batch, path):
     path = f"{path}.csv"
     with open(path, 'w', newline='') as file:
         writer = csv.writer(file)
-        print(images.shape)
         for j in range(images.shape[0]):    # (batch_size, 16, 16, 1)
             writer.writerow(images[j, :, :, :].flatten())
 
@@ -78,12 +77,9 @@ def weights_to_csv(model, path):
             path_weight = f"{path}/layer_{i}/weights.csv"
             with open(path_weight, 'w', newline='') as file:
                 writer = csv.writer(file)
-                print("-----------------")
-                print(writer[0].shape)
-                print("-----------------")
                 if len(weights[0].shape) == 4:
-                    for j in range(weights[0].shape[-1]):
-                        temp = weights[0][:, :, :, j]
+                    for j in range(weights[0].shape[-2]):
+                        temp = weights[0][:, :, j, :]
                         writer.writerow(temp.flatten())
                 elif len(weights[0].shape) == 2:
                     for j in range(weights[0].shape[-1]):

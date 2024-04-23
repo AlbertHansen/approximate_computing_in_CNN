@@ -5,6 +5,7 @@ Perceptron::Perceptron() {
 }
 
 Perceptron::Perceptron(const std::vector<intmax_t>& weights, const std::vector<intmax_t>& inputs) {
+    
     this->weights = weights;
     this->inputs = inputs;
 }
@@ -18,6 +19,11 @@ void Perceptron::setMultiplier(Multiplier multiplier) {
 }
 
 intmax_t Perceptron::compute(intmax_t bias) {
+    if (inputs.size() != weights.size()) 
+    {
+        std::cerr << "Input and Weights in perceptron mismatch in size." << std::endl;
+        return {};
+    }
     intmax_t result = bias;
     for (uint16_t i = 0; i < weights.size(); ++i) {
         result = adder.add(result, multiplier.multiply(weights.at(i), inputs.at(i)));

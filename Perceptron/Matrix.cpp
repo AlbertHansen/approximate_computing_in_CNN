@@ -5,7 +5,7 @@ Matrix::Matrix(size_t rows, size_t cols) : rows(rows), cols(cols) {
     data.resize(rows, std::vector<double>(cols, 0.0));
 }
 
-Matrix::Matrix(size_t rows, size_t cols, const std::vector<int>& values) : rows(rows), cols(cols) {
+Matrix::Matrix(size_t rows, size_t cols, const std::vector<intmax_t>& values) : rows(rows), cols(cols) {
     if (values.size() != rows * cols) {
         throw std::invalid_argument("Values size does not match matrix dimensions.");
     }
