@@ -78,6 +78,9 @@ def weights_to_csv(model, path):
             path_weight = f"{path}/layer_{i}/weights.csv"
             with open(path_weight, 'w', newline='') as file:
                 writer = csv.writer(file)
+                print("-----------------")
+                print(writer[0].shape)
+                print("-----------------")
                 if len(weights[0].shape) == 4:
                     for j in range(weights[0].shape[-1]):
                         temp = weights[0][:, :, :, j]
@@ -94,6 +97,44 @@ def weights_to_csv(model, path):
                 writer = csv.writer(file)
                 writer.writerow(weights[1].flatten())
 
+''' Original weights_to_csv (WORKS)
+def weights_to_csv(model, path):
+    """
+    Save the weights and biases of the trainable layers in the model to CSV files.
+
+    Args:
+        model (tf.keras.Model): The model whose weights and biases are to be saved.
+        path (str): The path to the directory where the CSV files will be saved.
+
+    Returns:
+        None
+    """
+    for i, layer in enumerate(model.layers):
+        if layer.trainable:
+            weights = layer.get_weights()
+            if not weights:  # Check if weights is not empty
+                continue
+            
+            path_weight = f"{path}/layer_{i}/weights.csv"
+            with open(path_weight, 'w', newline='') as file:
+                writer = csv.writer(file)
+                if len(weights[0].shape) == 4:
+                    for j in range(weights[0].shape[-1]):
+                        temp = weights[0][:, :, :, j]
+                        writer.writerow(temp.flatten())
+                elif len(weights[0].shape) == 2:
+                    for j in range(weights[0].shape[-1]):
+                        writer.writerow(weights[0][:, j])
+                else:
+                    print("The weights have an unexpected shape.")
+
+            # Save the biases
+            path_bias = f"{path}/layer_{i}/biases.csv"
+            with open(path_bias, 'w', newline='') as file:
+                writer = csv.writer(file)
+                writer.writerow(weights[1].flatten())
+'''
+                
 def get_approximate_predictions(path):
     """
     Reads the CSV file in the specified path and returns the approximated label predictions.
