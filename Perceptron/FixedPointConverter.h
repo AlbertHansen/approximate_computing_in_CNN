@@ -15,4 +15,7 @@ public:
     std::vector<T> convertToFixedPoint(const std::vector<float>& input) const;
 };
 
+// Include template implementation here
+#include "FixedPointConverter.tpp"
+
 #endif // FIXED_POINT_CONVERTER_H

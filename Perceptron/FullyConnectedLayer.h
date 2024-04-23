@@ -11,10 +11,10 @@ private:
     std::vector<Perceptron> perceptrons;  // Neurons in the layer
 
 public:
-    FullyConnectedLayer(size_t inputSize, size_t outputSize, const std::vector<std::vector<double>>& weights);
+    FullyConnectedLayer(size_t inputLength, size_t outputLength);
 
     // Forward pass through the layer
-    std::vector<double> forward(const std::vector<double>& input);
+    std::vector<intmax_t> forward(const std::vector<intmax_t>& inputs, const std::vector<std::vector<intmax_t>>& weights, const std::vector<intmax_t>& biases);
 
     // Get the number of neurons in the layer
     size_t getNumNeurons() const { return perceptrons.size(); }
