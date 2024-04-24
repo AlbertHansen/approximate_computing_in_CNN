@@ -17,8 +17,8 @@ XML_TOOL_FLAGS = --verbose --compile netlist/netlist.v
 netlist:
 	VLOG_FILE_NAME=$(VLOG_FILE_NAME) \
 	TOP_MODULE=$(TOP_MODULE) \
-	yosys netlist.tcl \
-	| tee ./work/netlist_information.txt
+	yosys netlist.tcl 
+#| tee ./work/netlist_information.txt
 
 svg:
 	netlistsvg netlist/netlist.json -o figures/netlist.svg
@@ -27,10 +27,10 @@ xml:
 	$(XML_TOOL) $(XML_TOOL_FLAGS) -o ./netlist/netlist.xml
 
 report_gates:
-	python gates.py
+	python3 gates.py
 
 report_paths:
 	TOP_MODULE=$(TOP_MODULE) \
-	python paths.py
+	python3 paths.py
 
 analysis: netlist svg xml report_gates report_paths

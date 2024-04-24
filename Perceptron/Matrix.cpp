@@ -3,6 +3,7 @@
 
 Matrix::Matrix(size_t rows, size_t cols) : rows(rows), cols(cols) {
     data.resize(rows, std::vector<double>(cols, 0.0));
+    
 }
 
 Matrix::Matrix(size_t rows, size_t cols, const std::vector<intmax_t>& values) : rows(rows), cols(cols) {
