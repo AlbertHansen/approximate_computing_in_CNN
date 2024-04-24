@@ -1,172 +1,211 @@
+#%%
 import json
-import subprocess
+import networkx as nx
 import os
+import matplotlib.pyplot as plt       # for making diagram of graph 
+import matplotlib.colors
+import pygraphviz as pgv
+from networkx.drawing.nx_agraph import graphviz_layout
 
-def get_info():
+import warnings
+if 'SUPPRESS_FIGURES' in os.environ:
+    matplotlib.use('Agg')
+    warnings.filterwarnings("ignore", category=UserWarning)
+
+#%% Functions
+
+def add_true_false(graph, driver_list):
     """
-    Retrieves information from the 'netlist.json' file.
+    Adds '0' and '1' nodes to the graph and updates the driver list to associate '0' and '1' with the nodes.
+
+    Parameters:
+    - graph (Graph): The graph to which the nodes will be added.
+    - driver_list (dict): The dictionary containing the driver information.
 
     Returns:
-        dict: A dictionary containing the information from the 'netlist.json' file.
+    None
     """
-    with open('netlist/netlist.json') as f:
-        info = json.load(f)
-    return info
+    graph.add_node('0')
+    graph.add_node('1')
+    driver_list['0'] = '0'
+    driver_list['1'] = '1'
 
-def get_ports(json_info):
+# Add ports as nodes and associate driven nets with them
+def add_ports(graph, driver_list, json_netlist, top_module):
     """
-    Get the input and output ports from the given JSON information.
+    Add ports to the graph and update the driver list and associates driven nets with the ports.
 
     Args:
-        json_info (dict): A dictionary containing the JSON information.
-
-    Returns:
-        tuple: A tuple containing two lists - input_ports and output_ports.
-               input_ports (list): A list of input port names.
-               output_ports (list): A list of output port names.
-    """
-    input_ports = []
-    output_ports = []
-    top_module = os.environ.get('TOP_MODULE')
-    # Iterate over the modules
-    for module_key, module_value in json_info["modules"].items():
-
-        # Get the module name
-        print(module_key)
-
-        # Verify that the module is the top module
-        if module_key != top_module:
-            continue
-
-        # Iterate over the ports
-        for port_name, port_data in module_value["ports"].items():
-            # Check the direction of the port and add it to the appropriate list
-            if port_data["direction"] == "input":
-                input_ports.append(port_name)
-            elif port_data["direction"] == "output":
-                output_ports.append(port_name)
-
-    return input_ports, output_ports
-
-def generate_paths(input_ports, output_ports):
-    """
-    Generate paths between input and output ports and save them in a file.
-
-    Args:
-        input_ports (list): A list of input ports.
-        output_ports (list): A list of output ports.
+        graph (Graph): The graph object to add the ports to.
+        driver_list (dict): The dictionary to update with the driver information.
+        json_netlist (dict): The JSON netlist containing the module information.
+        top_module (str): The name of the top module.
 
     Returns:
         None
     """
-    # clean previous paths in file
-    subprocess.run('echo " " | tee work/netlist_paths.txt', shell=True)
+    for port_name, port_data in json_netlist['modules'][top_module]['ports'].items():
+        graph.add_node(port_name)
 
-    # iterate over input and output ports and save paths in netlist_paths.txt
-    for input_port in input_ports:
-        for output_port in output_ports:
-            # Generate the command
-            command = f"netlist-paths --from {input_port} --to {output_port} --all-paths --ignore-hierarchy-markers netlist/netlist.xml | tee -a work/netlist_paths.txt"
-            print(command)
-            # run the command
-            # subprocess.run(command, shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        if port_data['direction'] != 'input':
+            continue
 
-import json
+        for net in port_data['bits']:
+            driver_list[net] = port_name
 
-def parse_txt_to_json(txt_file):
+
+# add ports as nodes and associate input port connections with nodes
+def add_cells(graph, driver_list, json_netlist, top_module):
     """
-    Parses a text file containing paths information and converts it into a JSON file.
+    Add cells to the graph and update the driver list based on the JSON netlist. The driver list associates the driven nets with the cells.
 
-    Args:
-        txt_file (str): The path to the input text file.
+    Parameters:
+    graph (Graph): The graph object to which the cells will be added.
+    driver_list (dict): The dictionary to store the driver information.
+    json_netlist (dict): The JSON netlist containing the module and cell information.
+    top_module (str): The name of the top module.
 
     Returns:
-        list: A list of dictionaries representing the paths information.
-
-    Example:
-        parse_txt_to_json('/path/to/input.txt')
+    None
     """
-    with open(txt_file, 'r') as f:
-        lines = f.readlines()
+    for cell_name, cell_data in json_netlist['modules'][top_module]['cells'].items():
+        graph.add_node(cell_name)
 
-    paths = []
-    path = {}
-    keys = ['Name', 'Type', 'DType', 'Statement', 'Location']
-    line1_flag = False
-    for line in lines:
-        if 'Path' in line:
-            if path:
-                paths.append(path)
-            path = {keys[0]: [], keys[1]: [], keys[2]: [], keys[3]: [], keys[4]: []}
-            continue
-        elif 'Name' in line:      # skip line with keys
-            line1_flag = True
-            continue
-        elif line1_flag:          # skip separator line
-            line1_flag = False
-            continue
-        elif line.strip():
-            parts = line.split()
-            i = 0
-            for part in parts:
-                if '[' in part:    # remove bus indications
+        outputs = []
+        for name, direction in cell_data['port_directions'].items():
+            if direction == 'output':
+                outputs.append(name)
+
+        for name, connections in cell_data['connections'].items():
+            for net in connections:
+                if name not in outputs:
                     continue
-                path[keys[i]].append(part)
-                i += 1
 
-    if path:
-        paths.append(path)
+                driver_list[net] = cell_name
 
-    # write to json file
-    with open('information/netlist_paths.json', 'w') as f:
-        json.dump(paths, f, indent=4)
-
-    return paths
-
-def get_longest_path(paths):
+# add edges, ports
+def add_port_edges(graph, driver_list, json_netlist, top_module):
     """
-    Returns the longest path from a list of paths (JSON-formatted as in 'parse_txt_to_json(txt_file)).
+    Adds edges to the graph; driving all output ports.
 
     Args:
-        paths (list): A list of paths, where each path is a dictionary with a 'Name' key.
-
-    Returns:
-        dict: The longest path from the list of paths.
-
-    """
-    longest_path = paths[0]
-    for path in paths:
-        if len(path['Name']) > len(longest_path['Name']):
-            longest_path = path
-
-    return longest_path
-
-def print_longest_path(longest_path):
-    """
-    Prints the longest path.
-
-    Args:
-        longest_path (dict): A dictionary containing the longest path information.
+        graph (Graph): The graph to which the edges will be added.
+        driver_list (dict): A dictionary mapping nets to their corresponding driver nodes.
+        json_netlist (dict): The JSON netlist containing module and port information.
+        top_module (str): The name of the top module.
 
     Returns:
         None
     """
-    print("Longest path:")
-    print("\tNumber of gates passed: ", len(longest_path['Name']) - 2)
-    print("\tPath:", ' '.join(longest_path['Name']))
-    print("\tTraceability:", ' '.join(longest_path['Location']) )
+    for port_name, port_data in json_netlist['modules'][top_module]['ports'].items():
+        
+        if port_data['direction'] != 'output':
+            continue
 
+        for net in port_data['bits']:
+            if net in driver_list:
+                graph.add_edge(driver_list[net], port_name)
 
+# add edges, cells
+def add_cell_edges(graph, driver_list, json_netlist, top_module):
+    """
+    Add edges to the graph based on the connections between cells in the netlist; driving all the cells.
+
+    Args:
+        graph (Graph): The graph object to which the edges will be added.
+        driver_list (list): A list of driver names corresponding to the nets in the netlist.
+        json_netlist (dict): The JSON representation of the netlist.
+        top_module (str): The name of the top module in the netlist.
+
+    Returns:
+        None
+    """
+    for cell_name, cell_data in json_netlist['modules'][top_module]['cells'].items():
+        inputs = []
+        for name, direction in cell_data['port_directions'].items():
+            if direction == 'input':
+                inputs.append(name)
+
+        for name, connections in cell_data['connections'].items():
+            for net in connections:
+                if name not in inputs:
+                    continue
+
+                graph.add_edge(driver_list[net], cell_name)   
+
+# Check for acyclic graph
+def check_acyclic(graph):
+    """
+    Check if a directed graph is acyclic.
+
+    Parameters:
+        graph (networkx.DiGraph): The directed graph to be checked.
+
+    Raises:
+        Exception: If the graph is not acyclic.
+
+    Returns:
+        None
+    """
+    if not nx.is_directed_acyclic_graph(graph):
+        print("Cycles:")
+        for cycle in list(nx.simple_cycles(graph)):
+            print(f"\t{cycle}")
+        raise Exception('The graph is not acyclic!')
+
+#draw graph
+
+def longest_path(graph):
+    """
+    Finds the longest path in a directed acyclic graph.
+
+    Args:
+        graph (nx.DiGraph): The directed acyclic graph.
+
+    Returns:
+        Number of nodes in the longest path, inclusive starting and ending points.
+
+    """
+    longest_path = nx.dag_longest_path(graph)
+    length = len(longest_path) - 2
+
+    print(f"The longest path passes {length} gates:")
+    for node in longest_path:
+        print(f"\t{node}")
+
+    return len(longest_path)
+
+#%%
 def main():
-    info = get_info()
-    input_ports, output_ports = get_ports(info)
-    print("Input ports:", input_ports)
-    print("Output ports:", output_ports)
-    generate_paths(input_ports, output_ports)
-    #paths = parse_txt_to_json('work/netlist_paths.txt')
-    #longest_path = get_longest_path(paths)
-    #print_longest_path(longest_path)
+    # Get the top module
+    top_module = os.environ.get('TOP_MODULE') # The top design to analyze
 
+    # Load the JSON data
+    with open('netlist/netlist.json') as f:
+        data = json.load(f)
+
+    # Create a directed graph
+    G = nx.DiGraph()
+    drivers = {}
+
+    # graph network setup
+    add_true_false(G, drivers)
+    add_ports(G, drivers, data, top_module)
+    add_cells(G, drivers, data, top_module)
+    add_port_edges(G, drivers, data, top_module)
+    add_cell_edges(G, drivers, data, top_module)
+
+    # Check for cycles
+    check_acyclic(G)
+
+    length_of_longest_path = longest_path(G)
+
+    # Draw the graph
+    layout = graphviz_layout(G, prog='dot')
+    nx.draw(G, layout, arrows=True, node_size=100)
+    plt.show()
+    plt.savefig('figures/graph.pdf', bbox_inches='tight')
+    plt.close()
 
 if __name__ == '__main__':
     main()
