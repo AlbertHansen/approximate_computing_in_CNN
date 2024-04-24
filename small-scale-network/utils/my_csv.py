@@ -13,8 +13,14 @@ def tensor_to_csv(tensor, file):
     Returns:
         None
     """
-    numpy_array = tensor.numpy()
-    np.savetxt(file, numpy_array, delimiter=",")
+    print(tensor.shape)
+
+    path = f"{file}.csv"
+    with open(path, 'w', newline='') as file:
+        writer = csv.writer(file)
+        for i in range(tensor.shape[0]):    # (batch_size, 16, 16, 1)
+            writer.writerow(tensor[i, :].numpy())
+    
 
 def csv_to_tensor(path):
     """
