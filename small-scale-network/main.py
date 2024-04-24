@@ -59,10 +59,14 @@ for i, batch in enumerate(train):
         continue
     
     # take first batch and save
-    utils.my_csv.batch_to_csv(batch, 'batch_test')
-    utils.my_csv.weights_to_csv(model, 'before')
-    utils.train.iteration(model, batch)
-    utils.my_csv.weights_to_csv(model, 'after')
+    utils.my_csv.batch_to_csv(batch, 'forward_pass_test/batch_test')
+    utils.my_csv.weights_to_csv(model, 'forward_pass_test')
+    images, labels = batch
+    labels_predicted = model(images)
+    utils.my_csv.tensor_to_csv(labels_predicted, 'forward_pass_test/labels_predicted')
+    
+    #utils.train.iteration(model, batch)
+    #utils.my_csv.weights_to_csv(model, 'after')
 
 
 
