@@ -1,5 +1,5 @@
-VLOG_FILE_NAME=./mul8s_1KVA.v
-TOP_MODULE=mul8s_1KVA
+VLOG_FILE_NAME=./add8s_83C.v
+TOP_MODULE=add8s_83C
 
 #Map to the specified list of gate types. Supported gates types are:
 #           AND, NAND, OR, NOR, XOR, XNOR, ANDNOT, ORNOT, MUX,

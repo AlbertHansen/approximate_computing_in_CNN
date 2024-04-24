@@ -112,12 +112,13 @@ def main():
         gate = gate.strip('$_')
         total_transistors += count * transistor_multiplier[gate]
 
+    '''
     print(f"The total gatecount is {total_gates} gates ({total_transistors} transistors) of the following types:")
     for gate, count in gates.items():
         gate = gate.strip('$_')
         transistors = count * transistor_multiplier[gate]
         print(f'\t{gate}:\t{count}\t({transistors})')
-
+    '''
     save_summary(gates, total_transistors)
 
 if __name__ == '__main__':
