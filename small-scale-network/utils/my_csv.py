@@ -13,14 +13,22 @@ def tensor_to_csv(tensor, file):
     Returns:
         None
     """
+    path = f"{file}.csv"
     print(tensor.shape)
 
-    path = f"{file}.csv"
+
     with open(path, 'w', newline='') as file:
         writer = csv.writer(file)
-        for i in range(tensor.shape[0]):    # (batch_size, 16, 16, 1)
-            writer.writerow(tensor[i, :].numpy())
-    
+        if len(tensor.shape) == 2:
+            for i in range(tensor.shape[-1]):
+                flat_tensor = tf.reshape(tensor[:, i], [-1])
+                writer.writerow(flat_tensor.numpy())
+        elif len(tensor.shape) == 4:
+            for i in range(tensor.shape[-1]):
+                flat_tensor = tf.reshape(tensor[:, :, :, i], [-1])
+                writer.writerow(flat_tensor.numpy())
+        else:
+            print(f"The tensor has an unexpected shape: {tensor.shape}. Albert Fix Det!")
 
 def csv_to_tensor(path):
     """

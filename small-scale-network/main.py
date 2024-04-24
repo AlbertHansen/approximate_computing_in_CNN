@@ -48,22 +48,28 @@ model.summary()
     
 
 #%% testing area
-import random
-
-# Define the number of rows and columns
-rows = 32
-columns = 20
 
 for i, batch in enumerate(train):
     if i != 0:
         continue
     
     # take first batch and save
-    utils.my_csv.batch_to_csv(batch, 'forward_pass_test/batch_test')
+    # utils.my_csv.batch_to_csv(batch, 'forward_pass_test/batch_test')
     utils.my_csv.weights_to_csv(model, 'forward_pass_test')
     images, labels = batch
-    labels_predicted = model(images)
-    utils.my_csv.tensor_to_csv(labels_predicted, 'forward_pass_test/labels_predicted')
+    image = images[0]
+    image = image[None, ...]    # add batch dimension
+    utils.my_csv.tensor_to_csv(image, 'forward_pass_test/image')
+    for i, layer in enumerate(model.layers):
+        if i == 0:
+            x = layer(image)
+        else:
+            x = layer(x)
+        print(f'For layer {i}: {x.shape}')
+        utils.my_csv.tensor_to_csv(x, f'forward_pass_test/layer_{i}')
+    
+    #labels_predicted = model(images)
+    #utils.my_csv.tensor_to_csv(labels_predicted, 'forward_pass_test/labels_predicted')
     
     #utils.train.iteration(model, batch)
     #utils.my_csv.weights_to_csv(model, 'after')

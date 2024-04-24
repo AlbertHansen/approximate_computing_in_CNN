@@ -80,16 +80,16 @@ std::vector<std::vector<float>> readInput(const std::string& filename) {
 
 int main()
 {
-    std::string layer0Weights = "WeightsNBiases/before/layer_0/weights.csv";
-    std::string layer0Biases = "WeightsNBiases/before/layer_0/biases.csv";
-    std::string layer2Weights = "WeightsNBiases/before/layer_2/weights.csv";
-    std::string layer2Biases = "WeightsNBiases/before/layer_2/biases.csv";
-    std::string layer4Weights = "WeightsNBiases/before/layer_4/weights.csv";
-    std::string layer4Biases = "WeightsNBiases/before/layer_4/biases.csv";
-    std::string layer6Weights = "WeightsNBiases/before/layer_6/weights.csv";
-    std::string layer6Biases = "WeightsNBiases/before/layer_6/biases.csv";
-    std::string layer7Weights = "WeightsNBiases/before/layer_7/weights.csv";
-    std::string layer7Biases = "WeightsNBiases/before/layer_7/biases.csv";
+    std::string layer0Weights = "WeightsNBiases/layer_0/weights.csv";
+    std::string layer0Biases = "WeightsNBiases/layer_0/biases.csv";
+    std::string layer2Weights = "WeightsNBiases/layer_2/weights.csv";
+    std::string layer2Biases = "WeightsNBiases/layer_2/biases.csv";
+    std::string layer4Weights = "WeightsNBiases/layer_4/weights.csv";
+    std::string layer4Biases = "WeightsNBiases/layer_4/biases.csv";
+    std::string layer6Weights = "WeightsNBiases/layer_6/weights.csv";
+    std::string layer6Biases = "WeightsNBiases/layer_6/biases.csv";
+    std::string layer7Weights = "WeightsNBiases/layer_7/weights.csv";
+    std::string layer7Biases = "WeightsNBiases/layer_7/biases.csv";
 
     std::string inputBatches = "WeightsNBiases/batch_test.csv";
 
@@ -109,7 +109,8 @@ int main()
     FullyConnectedLayer dense1(40,100);         //(InputNodes, OutputNodes)
 
     /********************* FIXEDPOINT CONVERTER *******************************/
-    FixedPointConverter<intmax_t> converter(4, 4); // int type, 4 decimal bits, 4 fractional bits
+    FixedPointConverter<intmax_t> converter(1, 7);
+    FixedPointConverter<double> converter2(1, 7); // int type, 4 decimal bits, 4 fractional bits
     /********************* READ INPUT ****************************************/
     std::vector<std::vector<float>> inputBatch = readInput(inputBatches);
 
@@ -117,12 +118,20 @@ int main()
     {
         /*  Get the i'th input in fixed point  */
         std::vector<intmax_t> singleInputFixedPoint =  converter.convertToFixedPoint(inputBatch.at(i));
+        
+    
         Matrix singleInputFixedPointMatrix(16,16,singleInputFixedPoint);
         /********************* LAYER 0 INSTANTIATE *******************************************/
         size_t partitionSize = 4;
         LayerParams ParametersForLayer0 = layer0.getLayer();
             /******************** BIAS TO FXP ******************************************************************/
         std::vector<intmax_t> biasesLayer0Fixed = converter.convertToFixedPoint(ParametersForLayer0.biases);
+        std::vector<double> test = converter2.convertToDouble(biasesLayer0Fixed);
+        for (const auto& element : test)
+        {
+            std::cout << element << " ";
+        }
+        std::cout << std::endl;
         std::vector<std::vector<float>> weightsLayer0Inputi;
         for (int j = 0; j < ParametersForLayer0.weights.size(); j++)
         {
@@ -283,109 +292,12 @@ int main()
         }
         /*************************** RUN DENSE LAYER7 ********************************************************************************/
         std::vector<intmax_t> denseLayer7 = dense1.forward(denseLayer6,layer7weightsFixed,layer7biasesFixed);
-
-        for (const auto& element : denseLayer7)
+        FixedPointConverter<double> doubleConverter(6,42);
+        std::vector<double> outputInDouble = doubleConverter.convertToDouble(denseLayer7);
+        for (const auto& element : outputInDouble)
         {
             std::cout << element << " ";
         }
         std::cout << std::endl;
     }
-    
-
-    //std::cout << testLayer.weights.at(39).at(3) << std::endl;
-
-    
-    
-    /*
-    std::vector<float> flattenedInput =     {-3.5, -1.5, -1.0, 5.1, 2.1,
-                                                1.0, 1.0, 1.0, 4.1, 1.1,
-                                                1.0, 1.0, 1.0, 4.1, 5.1,
-                                                5.1, 2.1, 1.1, 4.1, 4.1,
-                                                1.1, 1.1, 2.1, 2.1, 3.1};
-    
-    std::vector<float> flattenedFilter1 =   {1.0, 1.0, 1.0,
-                                             1.0, 1.0, 1.0,
-                                             1.0, 1.0, 1.0};
-    std::vector<float> flattenedFilter2 =   {1.0, 1.0, 1.0,
-                                             1.0, 1.0, 1.0, 
-                                             1.0, 1.0, 1.0};
-    std::vector<float> flatBias         =   {0.0,0.0};
-    
-
-    FixedPointConverter<intmax_t> converter(4, 4); // int type, 4 decimal bits, 4 fractional bits
-
-    
-    std::vector<intmax_t> fixedInput = converter.convertToFixedPoint(flattenedInput);
-    std::vector<intmax_t> fixedFilt1 = converter.convertToFixedPoint(flattenedFilter1);
-    std::vector<intmax_t> fixedFilt2 = converter.convertToFixedPoint(flattenedFilter2);   
-    std::vector<intmax_t> fixedBias = converter.convertToFixedPoint(flatBias);  
-        /*intmax_t inter = 0;
-        for (int i = 0; i < fixedInput.size(); i++)
-        {
-            std::cout << "Input: " << fixedInput.at(i) << std::endl;
-            printBits(fixedInput.at(i));
-            inter += fixedInput.at(i);
-            std::cout << "inter: " << inter << std::endl;
-        }
-    
-        std::vector<std::vector<intmax_t>> weights = {fixedFilt1,fixedFilt2};
-
-        FullyConnectedLayer dense1(fixedInput,weights); 
-
-        std::vector<intmax_t> result = dense1.forward(fixedBias);
-
-        for (int i = 0; i < result.size(); i++)
-        {
-            std::cout << result.at(i) << std::endl;
-            printBits(result.at(i));
-        }
-
-    
-    Matrix inputMatrix(5,5,fixedInput);
-    Matrix filterMatrix1(3,3,fixedFilt1);
-    Matrix filterMatrix2(3,3,fixedFilt2);
-    std::vector<Matrix> newfilters = {filterMatrix1,filterMatrix2};
-
-    size_t inputX = inputMatrix.numCols();
-    size_t inputY = inputMatrix.numRows();
-    size_t numKernels = 2;
-    size_t kernelX = filterMatrix1.numCols();
-    size_t kernelY = filterMatrix1.numRows();
-
-    ConvolutionalLayer conv2d(inputX,inputY,numKernels,kernelX,kernelY);
-    PoolingLayer max_pooling2d(2,2);
-    ConvolutionalLayer conv2d_1(7,7,numKernels,kernelX,kernelY); 
-    ConvolutionalLayer conv2d_2(7,7,numKernels,kernelX,kernelY); 
-    conv2d.updateFilters(newfilters);
-
-    std::vector<Matrix> result = conv2d.applyConvolution(inputMatrix);
-
-    std::vector<Matrix> poolOut = max_pooling2d.applyMaxPooling(result);
-
-    for (size_t k = 0 ; k < result.size(); k++)
-    {
-        std::vector<intmax_t> resultFlat = result.at(k).flatten();
-    
-        for (size_t i = 0; i < resultFlat.size(); i++)
-        {
-            printBits(resultFlat.at(i));
-            std::cout << "int value: " << resultFlat.at(i) << std::endl;
-        }
-        std::cout << std::endl;
-    }
-    
-    for (size_t k = 0 ; k < result.size(); k++)
-    {
-        std::vector<intmax_t> resultFlat = poolOut.at(k).flatten();
-    
-        for (size_t i = 0; i < resultFlat.size(); i++)
-        {
-            printBits(resultFlat.at(i));
-            std::cout << "int value: " << resultFlat.at(i) << std::endl;
-        }
-        std::cout << std::endl;
-    }*/
-    
-    //std::cout << (int)layer1.filters[0].numRows();
-    
 }

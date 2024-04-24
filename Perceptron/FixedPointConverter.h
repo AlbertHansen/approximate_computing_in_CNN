@@ -3,6 +3,7 @@
 #define FIXED_POINT_CONVERTER_H
 
 #include <vector>
+#include <iostream>
 
 template<typename T>
 class FixedPointConverter {
@@ -13,6 +14,7 @@ private:
 public:
     FixedPointConverter(int decimalBits, int fractionalBits);
     std::vector<T> convertToFixedPoint(const std::vector<float>& input) const;
+    std::vector<T> convertToDouble(const std::vector<intmax_t>& input) const;
 };
 
 // Include template implementation here
