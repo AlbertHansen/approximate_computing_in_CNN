@@ -19,6 +19,7 @@ private:
     Relu<intmax_t> relu;
 
     std::vector<std::vector<intmax_t>> filters; // Filters are represented as matrices
+    std::vector<intmax_t> biases;
     Sizes sizes;
 
 public:
@@ -28,7 +29,7 @@ public:
     void setRelu(Relu<intmax_t> relu);
 
     std::vector<Matrix> applyConvolution(const Matrix& input);
-    void updateFilters(const std::vector<Matrix>& newFilters);
+    void updateFilters(const std::vector<Matrix>& newFilters, const std::vector<intmax_t> newBiases);
 };
 
 #endif

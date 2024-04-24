@@ -121,23 +121,81 @@ int main()
         /********************* LAYER 0 INSTANTIATE *******************************************/
         size_t partitionSize = 4;
         LayerParams ParametersForLayer0 = layer0.getLayer();
-        std::vector<std::vector<float>> weightsLayer0Inputi = PartitionUtility::partitionVector(ParametersForLayer0.weights.at(i), partitionSize);
+            /******************** BIAS TO FXP ******************************************************************/
+        std::vector<intmax_t> biasesLayer0Fixed = converter.convertToFixedPoint(ParametersForLayer0.biases);
+        std::vector<std::vector<float>> weightsLayer0Inputi;
+        for (int j = 0; j < ParametersForLayer0.weights.size(); j++)
+        {
+            weightsLayer0Inputi = PartitionUtility::partitionVector(ParametersForLayer0.weights.at(j), partitionSize);
+        }
         
+
         std::vector<Matrix> weightsLayer0InputiMatrix;
         for (int j = 0; j < weightsLayer0Inputi.size(); j++)
         {
-            //Matrix intermediateWeightMatrix(2,2,converter.convertToFixedPoint(weightsLayer0Inputi.at(j)));
-            //weightsLayer0InputiMatrix.push_back(intermediateWeightMatrix);
+            //std::cout << "W: " << weightsLayer0Inputi.at(j).at(0) << std::endl;
+            Matrix intermediateWeightMatrix(2,2,converter.convertToFixedPoint(weightsLayer0Inputi.at(j)));
+            weightsLayer0InputiMatrix.push_back(intermediateWeightMatrix);
         }
         /******************** RUN LAYER 0 *************************************************/
-        conv2d.updateFilters(weightsLayer0InputiMatrix);
-        //std::vector<Matrix> FMLayer0 = conv2d.applyConvolution(singleInputFixedPointMatrix);
-        //for ( int p = 0; p < FMLayer0.size(); p++)
-        {
-            //std::cout << FMLayer0.at(0)(1,1) << FMLayer0.at(0)(1,2) << std::endl << FMLayer0.at(0)(2,1) << FMLayer0.at(0)(2,2);
-        }
+        conv2d.updateFilters(weightsLayer0InputiMatrix, biasesLayer0Fixed);
+        std::vector<Matrix> FMLayer0 = conv2d.applyConvolution(singleInputFixedPointMatrix);
+        
         /******************** MAX_POOLING_1*****************************************************/
-        //std::vector<Matrix> pooledFMLayer0 = max_pooling2d.applyMaxPooling(FMLayer0);
+        std::vector<Matrix> pooledFMLayer0 = max_pooling2d.applyMaxPooling(FMLayer0);
+
+        std::cout << pooledFMLayer0.at(0).numRows() << std::endl;
+        /******************* LAYER 2 INSTANTIATE *************************************************************/
+        LayerParams ParametersForLayer2 = layer2.getLayer();
+        
+        /******************** BIAS TO FXP ******************************************************************/
+        std::vector<intmax_t> biasesLayer2Fixed = converter.convertToFixedPoint(ParametersForLayer2.biases);
+        std::vector<intmax_t> zeroBias(ParametersForLayer2.weights.size(),0);
+
+        std::vector<std::vector<std::vector<float>>> weightsLayer2Inputi(ParametersForLayer2.weights.size());
+        std::vector<std::vector<Matrix>> FMLayer2inter;
+        for (int j = 0; j < ParametersForLayer2.weights.size(); j++)
+        {
+            //std::cout << j << std::endl;
+            weightsLayer2Inputi.at(j) = PartitionUtility::partitionVector(ParametersForLayer2.weights.at(j), partitionSize);
+        
+            //std::cout << weightsLayer2Inputi.at(j).at(j).size() << std::endl;
+
+            std::vector<Matrix> weightsLayer2InputiMatrix;
+            for (int p = 0; p < weightsLayer2Inputi.at(j).size(); p++)
+            {
+                //std::cout << "W: " << weightsLayer2Inputi.at(j).at(1).at(0) << std::endl;
+                Matrix intermediateWeightMatrix(2,2,converter.convertToFixedPoint(weightsLayer2Inputi.at(j).at(p)));
+                weightsLayer2InputiMatrix.push_back(intermediateWeightMatrix);
+            }
+            /******************** RUN LAYER 2 *************************************************/
+            if (j== 0)
+            {
+                conv2d_1.updateFilters(weightsLayer2InputiMatrix, biasesLayer2Fixed);
+            } 
+            else
+            {
+                conv2d_1.updateFilters(weightsLayer2InputiMatrix,zeroBias);
+            }
+            FMLayer2inter.push_back(conv2d_1.applyConvolution(pooledFMLayer0.at(j)));
+        }
+        /************************* ADD UP ALL FM IN CHANNELS*************************************************************************/
+        std::vector<Matrix> FMLayer2;
+        for (int j = 0; j < FMLayer2inter.size(); j++)
+        {
+            Matrix accumulate(FMLayer2inter.at(j).at(0).numRows(),FMLayer2inter.at(j).at(0).numCols());
+            
+            for (int p = 0; p < FMLayer2inter.at(j).size(); p++)
+            {
+                accumulate = accumulate + FMLayer2inter.at(j).at(p);
+            }
+            FMLayer2.push_back(accumulate);
+        }
+        /************************ POOLING NR. 2 ****************************************************************************************/
+
+        //std::cout << FMLayer2inter.size() << std::endl;
+
+        
     }
     
 
