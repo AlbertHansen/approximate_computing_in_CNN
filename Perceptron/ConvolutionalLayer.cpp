@@ -4,7 +4,7 @@
 ConvolutionalLayer::ConvolutionalLayer(size_t inputSizeX, size_t inputSizeY, size_t numFilters, size_t filterSizeX, size_t filterSizeY)
     : sizes{inputSizeX, inputSizeY, numFilters, filterSizeX, filterSizeY} {
     // Initialize filters with default values or specific initialization logic
-    filters.resize(sizes.filterSizeX*sizes.filterSizeY);
+    filters.resize(sizes.numFilters);
 }
 
 void ConvolutionalLayer::setRelu(Relu<intmax_t> relu)
@@ -31,7 +31,7 @@ std::vector<Matrix> ConvolutionalLayer::applyConvolution(const Matrix& input)
                 Matrix inputSubMatrix = input.extractSubMatrix(i,j,sizes.filterSizeX,sizes.filterSizeY);
                 std::vector<intmax_t> perceptronInput = inputSubMatrix.flatten();
                 Perceptron perceptron(filters.at(k),perceptronInput);
-                featureMap(i,j) = relu.ReLU(perceptron.compute(0));
+                featureMap(i,j) = relu.ReLU(perceptron.compute(biases.at(k)));
             }
             
         }
@@ -41,16 +41,17 @@ std::vector<Matrix> ConvolutionalLayer::applyConvolution(const Matrix& input)
 }
 
 // Update the filters with new values
-void ConvolutionalLayer::updateFilters(const std::vector<Matrix>& newFilters) 
+void ConvolutionalLayer::updateFilters(const std::vector<Matrix>& newFilters, const std::vector<intmax_t> newBiases) 
 {
     if (newFilters.size() != sizes.numFilters) 
     {
         throw std::invalid_argument("Number of new filters does not match the current number of filters.");
     }
     for (size_t k = 0; k < newFilters.size(); k++)
-    {        
+    {   
         std::vector<intmax_t> weights = newFilters.at(k).flatten();
         filters.at(k)= weights;
-        
     }
+
+    biases = newBiases;
 }
