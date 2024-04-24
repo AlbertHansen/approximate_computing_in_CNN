@@ -192,15 +192,105 @@ int main()
             FMLayer2.push_back(accumulate);
         }
         /************************ POOLING NR. 2 ****************************************************************************************/
+        std::vector<Matrix> pooledFMLayer2 = max_pooling2d.applyMaxPooling(FMLayer2);
 
+        std::cout << pooledFMLayer2.at(0).numRows() << std::endl;
         //std::cout << FMLayer2inter.size() << std::endl;
-
+        /******************* LAYER 4 INSTANTIATE *************************************************************/
+        LayerParams ParametersForLayer4 = layer4.getLayer();
         
+        /******************** BIAS TO FXP ******************************************************************/
+        std::vector<intmax_t> biasesLayer4Fixed = converter.convertToFixedPoint(ParametersForLayer4.biases);
+
+        std::vector<std::vector<std::vector<float>>> weightsLayer4Inputi(ParametersForLayer4.weights.size());
+        std::vector<std::vector<Matrix>> FMLayer4inter;
+        for (int j = 0; j < ParametersForLayer4.weights.size(); j++)
+        {
+            //std::cout << j << std::endl;
+            weightsLayer4Inputi.at(j) = PartitionUtility::partitionVector(ParametersForLayer4.weights.at(j), partitionSize);
+        
+            //std::cout << weightsLayer2Inputi.at(j).at(j).size() << std::endl;
+
+            std::vector<Matrix> weightsLayer4InputiMatrix;
+            for (int p = 0; p < weightsLayer4Inputi.at(j).size(); p++)
+            {
+                //std::cout << "W: " << weightsLayer2Inputi.at(j).at(1).at(0) << std::endl;
+                Matrix intermediateWeightMatrix(2,2,converter.convertToFixedPoint(weightsLayer4Inputi.at(j).at(p)));
+                weightsLayer4InputiMatrix.push_back(intermediateWeightMatrix);
+            }
+            /******************** RUN LAYER 2 *************************************************/
+            if (j== 0)
+            {
+                conv2d_2.updateFilters(weightsLayer4InputiMatrix, biasesLayer4Fixed);
+            } 
+            else
+            {
+                conv2d_2.updateFilters(weightsLayer4InputiMatrix,zeroBias);
+            }
+            FMLayer4inter.push_back(conv2d_2.applyConvolution(pooledFMLayer2.at(j)));
+        }
+        /************************* ADD UP ALL FM IN CHANNELS*************************************************************************/
+        std::vector<std::vector<intmax_t>> FMLayer4;
+        for (int j = 0; j < FMLayer4inter.size(); j++)
+        {
+            Matrix accumulate(FMLayer4inter.at(j).at(0).numRows(),FMLayer4inter.at(j).at(0).numCols());
+            
+            for (int p = 0; p < FMLayer4inter.at(j).size(); p++)
+            {
+                accumulate = accumulate + FMLayer4inter.at(j).at(p);
+            }
+            FMLayer4.push_back(accumulate.flatten());
+        }
+        /************************* FLATTEN FEATURE MAPS ********************************************************************/
+        size_t totalSize = 0;
+        for (const auto& innerVector : FMLayer4) {
+            totalSize += innerVector.size();
+        }
+        
+        // Flatten the nested vector into a single vector using for loops
+        std::vector<intmax_t> flattenedVector;
+        flattenedVector.reserve(totalSize);  // Reserve space for efficiency
+
+        for (const auto& innerVector : FMLayer4) 
+        {
+            for (const auto& element : innerVector) 
+            {
+                flattenedVector.push_back(element);
+            }
+        }
+        /**************************** DENSE LAYER6 INIT *******************************************************************************/
+        LayerParams layer6Params = layer6.getLayer();
+        /**************************** FXP CONVERSION *********************************************************************************/
+        std::vector<std::vector<intmax_t>> layer6weightsFixed;
+        std::vector<intmax_t> layer6biasesFixed = converter.convertToFixedPoint(layer6Params.biases);
+        for(int j = 0; j < layer6Params.weights.size(); j++)
+        {
+            std::vector<intmax_t> intermediateDenseWeights = converter.convertToFixedPoint(layer6Params.weights.at(j));
+            layer6weightsFixed.push_back(intermediateDenseWeights);
+        }
+        /*************************** RUN DENSE LAYER6 ********************************************************************************/
+        std::vector<intmax_t> denseLayer6 = dense.forward(flattenedVector,layer6weightsFixed,layer6biasesFixed);
+        /**************************** DENSE LAYER7 INIT *******************************************************************************/
+        LayerParams layer7Params = layer7.getLayer();
+        /**************************** FXP CONVERSION *********************************************************************************/
+        std::vector<std::vector<intmax_t>> layer7weightsFixed;
+        std::vector<intmax_t> layer7biasesFixed = converter.convertToFixedPoint(layer7Params.biases);
+        std::cout << layer7biasesFixed.size();
+        for(int j = 0; j < layer7Params.weights.size(); j++)
+        {
+            std::vector<intmax_t> intermediateDenseWeights = converter.convertToFixedPoint(layer7Params.weights.at(j));
+            layer7weightsFixed.push_back(intermediateDenseWeights);
+        }
+        /*************************** RUN DENSE LAYER7 ********************************************************************************/
+        std::vector<intmax_t> denseLayer7 = dense1.forward(denseLayer6,layer7weightsFixed,layer7biasesFixed);
+
+        for (const auto& element : denseLayer7)
+        {
+            std::cout << element << " ";
+        }
+        std::cout << std::endl;
     }
     
-
-
-    LayerParams testLayer = layer0.getLayer();
 
     //std::cout << testLayer.weights.at(39).at(3) << std::endl;
 
