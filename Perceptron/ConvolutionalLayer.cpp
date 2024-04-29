@@ -1,3 +1,4 @@
+//ConvolutionalLayer.cpp
 #include "ConvolutionalLayer.h"
 
 // Constructor
@@ -24,6 +25,7 @@ std::vector<Matrix> ConvolutionalLayer::applyConvolution(const Matrix& input)
     for (size_t k = 0; k < sizes.numFilters; k++)
     {
         Matrix featureMap(sizes.inputSizeX - sizes.filterSizeX + 1, sizes.inputSizeY - sizes.filterSizeY + 1);
+
         for (size_t i = 0 ; i < featureMap.numCols(); i++)
         {
             for (size_t j = 0 ; j < featureMap.numRows(); j++)
@@ -31,7 +33,8 @@ std::vector<Matrix> ConvolutionalLayer::applyConvolution(const Matrix& input)
                 Matrix inputSubMatrix = input.extractSubMatrix(i,j,sizes.filterSizeX,sizes.filterSizeY);
                 std::vector<intmax_t> perceptronInput = inputSubMatrix.flatten();
                 Perceptron perceptron(filters.at(k),perceptronInput);
-                featureMap(i,j) = relu.ReLU(perceptron.compute(biases.at(k)));
+                featureMap(i,j) = /*relu.ReLU(*/perceptron.compute(biases.at(k))/*)*/;
+                
             }
             
         }
@@ -54,4 +57,12 @@ void ConvolutionalLayer::updateFilters(const std::vector<Matrix>& newFilters, co
     }
 
     biases = newBiases;
+}
+
+std::vector<std::vector<intmax_t>> ConvolutionalLayer::getFilters() const {
+    return filters;
+}
+
+std::vector<intmax_t> ConvolutionalLayer::getBiases() const {
+    return biases;
 }
