@@ -109,7 +109,7 @@ int main()
     std::string layer7Weights = "WeightsNBiases/forward_pass_test/forward_pass_test/layer_7/weights.csv";
     std::string layer7Biases = "WeightsNBiases/forward_pass_test/forward_pass_test/layer_7/biases.csv";
 
-    std::string inputBatches = "../small-scale-network/forward_pass_test/image.csv";
+    std::string inputBatches = "WeightsNBiases/forward_pass_test/forward_pass_test/image.csv";
 
     ReadParameters layer0(layer0Weights, layer0Biases);
     ReadParameters layer2(layer2Weights, layer2Biases);
@@ -135,9 +135,9 @@ int main()
 
     for (int i = 0; i < inputBatch.size(); i++)
     {
-        std::vector<
+        
         /*  Get the i'th input in fixed point  */
-        std::vector<intmax_t> singleInputFixedPoint =  converter.convertToFixedPoint(inputBatch.at(i));
+        std::vector<intmax_t> singleInputFixedPoint = converter.convertToFixedPoint(inputBatch.at(i));
         
         std::cout << singleInputFixedPoint.at(0) << std::endl;
         

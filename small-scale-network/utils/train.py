@@ -4,7 +4,7 @@ from utils import my_csv
 from sklearn.metrics import accuracy_score
 import subprocess
 
-def iteration_approx(model, batch, labels_approximated):
+def iteration_approx(model, batch):
     """
     Perform one iteration of approximate computing in a convolutional neural network.
 
@@ -25,6 +25,7 @@ def iteration_approx(model, batch, labels_approximated):
 
     # Call c++ network
     subprocess.check_call(['AC_FF.exe'])
+    labels_approximated = my_csv.csv_to_tensor('forward_pass_test/output.csv')
 
     # Use GradientTape() for auto differentiation, FORWARD PASS(ES)
     with tf.GradientTape() as tape:     # OBS! tape will not be destroyed when exiting this scope
@@ -36,7 +37,6 @@ def iteration_approx(model, batch, labels_approximated):
 
     # Perform gradient descent, BACKWARD PASS(ES)
     grads = tape.gradient(loss_value, model.trainable_weights)
-    print(grads)
     model.optimizer.apply_gradients(zip(grads, model.trainable_weights))
 
 #def iteration(model, batch, labels_approximated):
@@ -117,6 +117,20 @@ def epoch(model, dataset):
     """
     for batch in dataset:
         iteration(model, batch)
+
+def epoch_approx(model, dataset):
+    """
+    Executes a single epoch of training on the given model using the provided dataset and the approximated network.
+
+    Args:
+        model (object): The model to train.
+        dataset (object): The dataset to use for training.
+
+    Returns:
+        None
+    """
+    for batch in dataset:
+        iteration_approx(model, batch)
 
 def obscure_tensor(tensor):
     """

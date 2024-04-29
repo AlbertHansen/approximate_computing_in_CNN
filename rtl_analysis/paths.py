@@ -12,8 +12,20 @@ if 'SUPPRESS_FIGURES' in os.environ:
     matplotlib.use('Agg')
     warnings.filterwarnings("ignore", category=UserWarning)
 
-#%% Functions
+#%%
+# based on edge-copilot
+delay_ns = {
+    'AND'   : 20,   # https://web.ece.ucsb.edu/Faculty/Johnson/ECE152A/handouts/L4%20-%20Propagation%20Delay,%20Circuit%20Timing%20&%20Adder%20Design.pdf
+    'NAND'  : 18,   # https://electronics.stackexchange.com/questions/197151/how-to-calculate-overall-propagation-time-for-circuitry
+    'OR'    : 12,   # https://vlsimaster.com/propogation-delay/
+    'NOR'   : 4,    # https://electronics.stackexchange.com/questions/197151/how-to-calculate-overall-propagation-time-for-circuitry
+    'XOR'   : 4,    # https://electronics.stackexchange.com/questions/236925/propagation-delay-of-a-digital-logic-circuit
+    'XNOR'  : 4,    # https://en.wikipedia.org/wiki/XNOR_gate
+    'ANDNOT': 28,   # https://web.ece.ucsb.edu/Faculty/Johnson/ECE152A/handouts/L4%20-%20Propagation%20Delay,%20Circuit%20Timing%20&%20Adder%20Design.pdf
+    'ORNOT' : 20    # https://vlsimaster.com/propogation-delay/
+}
 
+#%% Functions
 def add_true_false(graph, driver_list):
     """
     Adds '0' and '1' nodes to the graph and updates the driver list to associate '0' and '1' with the nodes.
@@ -107,7 +119,7 @@ def add_port_edges(graph, driver_list, json_netlist, top_module):
                 graph.add_edge(driver_list[net], port_name)
 
 # add edges, cells
-def add_cell_edges(graph, driver_list, json_netlist, top_module):
+def add_cell_edges(graph, driver_list, json_netlist, top_module, delay_ns=delay_ns):
     """
     Add edges to the graph based on the connections between cells in the netlist; driving all the cells.
 
@@ -131,7 +143,18 @@ def add_cell_edges(graph, driver_list, json_netlist, top_module):
                 if name not in inputs:
                     continue
 
-                graph.add_edge(driver_list[net], cell_name)   
+                # add edge and weigh based on the type driving cell
+                driver = driver_list[net]
+                try :
+                    gate_type = json_netlist['modules'][top_module]['cells'][driver]['type']
+                    gate_type = gate_type.strip('$_')
+                    gate_delay = delay_ns[gate_type]
+                    graph.add_edge(driver, cell_name, weight=gate_delay)
+                    #graph[driver][cell_name]['weight'] = gate_delay   
+                except KeyError:
+                    print(f"Warning: No gate delay specified for {driver}. Using default value of 0.")
+                    graph.add_edge(driver, cell_name, weight=0)
+                    #graph[driver][cell_name]['weight'] = 0
 
 # Check for acyclic graph
 def check_acyclic(graph):
@@ -166,14 +189,46 @@ def longest_path(graph):
         Number of nodes in the longest path, inclusive starting and ending points.
 
     """
-    longest_path = nx.dag_longest_path(graph)
+    longest_path = nx.dag_longest_path(graph, weight='weight')   # Returns the longest path in a directed acyclic graph (DAG). If G has edges with weight attribute the edge data are used as weight values.
     length = len(longest_path) - 2
 
-    print(f"The longest path passes {length} gates:")
-    for node in longest_path:
-        print(f"\t{node}")
+    for i in range(len(longest_path) - 1):
+        edge = graph.edges[longest_path[i], longest_path[i + 1]]
+        if 'weight' not in edge:
+            print(f"The edge from {longest_path[i]} to {longest_path[i + 1]} does not have a 'weight' attribute.")
 
-    return len(longest_path)
+    # Calculate the value of the longest path
+    path_value = sum(graph.edges[longest_path[i], longest_path[i + 1]].get('weight', 0) for i in range(len(longest_path) - 1))
+
+    #print(f"Longest path passes through {length} gates and has a delay of {path_value} ns.:")
+    #for node in longest_path:
+    #    print(f"\t{node}")
+
+    return longest_path, length, path_value
+
+def save_summary(longest_path, gates, delay):
+    """
+    Save the summary of the analysis to a text file.
+
+    Args:
+        longest_path (list): The list of nodes representing the longest path.
+        gates (int): The number of gates in the circuit.
+        delay (float): The total delay in nanoseconds.
+
+    Returns:
+        None
+
+    Raises:
+        None
+    """
+    with open('summary/path.txt', 'w') as f:
+        f.write(f"Number of Gates:\t{gates}\n")
+        f.write(f"Total Delay:\t {delay} ns\n")
+        f.write(f"Longest path:\n")
+        for node in longest_path:
+            f.write(f"\t{node}\n")
+
+    print("Summary saved to 'summary/path.txt'.")
 
 #%%
 def main():
@@ -198,7 +253,8 @@ def main():
     # Check for cycles
     check_acyclic(G)
 
-    length_of_longest_path = longest_path(G)
+    path, gates, delay = longest_path(G)
+    save_summary(path, gates, delay)
 
     # Draw the graph
     layout = graphviz_layout(G, prog='dot')
