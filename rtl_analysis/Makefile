@@ -1,5 +1,11 @@
-VLOG_FILE_NAME=./add16se_20J.v
-TOP_MODULE=add16se_20J
+VLOG_FILE_NAME=./add8s_83C.v
+TOP_MODULE=add8s_83C
+
+#Map to the specified list of gate types. Supported gates types are:
+#           AND, NAND, OR, NOR, XOR, XNOR, ANDNOT, ORNOT, MUX,
+#           NMUX, AOI3, OAI3, AOI4, OAI4. (NOT will always added)
+#GATES=AND,NAND,XOR
+GATES=NAND,OR,XNOR
 
 SUPPRESS_FIGURES=1
 
@@ -12,6 +18,7 @@ SUPPRESS_FIGURES=1
 
 # Produces netlist and a file with information w.r.t. the netlist, i.e. gates-counts: output.v and yosys_output.txt, respectively
 netlist:
+	GATES=$(GATES) \
 	VLOG_FILE_NAME=$(VLOG_FILE_NAME) \
 	TOP_MODULE=$(TOP_MODULE) \
 	yosys netlist.tcl 
