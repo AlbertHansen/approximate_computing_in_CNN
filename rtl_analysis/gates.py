@@ -33,17 +33,17 @@ transistor_multiplier = {
 }
 '''
 
-# Based on wikipedia and googling (the lowest count, optimistic)
+# CMOS technology https://eepower.com/technical-articles/basic-cmos-logic-gates/#
 transistor_multiplier = {
-        'NOT'   : 1,    # https://en.wikipedia.org/wiki/Inverter_(logic_gate)
-        'AND'   : 2,    # https://en.wikipedia.org/wiki/AND_gate
-        'NAND'  : 2,    # https://mavink.com/explore/Nand-Gate-Transistor-Circuit
-        'OR'    : 2,    # https://www.homemade-circuits.com/how-to-make-logic-gates-using-transistors/
-        'NOR'   : 2,    # https://www.electronics-tutorials.ws/logic/logic_6.html
-        'XOR'   : 6,    # https://en.wikipedia.org/wiki/XOR_gate
-        'XNOR'  : 8,   # https://en.wikipedia.org/wiki/XNOR_gate
-        'ANDNOT': 3,    # AND + NOT  
-        'ORNOT' : 3,    # OR + NOT
+        'NOT'   : 2,   
+        'AND'   : 6,
+        'NAND'  : 4,
+        'OR'    : 6,
+        'NOR'   : 4,
+        'XOR'   : 10,
+        'XNOR'  : 10,   # https://en.wikipedia.org/wiki/XNOR_gate
+        'ANDNOT': 8,    # AND + NOT 
+        'ORNOT' : 8,    # OR + NOT
 }
 
 #%% Functions
