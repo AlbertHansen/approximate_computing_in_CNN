@@ -189,7 +189,7 @@ def longest_path(graph):
         Number of nodes in the longest path, inclusive starting and ending points.
 
     """
-    longest_path = nx.dag_longest_path(graph)   # Returns the longest path in a directed acyclic graph (DAG). If G has edges with weight attribute the edge data are used as weight values.
+    longest_path = nx.dag_longest_path(graph, weight='weight')   # Returns the longest path in a directed acyclic graph (DAG). If G has edges with weight attribute the edge data are used as weight values.
     length = len(longest_path) - 2
 
     for i in range(len(longest_path) - 1):
