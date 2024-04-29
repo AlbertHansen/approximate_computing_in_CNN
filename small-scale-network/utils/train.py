@@ -2,6 +2,7 @@ import tensorflow as tf
 import numpy as np
 from utils import my_csv
 from sklearn.metrics import accuracy_score
+import subprocess
 
 def iteration_approx(model, batch, labels_approximated):
     """
@@ -17,6 +18,13 @@ def iteration_approx(model, batch, labels_approximated):
     """
     # unpack batch
     images, labels = batch
+
+    # save batch and weights
+    my_csv.tensor_to_csv(images, 'forward_pass_test/batch')
+    my_csv.weights_to_csv(model, 'forward_pass_test')
+
+    # Call c++ network
+    subprocess.check_call(['AC_FF.exe'])
 
     # Use GradientTape() for auto differentiation, FORWARD PASS(ES)
     with tf.GradientTape() as tape:     # OBS! tape will not be destroyed when exiting this scope
@@ -46,12 +54,10 @@ def iteration(model, batch):
     # unpack batch
     images, labels = batch
 
+
     # Use GradientTape() for auto differentiation, FORWARD PASS(ES)
     with tf.GradientTape() as tape:     # OBS! tape will not be destroyed when exiting this scope
         labels_predicted = model(images)
-        #labels_approx    = my_csv.csv_to_tensor('random_numbers.csv')
-        #labels_predicted = labels_predicted - labels_approx
-        #print(labels_predicted.shape)
         loss_value       = model.compute_loss(images, labels, labels_predicted)
 
     # Perform gradient descent, BACKWARD PASS(ES)

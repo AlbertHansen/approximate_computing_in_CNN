@@ -3,12 +3,15 @@
 
 #include <vector>
 #include <iostream>
+#include "Relu.h"
 
 class Matrix {
 private:
-    std::vector<std::vector<double>> data;
+    std::vector<std::vector<intmax_t>> data;
     size_t rows;
     size_t cols;
+
+    Relu<intmax_t> relu;
 
 public:
     Matrix(size_t rows, size_t cols);
@@ -17,8 +20,8 @@ public:
     size_t numRows() const { return rows; }
     size_t numCols() const { return cols; }
 
-    double& operator()(size_t i, size_t j);
-    const double& operator()(size_t i, size_t j) const;
+    intmax_t& operator()(size_t i, size_t j);
+    const intmax_t& operator()(size_t i, size_t j) const;
 
     Matrix operator+(const Matrix& other) const;
     Matrix operator*(const Matrix& other) const;
@@ -29,6 +32,11 @@ public:
     //Method to flatten the matrix
     std::vector<intmax_t> flatten() const;
 
+    void unflatten(const std::vector<intmax_t>& flattened);
+
+    Matrix applyRelu() const;
+
+    
 };
 
 #endif

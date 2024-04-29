@@ -16,20 +16,56 @@ def tensor_to_csv(tensor, file):
     path = f"{file}.csv"
     print(tensor.shape)
 
-
     with open(path, 'w', newline='') as file:
         writer = csv.writer(file)
         if len(tensor.shape) == 2:
             for i in range(tensor.shape[-1]):
-                flat_tensor = tf.reshape(tensor[:, i], [-1])
-                writer.writerow(flat_tensor.numpy())
+                line = []
+                for j in range(tensor.shape[0]):
+                    line.append(tensor[j, i].numpy())
+                writer.writerow(line)
+        elif len(tensor.shape) == 3:
+            for i in range(tensor.shape[-1]):           # lines in csv
+                line = []
+                for j in range(tensor.shape[1]):        # columns
+                    for k in range(tensor.shape[0]):    # rows
+                        line.append(tensor[k, j, i].numpy())
+                writer.writerow(line)
+        elif len(tensor.shape) == 4:
+            for i in range(tensor.shape[-1]):           # lines in csv
+                line = []
+                for j in range(tensor.shape[-2]):       #
+                    for k in range(tensor.shape[1]):    # columns
+                        for l in range(tensor.shape[0]):# rows
+                            line.append(tensor[l, k, j, i].numpy())
+                writer.writerow(line)
+        else:
+            print(f"The tensor has an unexpected shape: {tensor.shape}.")
+        
+        #writer.writerow(tensor.numpy())
+
+    '''
+    with open(path, 'w', newline='') as file:
+        writer = csv.writer(file)
+        if len(tensor.shape) == 2:
+            for i in range(tensor.shape[-1]):
+                #flat_tensor = tf.reshape(tensor[:, i], [-1])
+                #indexed_tensor = tf.gather(tensor, i, axis=-1)
+                #flat_tensor = indexed_tensor.numpy().flatten().tolist()
+                flat_tensor = tensor[:, i].numpy().flatten().tolist()
+                writer.writerow(flat_tensor)
         elif len(tensor.shape) == 4:
             for i in range(tensor.shape[-1]):
-                flat_tensor = tf.reshape(tensor[:, :, :, i], [-1])
-                writer.writerow(flat_tensor.numpy())
+                #flat_tensor = tensor[:,:,:, i].numpy().flatten().tolist()
+                #flat_tensor = tf.reshape(tensor[:, :, :, i], [-1])
+                indexed_tensor = tf.gather(tensor, i, axis=-1)
+                flat_tensor = indexed_tensor.numpy().flatten().tolist()
+                writer.writerow(flat_tensor)
         else:
             print(f"The tensor has an unexpected shape: {tensor.shape}. Albert Fix Det!")
-
+        writer.writerow(tensor.numpy())
+    '''
+        
 def csv_to_tensor(path):
     """
     Reads a CSV file and returns a tensor with dtype float32.
@@ -92,6 +128,23 @@ def weights_to_csv(model, path):
             with open(path_weight, 'w', newline='') as file:
                 writer = csv.writer(file)
                 if len(weights[0].shape) == 4:
+                    for j in range(weights[0].shape[-2]):           # per csv. line
+                        line = []
+                        for k in range(weights[0].shape[-1]):       #
+                            for l in range(weights[0].shape[1]):    # per row
+                                for m in range(weights[0].shape[0]):# per column
+                                    line.append(weights[0][m, l, j, k])
+                        writer.writerow(line)
+                elif len(weights[0].shape) == 2:
+                    for j in range(weights[0].shape[-1]):
+                        line = []
+                        for k in range(weights[0].shape[0]):
+                            line.append(weights[0][k, j])
+                        writer.writerow(line)
+
+
+                '''
+                if len(weights[0].shape) == 4:
                     for j in range(weights[0].shape[-2]):
                         temp = weights[0][:, :, j, :]
                         writer.writerow(temp.flatten())
@@ -100,6 +153,10 @@ def weights_to_csv(model, path):
                         writer.writerow(weights[0][:, j])
                 else:
                     print("The weights have an unexpected shape.")
+                '''
+                
+                
+                #writer.writerow(weights[0])
 
             # Save the biases
             path_bias = f"{path}/layer_{i}/biases.csv"

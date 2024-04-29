@@ -30,6 +30,9 @@ public:
 
     std::vector<Matrix> applyConvolution(const Matrix& input);
     void updateFilters(const std::vector<Matrix>& newFilters, const std::vector<intmax_t> newBiases);
+
+    std::vector<std::vector<intmax_t>> getFilters() const;
+    std::vector<intmax_t> getBiases() const;
 };
 
 #endif
