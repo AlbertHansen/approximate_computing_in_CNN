@@ -253,12 +253,21 @@ def main():
     # Check for cycles
     check_acyclic(G)
 
+
     path, gates, delay = longest_path(G)
     save_summary(path, gates, delay)
 
+    # recolor critical path
+    color_map = []
+    for node in G:
+        if node in path:
+            color_map.append('red')
+        else: 
+            color_map.append('blue')
+
     # Draw the graph
     layout = graphviz_layout(G, prog='dot')
-    nx.draw(G, layout, arrows=True, node_size=100)
+    nx.draw(G, layout, node_color=color_map, arrows=True, node_size=100)
     plt.show()
     plt.savefig('figures/graph.pdf', bbox_inches='tight')
     plt.close()
