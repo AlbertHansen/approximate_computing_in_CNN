@@ -35,4 +35,19 @@ std::vector<T> FixedPointConverter<T>::convertToDouble(const std::vector<intmax_
     return doubleValues;
 }
 
+template<typename T>
+std::vector<T> FixedPointConverter<T>::truncateLSBs(const std::vector<intmax_t>& input, int fractionalOut) {
+    std::vector<T> truncatedValues;
+    truncatedValues.reserve(input.size());
+
+    int shiftBits = fractionalBits - fractionalOut;
+    for (intmax_t value : input) {
+        T truncatedValue = static_cast<T>(value >> shiftBits);
+        truncatedValues.push_back(truncatedValue);
+    }
+
+    return truncatedValues;
+}
+
+
 #endif // FIXED_POINT_CONVERTER_TPP

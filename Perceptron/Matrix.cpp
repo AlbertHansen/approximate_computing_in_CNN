@@ -2,7 +2,7 @@
 #include <stdexcept>
 
 Matrix::Matrix(size_t rows, size_t cols) : rows(rows), cols(cols) {
-    data.resize(rows, std::vector<double>(cols, 0.0));
+    data.resize(rows, std::vector<intmax_t>(cols, 0.0));
     
 }
 
@@ -11,7 +11,7 @@ Matrix::Matrix(size_t rows, size_t cols, const std::vector<intmax_t>& values) : 
         throw std::invalid_argument("Values size does not match matrix dimensions.");
     }
 
-    data.resize(rows, std::vector<double>(cols));
+    data.resize(rows, std::vector<intmax_t>(cols));
     for (size_t i = 0; i < rows; ++i) {
         for (size_t j = 0; j < cols; ++j) {
             data[i][j] = values[i * cols + j];
@@ -19,14 +19,14 @@ Matrix::Matrix(size_t rows, size_t cols, const std::vector<intmax_t>& values) : 
     }
 }
 
-double& Matrix::operator()(size_t i, size_t j) {
+intmax_t& Matrix::operator()(size_t i, size_t j) {
     if (i >= rows || j >= cols) {
         throw std::out_of_range("Index out of range.");
     }
     return data[i][j];
 }
 
-const double& Matrix::operator()(size_t i, size_t j) const {
+const intmax_t& Matrix::operator()(size_t i, size_t j) const {
     if (i >= rows || j >= cols) {
         throw std::out_of_range("Index out of range.");
     }
@@ -88,4 +88,33 @@ std::vector<intmax_t> Matrix::flatten() const {
         flattened.insert(flattened.end(), row.begin(), row.end());
     }
     return flattened;
+}
+
+Matrix Matrix::applyRelu() const {
+    Matrix result(rows, cols);
+    for (size_t i = 0; i < rows; ++i) {
+        for (size_t j = 0; j < cols; ++j) {
+            // Apply ReLU to each element
+            result(i, j) = relu.ReLU((*this)(i, j)); // Assuming 'relu' is an instance of Relu<intmax_t>
+        }
+    }
+    return result;
+}
+
+void Matrix::unflatten(const std::vector<intmax_t>& flattened) {
+    if (flattened.size() != rows * cols) {
+        throw std::invalid_argument("Flattened vector size does not match matrix dimensions.");
+    }
+
+    // Clear the existing data
+    data.clear();
+    data.resize(rows, std::vector<intmax_t>(cols));
+
+    // Copy the elements from the flattened vector to the matrix
+    size_t index = 0;
+    for (size_t i = 0; i < rows; ++i) {
+        for (size_t j = 0; j < cols; ++j) {
+            data[i][j] = flattened[index++];
+        }
+    }
 }

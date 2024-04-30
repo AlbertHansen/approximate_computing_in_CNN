@@ -7,7 +7,7 @@ class Adder {
 public:
     // Add two numbers
     
-    size_t add(size_t a, size_t b)
+    intmax_t add(intmax_t a, intmax_t b)
     {
         return a+b;
     }

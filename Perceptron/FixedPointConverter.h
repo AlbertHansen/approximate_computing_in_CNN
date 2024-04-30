@@ -15,6 +15,7 @@ public:
     FixedPointConverter(int decimalBits, int fractionalBits);
     std::vector<T> convertToFixedPoint(const std::vector<float>& input) const;
     std::vector<T> convertToDouble(const std::vector<intmax_t>& input) const;
+    std::vector<T> truncateLSBs(const std::vector<intmax_t>& input, int fractionalOut);
 };
 
 // Include template implementation here
