@@ -19,6 +19,7 @@ void FullyConnectedLayer::setRelu(Relu<intmax_t> relu)
 
 std::vector<intmax_t> FullyConnectedLayer::forward(const std::vector<intmax_t>& inputs, const std::vector<std::vector<intmax_t>>& weights, const std::vector<intmax_t>& biases) 
 {
+    perceptrons.clear();
     if (inputs.size() != inputSize /*|| biases.size() != outputSize*/) 
     {
         std::cerr << "Input size mismatch in FullyConnectedLayer::forward()." << std::endl;

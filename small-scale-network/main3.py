@@ -56,13 +56,13 @@ for i in range(100):
     accuracy.append(acc)
     accuracy_val.append(acc_val)
 
-with open('runs/custom_loop_test/eval.csv', 'w') as file:
+with open('runs/gradient_test/eval.csv', 'w') as file:
     writer = csv.writer(file)
     for acc, acc_val in zip(accuracy, accuracy_val):
         writer.writerow([acc, acc_val])
 
 # Save model summary
-with open('runs/custom_loop_test/summary.txt', 'w') as f:
+with open('runs/gradient_test/summary.txt', 'w') as f:
     for layer in model.layers:
         print(type(layer).__name__, file=f)
 
