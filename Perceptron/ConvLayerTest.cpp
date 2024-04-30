@@ -78,38 +78,43 @@ std::vector<std::vector<float>> readInput(const std::string& filename) {
     return data;
 }
 
-void writeVectorToCSV(const std::string& filename, const std::vector<double>& data) {
+void writeMatrixToCSV(const std::string& filename, const std::vector<std::vector<double>>& matrix) {
     std::ofstream outputFile(filename);
     if (!outputFile.is_open()) {
         std::cerr << "Error: Could not open file " << filename << " for writing." << std::endl;
         return;
     }
 
-    for (size_t i = 0; i < data.size(); ++i) {
-        outputFile << data[i];
-        if (i != data.size() - 1) {
-            outputFile << ","; // Add comma except for the last element
+    for (size_t i = 0; i < matrix.size(); ++i) {
+        for (size_t j = 0; j < matrix.at(i).size(); ++j) {
+            outputFile << matrix[i][j];
+            if (j != matrix[i].size() - 1) {
+                outputFile << ","; // Add comma except for the last element in a row
+            }
         }
+        outputFile << std::endl; // Move to the next line after each row
     }
 
     outputFile.close();
-    std::cout << "Data written to " << filename << " successfully." << std::endl;
+    //std::cout << "Matrix written to " << filename << " successfully." << std::endl;
 }
 
 int main()
 {
-    std::string layer0Weights = "WeightsNBiases/forward_pass_test/forward_pass_test/layer_0/weights.csv";
-    std::string layer0Biases = "WeightsNBiases/forward_pass_test/forward_pass_test/layer_0/biases.csv";
-    std::string layer2Weights = "WeightsNBiases/forward_pass_test/forward_pass_test/layer_2/weights.csv";
-    std::string layer2Biases = "WeightsNBiases/forward_pass_test/forward_pass_test/layer_2/biases.csv";
-    std::string layer4Weights = "WeightsNBiases/forward_pass_test/forward_pass_test/layer_4/weights.csv";
-    std::string layer4Biases = "WeightsNBiases/forward_pass_test/forward_pass_test/layer_4/biases.csv";
-    std::string layer6Weights = "WeightsNBiases/forward_pass_test/forward_pass_test/layer_6/weights.csv";
-    std::string layer6Biases = "WeightsNBiases/forward_pass_test/forward_pass_test/layer_6/biases.csv";
-    std::string layer7Weights = "WeightsNBiases/forward_pass_test/forward_pass_test/layer_7/weights.csv";
-    std::string layer7Biases = "WeightsNBiases/forward_pass_test/forward_pass_test/layer_7/biases.csv";
+    std::string layer0Weights = "forward_pass_test/layer_0/weights.csv";
+    std::string layer0Biases = "forward_pass_test/layer_0/biases.csv";
+    std::string layer2Weights = "forward_pass_test/layer_2/weights.csv";
+    std::string layer2Biases = "forward_pass_test/layer_2/biases.csv";
+    std::string layer4Weights = "forward_pass_test/layer_4/weights.csv";
+    std::string layer4Biases = "forward_pass_test/layer_4/biases.csv";
+    std::string layer6Weights = "forward_pass_test/layer_6/weights.csv";
+    std::string layer6Biases = "forward_pass_test/layer_6/biases.csv";
+    std::string layer7Weights = "forward_pass_test/layer_7/weights.csv";
+    std::string layer7Biases = "forward_pass_test/layer_7/biases.csv";
 
-    std::string inputBatches = "WeightsNBiases/forward_pass_test/forward_pass_test/image.csv";
+    std::string inputBatches = "forward_pass_test/batch.csv";
+
+    
 
     ReadParameters layer0(layer0Weights, layer0Biases);
     ReadParameters layer2(layer2Weights, layer2Biases);
@@ -124,7 +129,7 @@ int main()
   //PoolingLayer max_pooling2d(2,2);  *Gentagelse(samme bruges igen)*          //(PoolSizeX, PoolSizeY)
     ConvolutionalLayer conv2d_2(3,3,40,2,2);    //(InputSizeX, InputSizeY, NumberOfKernels, KernelSizeX, KernelSizeY)
     FullyConnectedLayer dense(160,40);          //(InputNodes, OutputNodes)
-    FullyConnectedLayer dense1(40,100);         //(InputNodes, OutputNodes)
+    FullyConnectedLayer dense1(40,10);         //(InputNodes, OutputNodes)
 
     /********************* FIXEDPOINT CONVERTER *******************************/
     FixedPointConverter<intmax_t> converter(1, 20);
@@ -133,16 +138,19 @@ int main()
     /********************* READ INPUT ****************************************/
     std::vector<std::vector<float>> inputBatch = readInput(inputBatches);
 
+    std::vector<std::vector<double>> outputBatch;
+
     for (int i = 0; i < inputBatch.size(); i++)
     {
-        
+        //std::cout << inputBatch.at(i).at(1) << std::endl;
         /*  Get the i'th input in fixed point  */
         std::vector<intmax_t> singleInputFixedPoint = converter.convertToFixedPoint(inputBatch.at(i));
         
-        std::cout << singleInputFixedPoint.at(0) << std::endl;
+        //std::cout << singleInputFixedPoint.at(1) << std::endl;
         
         
         Matrix singleInputFixedPointMatrix(16,16,singleInputFixedPoint);
+        
         /********************* LAYER 0 INSTANTIATE *******************************************/
         size_t partitionSize = 4;
         LayerParams ParametersForLayer0 = layer0.getLayer();
@@ -177,7 +185,7 @@ int main()
         
         /******************** MAX_POOLING_1*****************************************************/
         std::vector<Matrix> pooledFMLayer0 = max_pooling2d.applyMaxPooling(FMLayer0);
-
+        
         
         /************************ TUNCATE FXP **********************************************************************************/
         std::vector<Matrix> FMLayer0out;
@@ -187,6 +195,7 @@ int main()
             truncateMatrixLayer0.unflatten(converter3.truncateLSBs(pooledFMLayer0.at(j).flatten(), 20));
             FMLayer0out.push_back(truncateMatrixLayer0);
         }
+        
 
         /******************* LAYER 2 INSTANTIATE *************************************************************/
         LayerParams ParametersForLayer2 = layer2.getLayer();
@@ -227,7 +236,7 @@ int main()
             }
             FMLayer2inter.push_back(conv2d_1.applyConvolution(FMLayer0out.at(j)));
         }
-        std::cout << FMLayer2inter.at(0).at(0).numCols() << std::endl;
+        //std::cout << FMLayer2inter.at(0).at(0).numCols() << std::endl;
         /************************* ADD UP ALL FM IN CHANNELS*************************************************************************/
         std::vector<Matrix> FMLayer2beforeRelu;
         for (int j = 0; j < FMLayer2inter.size(); j++)
@@ -248,7 +257,6 @@ int main()
         }
         /************************ POOLING NR. 2 ****************************************************************************************/
         std::vector<Matrix> pooledFMLayer2 = max_pooling2d.applyMaxPooling(FMLayer2);
-
         /************************ TUNCATE FXP **********************************************************************************/
         std::vector<Matrix> FMLayer2out;
         for (int j = 0; j < pooledFMLayer2.size(); j++)
@@ -257,6 +265,7 @@ int main()
             truncateMatrixLayer2.unflatten(converter3.truncateLSBs(pooledFMLayer2.at(j).flatten(), 20));
             FMLayer2out.push_back(truncateMatrixLayer2);
         }
+        
 
         
 
@@ -342,6 +351,7 @@ int main()
         /************************ TUNCATE FXP **********************************************************************************/
         std::vector<intmax_t> flattenedOut = converter3.truncateLSBs(flattenedVector,20);      
         
+        
 
         /**************************** DENSE LAYER6 INIT *******************************************************************************/
         LayerParams layer6Params = layer6.getLayer();
@@ -355,6 +365,7 @@ int main()
             layer6weightsFixed.push_back(intermediateDenseWeights);
         }
         /*************************** RUN DENSE LAYER6 ********************************************************************************/
+        //std::cout << "t: " << flattenedOut.at(0) << std::endl;
         std::vector<intmax_t> denseLayer6 = dense.forward(flattenedOut,layer6weightsFixed,layer6biasesFixed);
         /************************ TUNCATE FXP **********************************************************************************/
         std::vector<intmax_t> denseLayer6out = converter3.truncateLSBs(denseLayer6,20);      
@@ -375,7 +386,9 @@ int main()
         /*************************** RUN DENSE LAYER7 ********************************************************************************/
         std::vector<intmax_t> denseLayer7 = dense1.forward(denseLayer6out,layer7weightsFixed,layer7biasesFixed);
         /************************ TUNCATE FXP **********************************************************************************/
-        std::vector<double> denseLayer7out = converter2.convertToDouble(converter3.truncateLSBs(denseLayer7,20)); 
-        writeVectorToCSV("output.csv",denseLayer7out);
+        std::vector<double> denseLayer7out = converter2.convertToDouble(converter3.truncateLSBs(denseLayer7,20));
+        //std::cout << denseLayer7out.at(1)<< std::endl;
+        outputBatch.push_back(denseLayer7out);
     }
+    writeMatrixToCSV("forward_pass_test/output.csv",outputBatch);
 }
