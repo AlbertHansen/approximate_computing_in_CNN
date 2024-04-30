@@ -259,6 +259,7 @@ def main():
     # Draw the graph
     layout = graphviz_layout(G, prog='dot')
     nx.draw(G, layout, arrows=True, node_size=100)
+    #nx.draw(G, arrows=True, node_size=100)
     plt.show()
     plt.savefig('figures/graph.pdf', bbox_inches='tight')
     plt.close()
