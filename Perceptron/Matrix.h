@@ -24,6 +24,7 @@ public:
     const intmax_t& operator()(size_t i, size_t j) const;
 
     Matrix operator+(const Matrix& other) const;
+    Matrix operator+(intmax_t scalar) const;
     Matrix operator*(const Matrix& other) const;
 
     // Method to extract a sub-matrix

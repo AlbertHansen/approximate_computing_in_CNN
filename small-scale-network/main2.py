@@ -30,20 +30,26 @@ test_path =  '/home/ubuntu/tensorflow_datasets/cifar100_grey_16x16_LANCZOS3/test
 train, test = utils.dataset_manipulation.get_datasets(train_path, test_path, classes_to_keep)
 
 #%% Model
+class ZeroBias(tf.keras.constraints.Constraint):
+    def __call__(self, w):
+        return tf.zeros_like(w)
+
 model = models.Sequential([
-    layers.Conv2D(40, (2, 2), activation='relu'),
+    layers.Conv2D(40, (2, 2), activation='relu', bias_constraint=ZeroBias()),
     layers.MaxPooling2D((2, 2)),
-    layers.Conv2D(40, (2, 2), activation='relu'),
+    layers.Conv2D(40, (2, 2), activation='relu', bias_constraint=ZeroBias()),
     layers.MaxPooling2D((2, 2)),
-    layers.Conv2D(40, (2, 2), activation='relu'),
+    layers.Conv2D(40, (2, 2), activation='relu', bias_constraint=ZeroBias()),
     layers.Flatten(),
-    layers.Dense(40, activation='relu'),
-    layers.Dense(num_classes, activation='relu'),       # OBS!!! last layer will be changed to accommodate no of classes
+    layers.Dense(40, activation='relu', bias_constraint=ZeroBias()),
+    layers.Dense(num_classes, activation='relu', bias_constraint=ZeroBias()),  # OBS!!! last layer will be changed to accommodate no of classes
 ])
+
 
 model = utils.model_manipulation.compile_model(model)
 model.build((None, 16, 16, 1))
 # model.summary()
+
 #%%
 for i in range(5):
     for j, batch in enumerate(train):
@@ -51,16 +57,38 @@ for i in range(5):
             continue
         images, labels = batch
 
-        utils.my_csv.weights_to_csv(model, f'runs/weight_increments_test/iteration_{i}')
+        image = images[0]
+        utils.my_csv.tensor_to_csv(image, f'runs/weight_increment_test_3/iteration_{i}/image')
+        image = image[None, ...]    # add batch dimension
+
+        utils.my_csv.weights_to_csv(model, f'runs/weight_increment_test_3/iteration_{i}')
+        for k, layer in enumerate(model.layers):
+            if k == 0:
+                x = layer(image)
+            else:
+                x = layer(x)
+            utils.my_csv.tensor_to_csv(x, f'runs/weight_increment_test_3/iteration_{i}/layer_{k}')
+
         labels_approx, labels_predicted = utils.train.iteration_approx(model, batch)
-        utils.my_csv.tensor_to_csv(images, f'runs/weight_increments_test/images_{i}')
-        utils.my_csv.tensor_to_csv(labels, f'runs/weight_increments_test/labels_{i}')
-        utils.my_csv.tensor_to_csv(labels_approx, f'runs/weight_increments_test/labels_approx_{i}')
-        utils.my_csv.tensor_to_csv(labels_predicted, f'runs/weight_increments_test/labels_predicted_{i}')
+        utils.my_csv.tensor_to_csv(images, f'runs/weight_increment_test_3/images_{i}')
+        utils.my_csv.tensor_to_csv(labels, f'runs/weight_increment_test_3/labels_{i}')
+        utils.my_csv.tensor_to_csv(labels_approx, f'runs/weight_increment_test_3/labels_approx_{i}')
+        utils.my_csv.tensor_to_csv(labels_predicted, f'runs/weight_increment_test_3/labels_predicted_{i}')
 
 
 #%%
 '''
+for i, batch in enumerate(train):
+    if i != 0:
+        continue
+    
+    # take first batch and save
+    # utils.my_csv.batch_to_csv(batch, 'forward_pass_test/batch_test')
+    
+
+
+
+
 # Train
 accuracy     = []
 accuracy_val = []
