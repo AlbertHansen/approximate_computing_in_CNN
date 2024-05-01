@@ -46,25 +46,18 @@ model.build((None, 16, 16, 1))
 # model.summary()
 
 #%% Functions
-def evaluate_approx(dataset):
+def evaluate_approx():
+    train_eval, test_eval = utils.dataset_manipulation.get_datasets(train_path, test_path, classes_to_keep)
+
+    # Train
+    train_eval_images, train_eval_labels = train_eval
+
     path = "forward_pass_test/batch.csv"
-    with open(path, 'w', newline='') as file:
-        writer = csv.writer(file)
+    utils.my_csv.tensor_to_csv(train_eval_images, path)
+    path = "forward_pass_test/labels.csv"
+    utils.my_csv.tensor_to_csv(train_eval_labels, path)
 
-        for images, labels in dataset:
-
-            # save all images in a file (to be processed by the c++ network)
-            for i in range(images.shape[0]):            # lines in csv
-                line = []
-                for j in range(images.shape[-1]):       #
-                    for k in range(images.shape[2]):    # columns
-                        for l in range(images.shape[1]):# rows
-                            line.append(images[i, l, k, j].numpy())
-                writer.writerow(line)
-
-            # save all
-
-
+evaluate_approx()
 #%%
 for i in range(5):
     for j, batch in enumerate(train):
