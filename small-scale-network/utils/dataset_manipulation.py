@@ -82,3 +82,71 @@ def get_datasets(train_path, test_path, classes_to_keep):
     test  = format_set(len(classes_to_keep), test)
 
     return train, test
+
+def get_datasets_no_batches(train_path, test_path, classes_to_keep):
+    """
+    Load and filter datasets based on the provided class list.
+
+    Args:
+        train_path (str): The file path to the training dataset.
+        test_path (str): The file path to the testing dataset.
+        classes_to_keep (list): A list of classes to keep in the datasets.
+
+    Returns:
+        tuple: A tuple containing the filtered training and testing datasets.
+    """
+    # fetch datasets
+    train = tf.data.Dataset.load(train_path)
+    test  = tf.data.Dataset.load(test_path)
+
+    # Use the filter function to remove examples not in the list
+    train = train.filter(lambda example: filter_fn(classes_to_keep, example))
+    test = test.filter(lambda example: filter_fn(classes_to_keep, example))
+    
+    return train, test
+
+def create_eval_sets(no_classes):
+    train_eval, test_eval = utils.dataset_manipulation.get_datasets_no_batches(train_path, test_path, classes_to_keep)
+    with open('forward_pass_test/train_images.csv', 'w') as image_file:
+        writer_image = csv.writer(image_file)
+        for batch in tqdm.tqdm(train_eval):
+            image = batch['image']
+            
+            line = []
+            for column in range(image.shape[1]):
+                for row in range(image.shape[0]):
+                    line.append(image[row, column, 0].numpy())
+            writer_image.writerow(line)
+    
+        
+    with open('forward_pass_test/train_labels.csv', 'w') as label_file:
+        writer_label = csv.writer(label_file)
+        for i, batch in enumerate(tqdm.tqdm(train_eval)):
+            label = batch['label']
+            label = tf.one_hot(label, no_classes)
+            line = []
+            for row in range(label.shape[0]):
+                line.append(label[row].numpy())
+            writer_label.writerow(line)
+    
+    with open('forward_pass_test/test_images.csv', 'w') as image_file:
+        writer_image = csv.writer(image_file)
+        for batch in tqdm.tqdm(test_eval):
+            image = batch['image']
+            
+            line = []
+            for column in range(image.shape[1]):
+                for row in range(image.shape[0]):
+                    line.append(image[row, column, 0].numpy())
+            writer_image.writerow(line)
+    
+        
+    with open('forward_pass_test/test_labels.csv', 'w') as label_file:
+        writer_label = csv.writer(label_file)
+        for i, batch in enumerate(tqdm.tqdm(test_eval)):
+            label = batch['label']
+            label = tf.one_hot(label, no_classes)
+            line = []
+            for row in range(label.shape[0]):
+                line.append(label[row].numpy())
+            writer_label.writerow(line)
