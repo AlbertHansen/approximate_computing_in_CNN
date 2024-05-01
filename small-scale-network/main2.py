@@ -7,6 +7,7 @@ import tensorflow_datasets as tfds
 import subprocess
 import csv
 import tqdm
+import time
 
 from contextlib import redirect_stdout
 from tensorflow.keras import datasets, layers, models
@@ -30,37 +31,81 @@ test_path =  '/home/ubuntu/tensorflow_datasets/cifar100_grey_16x16_LANCZOS3/test
 train, test = utils.dataset_manipulation.get_datasets(train_path, test_path, classes_to_keep)
 
 #%% Model
+class ZeroBias(tf.keras.constraints.Constraint):
+    def __call__(self, w):
+        return tf.zeros_like(w)
+
 model = models.Sequential([
-    layers.Conv2D(40, (2, 2), activation='relu'),
+    layers.Conv2D(40, (2, 2), activation='relu', bias_constraint=ZeroBias()),
     layers.MaxPooling2D((2, 2)),
-    layers.Conv2D(40, (2, 2), activation='relu'),
+    layers.Conv2D(40, (2, 2), activation='relu', bias_constraint=ZeroBias()),
     layers.MaxPooling2D((2, 2)),
-    layers.Conv2D(40, (2, 2), activation='relu'),
+    layers.Conv2D(40, (2, 2), activation='relu', bias_constraint=ZeroBias()),
     layers.Flatten(),
-    layers.Dense(40, activation='relu'),
-    layers.Dense(num_classes, activation='relu'),       # OBS!!! last layer will be changed to accommodate no of classes
+    layers.Dense(40, activation='relu', bias_constraint=ZeroBias()),
+    layers.Dense(num_classes, activation='relu', bias_constraint=ZeroBias()),  # OBS!!! last layer will be changed to accommodate no of classes
 ])
+
 
 model = utils.model_manipulation.compile_model(model)
 model.build((None, 16, 16, 1))
 # model.summary()
+
+#%%
+def compare_max_indices(file1, file2):
+    df1 = pd.read_csv(file1, header=None)
+    df2 = pd.read_csv(file2, header=None)
+
+    if df1.shape != df2.shape:
+        print('Shapes do not match')
+        return
+    
+    max_indices_df1 = df1.idxmax(axis=1)
+    max_indices_df2 = df2.idxmax(axis=1)
+
+    matches = sum(max_indices_df1 == max_indices_df2)
+
+    print(f'Matches: {matches}/{df1.shape[0]}')
+
+    return matches/df1.shape[0]
+
+
+def evaluate_approx():
+    subprocess.check_call(['cp forward_pass_test/train_images.csv forward_pass_test/batch.csv'], shell=True)
+    subprocess.check_call(['/home/ubuntu/approximate_computing_in_CNN/small-scale-network/AC_FF'])
+
+    acc = compare_max_indices('forward_pass_test/train_labels.csv', 'forward_pass_test/output.csv')
+
+    # Call c++ network
+    subprocess.check_call(['cp forward_pass_test/test_images.csv forward_pass_test/batch.csv'], shell=True)
+    subprocess.check_call(['/home/ubuntu/approximate_computing_in_CNN/small-scale-network/AC_FF'])
+
+    acc_val = compare_max_indices('forward_pass_test/test_labels.csv', 'forward_pass_test/output.csv')
+    
+    return acc, acc_val
+
+#evaluate_approx()
 #%%
 for i in range(5):
-    for j, batch in enumerate(train):
-        if j != 0:
-            continue
-        images, labels = batch
-
-        utils.my_csv.weights_to_csv(model, f'runs/weight_increments_test/iteration_{i}')
-        labels_approx, labels_predicted = utils.train.iteration_approx(model, batch)
-        utils.my_csv.tensor_to_csv(images, f'runs/weight_increments_test/images_{i}')
-        utils.my_csv.tensor_to_csv(labels, f'runs/weight_increments_test/labels_{i}')
-        utils.my_csv.tensor_to_csv(labels_approx, f'runs/weight_increments_test/labels_approx_{i}')
-        utils.my_csv.tensor_to_csv(labels_predicted, f'runs/weight_increments_test/labels_predicted_{i}')
+    
+        
+    acc, acc_val = evaluate_approx()
+    print(f'Accuracy: {acc}, Accuracy_val: {acc_val}')
 
 
 #%%
 '''
+for i, batch in enumerate(train):
+    if i != 0:
+        continue
+    
+    # take first batch and save
+    # utils.my_csv.batch_to_csv(batch, 'forward_pass_test/batch_test')
+    
+
+
+
+
 # Train
 accuracy     = []
 accuracy_val = []
