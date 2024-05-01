@@ -46,7 +46,7 @@ plt.rc('xtick',     labelsize   = SMALL_SIZE)   # fontsize of the tick labels
 plt.rc('ytick',     labelsize   = SMALL_SIZE)   # fontsize of the tick labels
 plt.rc('legend',    fontsize    = SMALL_SIZE)   # legend fontsize
 plt.rc('figure',    titlesize   = BIGGER_SIZE)  # fontsize of the figure title
-plt.rc('text',      usetex      = True)         # use latex for interpreter
+# plt.rc('text',      usetex      = True)         # use latex for interpreter
 plt.rc('font',      family      = 'Computer Modern Serif')      # use serif font (to look like latex)
 plt.rc('font',      weight      = 'heavy')     # controls font weight
 
@@ -57,27 +57,27 @@ colors = dc(len(labels))
 #%% Plot
 
 # Create a new figure
-gc = gridspec.GridSpec(1, 3)
+gc = gridspec.GridSpec(1, 5)
 fig = plt.figure(layout='constrained', figsize=(17.01*cm, 8*cm))
 
 # Create layout
 axs = []
-axs.append(fig.add_subplot(gc[0, 0:2]))
-axs.append(fig.add_subplot(gc[0, 2]))
+axs.append(fig.add_subplot(gc[0, 0:4]))
+axs.append(fig.add_subplot(gc[0, 4]))
 
 # Plot 'accuracy' and 'val_accuracy' for each DataFrame
 for df, label, color in zip(data, labels, colors): 
     axs[0].plot(df['accuracy'], linestyle='-', color=color)
     axs[0].plot(df['val_accuracy'], linestyle=':', color=color)
-    axs[0].set_ylim(0, 0.7)
+    axs[0].set_ylim(0, 1)
     axs[0].set_xlim(0, 250)
     axs[0].grid(True)
-    axs[0].set_xlabel('Epochs \([\cdot]\)')
-    axs[0].set_ylabel('Accuracy \([\cdot]\)')
+    axs[0].set_xlabel('Epochs [.]')
+    axs[0].set_ylabel('Accuracy [.]')
     
 # Create legend for the linestyles
-style_legend = [mlines.Line2D([], [], color='black', linestyle='-', label='\\texttt{accuracy}'),
-                mlines.Line2D([], [], color='black', linestyle=':', label='\\texttt{val_accuracy}')]
+style_legend = [mlines.Line2D([], [], color='black', linestyle='-', label='accuracy'),
+                mlines.Line2D([], [], color='black', linestyle=':', label='val_accuracy')]
 axs[0].legend(handles=style_legend, loc='upper left')
 
 # Create a legend for the colors
@@ -86,10 +86,11 @@ axs[1].legend(handles=color_legend, loc='upper left', ncol=2)
 axs[1].axis('off')
 
 # Save and show
-plt.show()
 plt.savefig('classes_accuracy.pdf', bbox_inches='tight')
-# plt.close()
+plt.show()
+plt.close()
 
+#%% Calculate the average time spent on each epoch
 # Mean time spent on each epoch
 average_times = []
 for df in data:
@@ -101,3 +102,4 @@ for df in data:
 
 for label, time in zip(labels, average_times):
     print(f'{label}: {time:.2f} s')
+# %%
