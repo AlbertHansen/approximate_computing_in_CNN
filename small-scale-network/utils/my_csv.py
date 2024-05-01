@@ -1,6 +1,7 @@
 import numpy as np
 import tensorflow as tf
 import csv
+import pandas as pd
 
 def tensor_to_csv(tensor, file):
     """
@@ -75,10 +76,12 @@ def csv_to_tensor(path):
     Returns:
         tf.Tensor: The tensor with dtype float32.
     """
-    numpy_array = np.loadtxt(path, delimiter=",", dtype=np.float32)
-    tensor = tf.convert_to_tensor(numpy_array, dtype=tf.float32)
-    # tensor = tf.expand_dims(tensor, axis=0)
-    # tensor = tf.transpose(tensor) 
+    df = pd.read_csv(path, header=None)
+
+    data = df.values.tolist()
+
+    tensor = tf.convert_to_tensor(data, dtype=tf.float32)
+
     return tensor
 
 def batch_to_csv(batch, path):
