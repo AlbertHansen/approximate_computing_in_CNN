@@ -1,6 +1,7 @@
 import numpy as np
 import tensorflow as tf
 import csv
+import pandas as pd
 
 def tensor_to_csv(tensor, file):
     """
@@ -14,7 +15,6 @@ def tensor_to_csv(tensor, file):
         None
     """
     path = f"{file}.csv"
-    print(tensor.shape)
 
     with open(path, 'w', newline='') as file:
         writer = csv.writer(file)
@@ -32,12 +32,12 @@ def tensor_to_csv(tensor, file):
                         line.append(tensor[k, j, i].numpy())
                 writer.writerow(line)
         elif len(tensor.shape) == 4:
-            for i in range(tensor.shape[-1]):           # lines in csv
+            for i in range(tensor.shape[0]):           # lines in csv
                 line = []
-                for j in range(tensor.shape[-2]):       #
-                    for k in range(tensor.shape[1]):    # columns
-                        for l in range(tensor.shape[0]):# rows
-                            line.append(tensor[l, k, j, i].numpy())
+                for j in range(tensor.shape[-1]):       #
+                    for k in range(tensor.shape[2]):    # columns
+                        for l in range(tensor.shape[1]):# rows
+                            line.append(tensor[i, l, k, j].numpy())
                 writer.writerow(line)
         else:
             print(f"The tensor has an unexpected shape: {tensor.shape}.")
@@ -76,9 +76,12 @@ def csv_to_tensor(path):
     Returns:
         tf.Tensor: The tensor with dtype float32.
     """
-    numpy_array = np.loadtxt(path, delimiter=",", dtype=np.float32)
-    tensor = tf.convert_to_tensor(numpy_array, dtype=tf.float32)
-    # tensor = tf.expand_dims(tensor, axis=0)
+    df = pd.read_csv(path, header=None)
+
+    data = df.values.tolist()
+
+    tensor = tf.convert_to_tensor(data, dtype=tf.float32)
+
     return tensor
 
 def batch_to_csv(batch, path):
