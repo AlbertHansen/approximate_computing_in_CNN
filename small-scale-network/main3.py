@@ -8,7 +8,6 @@ import subprocess
 import csv
 import tqdm
 
-from print_versions import print_versions
 from contextlib import redirect_stdout
 from tensorflow.keras import datasets, layers, models
 
@@ -50,7 +49,7 @@ model.build((None, 16, 16, 1))
 accuracy     = []
 accuracy_val = []
 for i in range(100):
-    utils.train.epoch(model, train)
+    utils.train.epoch_gradient_test(model, train)
     acc = utils.train.evaluate_model(model, train)
     acc_val = utils.train.evaluate_model(model, test)
     accuracy.append(acc)
@@ -73,3 +72,5 @@ with open('runs/gradient_test/summary.txt', 'w') as f:
     print(f'Total params: {total_params}', file=f)
     print(f'Trainable params: {trainable_params}', file=f)
     print(f'Non-trainable params: {non_trainable_params}', file=f)
+
+# %%

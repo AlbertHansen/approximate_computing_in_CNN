@@ -8,7 +8,6 @@ import subprocess
 import csv
 import tqdm
 
-from print_versions import print_versions
 from contextlib import redirect_stdout
 from tensorflow.keras import datasets, layers, models
 
@@ -45,24 +44,40 @@ model = models.Sequential([
 model = utils.model_manipulation.compile_model(model)
 model.build((None, 16, 16, 1))
 # model.summary()
+#%%
+for i in range(5):
+    for j, batch in enumerate(train):
+        if j != 0:
+            continue
+        images, labels = batch
 
+        utils.my_csv.weights_to_csv(model, f'runs/weight_increments_test/iteration_{i}')
+        labels_approx, labels_predicted = utils.train.iteration_approx(model, batch)
+        utils.my_csv.tensor_to_csv(images, f'runs/weight_increments_test/images_{i}')
+        utils.my_csv.tensor_to_csv(labels, f'runs/weight_increments_test/labels_{i}')
+        utils.my_csv.tensor_to_csv(labels_approx, f'runs/weight_increments_test/labels_approx_{i}')
+        utils.my_csv.tensor_to_csv(labels_predicted, f'runs/weight_increments_test/labels_predicted_{i}')
+
+
+#%%
+'''
 # Train
 accuracy     = []
 accuracy_val = []
-for i in range(100):
-    utils.train.epoch(model, train)
+for i in range(5):
+    utils.train.epoch_approx(model, train)
     acc = utils.train.evaluate_model(model, train)
     acc_val = utils.train.evaluate_model(model, test)
     accuracy.append(acc)
     accuracy_val.append(acc_val)
 
-with open('runs/custom_loop_test/eval.csv', 'w') as file:
+with open('runs/diff_test/eval.csv', 'w') as file:
     writer = csv.writer(file)
     for acc, acc_val in zip(accuracy, accuracy_val):
         writer.writerow([acc, acc_val])
 
 # Save model summary
-with open('runs/custom_loop_test/summary.txt', 'w') as f:
+with open('runs/diff_test/summary.txt', 'w') as f:
     for layer in model.layers:
         print(type(layer).__name__, file=f)
 
@@ -73,3 +88,4 @@ with open('runs/custom_loop_test/summary.txt', 'w') as f:
     print(f'Total params: {total_params}', file=f)
     print(f'Trainable params: {trainable_params}', file=f)
     print(f'Non-trainable params: {non_trainable_params}', file=f)
+'''
