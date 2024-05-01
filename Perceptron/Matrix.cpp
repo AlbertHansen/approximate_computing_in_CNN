@@ -47,6 +47,17 @@ Matrix Matrix::operator+(const Matrix& other) const {
     return result;
 }
 
+Matrix Matrix::operator+(intmax_t scalar) const {
+    Matrix result(rows, cols);
+    for (size_t i = 0; i < rows; ++i) {
+        for (size_t j = 0; j < cols; ++j) {
+            result(i, j) = data[i][j] + scalar;
+        }
+    }
+    return result;
+}
+
+
 Matrix Matrix::operator*(const Matrix& other) const {
     if (cols != other.rows) {
         throw std::invalid_argument("Matrix dimensions don't match for multiplication.");

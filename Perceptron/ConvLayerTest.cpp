@@ -101,18 +101,18 @@ void writeMatrixToCSV(const std::string& filename, const std::vector<std::vector
 
 int main()
 {
-    std::string layer0Weights = "forward_pass_test/layer_0/weights.csv";
-    std::string layer0Biases = "forward_pass_test/layer_0/biases.csv";
-    std::string layer2Weights = "forward_pass_test/layer_2/weights.csv";
-    std::string layer2Biases = "forward_pass_test/layer_2/biases.csv";
-    std::string layer4Weights = "forward_pass_test/layer_4/weights.csv";
-    std::string layer4Biases = "forward_pass_test/layer_4/biases.csv";
-    std::string layer6Weights = "forward_pass_test/layer_6/weights.csv";
-    std::string layer6Biases = "forward_pass_test/layer_6/biases.csv";
-    std::string layer7Weights = "forward_pass_test/layer_7/weights.csv";
-    std::string layer7Biases = "forward_pass_test/layer_7/biases.csv";
+    std::string layer0Weights = "weight_increment_test_3/iteration_4/layer_0/weights.csv";
+    std::string layer0Biases = "weight_increment_test_3/iteration_4/layer_0/biases.csv";
+    std::string layer2Weights = "weight_increment_test_3/iteration_4/layer_2/weights.csv";
+    std::string layer2Biases = "weight_increment_test_3/iteration_4/layer_2/biases.csv";
+    std::string layer4Weights = "weight_increment_test_3/iteration_4/layer_4/weights.csv";
+    std::string layer4Biases = "weight_increment_test_3/iteration_4/layer_4/biases.csv";
+    std::string layer6Weights = "weight_increment_test_3/iteration_4/layer_6/weights.csv";
+    std::string layer6Biases = "weight_increment_test_3/iteration_4/layer_6/biases.csv";
+    std::string layer7Weights = "weight_increment_test_3/iteration_4/layer_7/weights.csv";
+    std::string layer7Biases = "weight_increment_test_3/iteration_4/layer_7/biases.csv";
 
-    std::string inputBatches = "forward_pass_test/batch.csv";
+    std::string inputBatches = "weight_increment_test_3/iteration_4/image.csv";
 
     
 
@@ -175,6 +175,9 @@ int main()
         /******************** RUN LAYER 0 *************************************************/
         conv2d.updateFilters(weightsLayer0InputiMatrix, biasesLayer0Fixed);
         std::vector<Matrix> FMLayer0beforeRelu = conv2d.applyConvolution(singleInputFixedPointMatrix);
+        
+        
+
         /************************ APPLY ReLU **********************************************************************************/
         std::vector<Matrix> FMLayer0;
         for ( int j = 0 ; j <  FMLayer0beforeRelu.size(); j++)
@@ -195,7 +198,13 @@ int main()
             truncateMatrixLayer0.unflatten(converter3.truncateLSBs(pooledFMLayer0.at(j).flatten(), 20));
             FMLayer0out.push_back(truncateMatrixLayer0);
         }
-        
+
+        std::vector<double> test = converter2.convertToDouble(FMLayer0out.at(0).flatten());
+        for (int j = 0; j < test.size(); j++)
+        {
+            std::cout << test.at(j) << " " ;
+        }
+        std::cout << std::endl;
 
         /******************* LAYER 2 INSTANTIATE *************************************************************/
         LayerParams ParametersForLayer2 = layer2.getLayer();
@@ -226,14 +235,14 @@ int main()
             }
             //std::cout << weightsLayer2InputiMatrix.at(j)(0,0) << " " << weightsLayer2InputiMatrix.at(j)(0,1) << " " << weightsLayer2InputiMatrix.at(j)(1,0) << " " << weightsLayer2InputiMatrix.at(j)(1,1) << std::endl;
             /******************** RUN LAYER 2 *************************************************/
-            if (j== 0)
+            /*if (j== 0)
             {
                 conv2d_1.updateFilters(weightsLayer2InputiMatrix, biasesLayer2Fixed);
             } 
             else
-            {
-                conv2d_1.updateFilters(weightsLayer2InputiMatrix,zeroBias);
-            }
+            {}*/
+            conv2d_1.updateFilters(weightsLayer2InputiMatrix,zeroBias);
+            
             FMLayer2inter.push_back(conv2d_1.applyConvolution(FMLayer0out.at(j)));
         }
         //std::cout << FMLayer2inter.at(0).at(0).numCols() << std::endl;
@@ -241,13 +250,15 @@ int main()
         std::vector<Matrix> FMLayer2beforeRelu;
         for (int j = 0; j < FMLayer2inter.size(); j++)
         {
+            
             Matrix accumulate(FMLayer2inter.at(j).at(0).numRows(),FMLayer2inter.at(j).at(0).numCols());
             
             for (int p = 0; p < FMLayer2inter.at(j).size(); p++)
             {
                 accumulate = accumulate + FMLayer2inter.at(p).at(j);
+                accumulate = accumulate + biasesLayer2Fixed.at(j);
             }
-            FMLayer2beforeRelu.push_back(accumulate);
+            FMLayer2beforeRelu.push_back(accumulate );
         }
         /************************ APPLY ReLU **********************************************************************************/
         std::vector<Matrix> FMLayer2;
@@ -290,14 +301,14 @@ int main()
                 weightsLayer4InputiMatrix.push_back(intermediateWeightMatrix);
             }
             /******************** RUN LAYER 4 *************************************************/
-            if (j== 0)
+            /*if (j== 0)
             {
                 conv2d_2.updateFilters(weightsLayer4InputiMatrix, biasesLayer4Fixed);
             } 
             else
-            {
+            {}*/
                 conv2d_2.updateFilters(weightsLayer4InputiMatrix,zeroBias);
-            }
+            
             FMLayer4inter.push_back(conv2d_2.applyConvolution(FMLayer2out.at(j)));
         }
         /************************* ADD UP ALL FM IN CHANNELS*************************************************************************/
@@ -308,9 +319,10 @@ int main()
             
             for (int p = 0; p < FMLayer4inter.at(j).size(); p++)
             {
-                accumulate = accumulate + FMLayer4inter.at(p).at(j);
+                accumulate = accumulate + FMLayer4inter.at(p).at(j); 
+                accumulate = accumulate + biasesLayer4Fixed.at(j);
             }
-            FMLayer4beforeRelu.push_back(accumulate);
+            FMLayer4beforeRelu.push_back(accumulate );
         }
         
         /************************ APPLY ReLU **********************************************************************************/
@@ -323,10 +335,6 @@ int main()
         
 
         /************************* FLATTEN FEATURE MAPS ********************************************************************/
-        /*size_t totalSize = 0;
-        for (const auto& innerVector : FMLayer4) {
-            totalSize += innerVector.size();
-        }*/
         
         // Flatten the nested vector into a single vector using for loops
         std::vector<intmax_t> flattenedVector;
@@ -390,5 +398,5 @@ int main()
         //std::cout << denseLayer7out.at(1)<< std::endl;
         outputBatch.push_back(denseLayer7out);
     }
-    writeMatrixToCSV("forward_pass_test/output.csv",outputBatch);
+    writeMatrixToCSV("output2.csv",outputBatch);
 }
