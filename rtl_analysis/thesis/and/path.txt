@@ -1,0 +1,32 @@
+Number of Gates:	27
+Total Delay:	 300 ns
+Longest path:
+	B
+	$abc$223$auto$blifparse.cc:396:parse_blif$226
+	$abc$223$auto$blifparse.cc:396:parse_blif$245
+	$abc$223$auto$blifparse.cc:396:parse_blif$246
+	$abc$223$auto$blifparse.cc:396:parse_blif$249
+	$abc$223$auto$blifparse.cc:396:parse_blif$251
+	$abc$223$auto$blifparse.cc:396:parse_blif$252
+	$abc$223$auto$blifparse.cc:396:parse_blif$256
+	$abc$223$auto$blifparse.cc:396:parse_blif$257
+	$abc$223$auto$blifparse.cc:396:parse_blif$264
+	$abc$223$auto$blifparse.cc:396:parse_blif$265
+	$abc$223$auto$blifparse.cc:396:parse_blif$269
+	$abc$223$auto$blifparse.cc:396:parse_blif$270
+	$abc$223$auto$blifparse.cc:396:parse_blif$277
+	$abc$223$auto$blifparse.cc:396:parse_blif$278
+	$abc$223$auto$blifparse.cc:396:parse_blif$282
+	$abc$223$auto$blifparse.cc:396:parse_blif$303
+	$abc$223$auto$blifparse.cc:396:parse_blif$304
+	$abc$223$auto$blifparse.cc:396:parse_blif$306
+	$abc$223$auto$blifparse.cc:396:parse_blif$307
+	$abc$223$auto$blifparse.cc:396:parse_blif$308
+	$abc$223$auto$blifparse.cc:396:parse_blif$312
+	$abc$223$auto$blifparse.cc:396:parse_blif$327
+	$abc$223$auto$blifparse.cc:396:parse_blif$328
+	$abc$223$auto$blifparse.cc:396:parse_blif$330
+	$abc$223$auto$blifparse.cc:396:parse_blif$341
+	$abc$223$auto$blifparse.cc:396:parse_blif$342
+	$abc$223$auto$blifparse.cc:396:parse_blif$345
+	O
