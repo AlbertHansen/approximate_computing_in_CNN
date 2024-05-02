@@ -25,11 +25,26 @@ std::vector<intmax_t> testAllCombinations(BinaryOperation operation) {
     return results;
 }
 
-
+void writeVectorToCSV(const std::string& filename, const std::vector<intmax_t>& data) {
+    std::ofstream outfile(filename);
+    // Write data to CSV
+    for (size_t i = 0; i < data.size(); ++i) {
+        outfile << data[i];
+        if (i != data.size() - 1) {
+            outfile << ",";  // Add comma if not the last element
+        }
+    }
+    outfile << std::endl;
+    outfile.close();
+    std::cout << "Data written to " << filename << std::endl;
+}
 
 int main() {
     std::vector<intmax_t> Expected = testAllCombinations(add);
     std::vector<intmax_t> Actual = testAllCombinations(add8se_8R9);
+
+    writeVectorToCSV("Expected.csv",Expected);
+    writeVectorToCSV("Actual.csv",Actual);
 
     Evaluator eval_add8se_8R9(Expected,Actual);
     Metrics add8se_8R9_metrics = eval_add8se_8R9.calculateMetrics();
