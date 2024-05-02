@@ -18,8 +18,9 @@ conv2d_layer = tf.keras.layers.Conv2D(filters=1, kernel_size=(2, 2), activation=
 _ = conv2d_layer(input_image)
 
 # Set the weights of the Conv2D layer to all 1's
-weights = [np.ones((2, 2, 3, 1), dtype=np.float32), np.zeros((1,), dtype=np.float32)]
+weights = [np.ones((2, 2, 3, 1), dtype=np.float32), np.full((1,), 0.5, dtype=np.float32)]
 conv2d_layer.set_weights(weights)
+# conv2d_layer.set_bias()
 
 # Apply the Conv2D layer to the image
 output = conv2d_layer(input_image)
