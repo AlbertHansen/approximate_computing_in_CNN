@@ -23,7 +23,7 @@ delay_ns = {
     'XNOR'  : 4,    # https://en.wikipedia.org/wiki/XNOR_gate
     'ANDNOT': 28,   # https://web.ece.ucsb.edu/Faculty/Johnson/ECE152A/handouts/L4%20-%20Propagation%20Delay,%20Circuit%20Timing%20&%20Adder%20Design.pdf
     'ORNOT' : 20,   # https://vlsimaster.com/propogation-delay/
-    'NOT'   : 5,    # https://controllerstech.com/create-1-microsecond-delay-stm32/
+    'NOT'   : 5    # https://controllerstech.com/create-1-microsecond-delay-stm32/
 }
 
 #%% Functions

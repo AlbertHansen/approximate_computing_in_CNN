@@ -1,5 +1,5 @@
 Number of Gates:	19
-Total Delay:	 270 ns
+Total Delay:	 285 ns
 Longest path:
 	B
 	$abc$223$auto$blifparse.cc:396:parse_blif$226
