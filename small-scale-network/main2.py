@@ -87,8 +87,8 @@ def evaluate_approx():
 #evaluate_approx()
 #%%
 for i in range(5):
-    
-        
+    print(f"----- Epoch {i} -----")
+    utils.train.epoch_approx(model, train)
     acc, acc_val = evaluate_approx()
     print(f'Accuracy: {acc}, Accuracy_val: {acc_val}')
 

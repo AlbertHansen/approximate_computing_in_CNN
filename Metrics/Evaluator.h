@@ -7,26 +7,35 @@
 #include <iostream>
 
 struct Metrics {
-    double mse;
-    double mae;
-    double ed;
-    double ep;
+    std::vector<intmax_t> diff;
+    double mse;         //Mean square error
+    double mae;         //Mean Absolute error
+    double wcd;         //Worst-case error
+    double arem;        //Average relative error magnitude
+    double er;          //ErrorRate
+    double mhd;         //Mean Hamming distance
+    std::vector<size_t> hd;
 };
 
 class Evaluator {
 public:
-    Evaluator(const std::vector<double>& expected, const std::vector<double>& actual);
+    Evaluator(const std::vector<intmax_t>& expected, const std::vector<intmax_t>& actual);
 
     Metrics calculateMetrics() const;
+    void writeMetricsToCSV(const std::string& filename, const Metrics& metrics) const;
 
 private:
-    std::vector<double> expected;
-    std::vector<double> actual;
+    std::vector<intmax_t> expected;
+    std::vector<intmax_t> actual;
 
+    std::vector<intmax_t> calculateDIFF() const;
     double calculateMSE() const;
     double calculateMAE() const;
-    double calculateED() const;
-    double calculateEP(double epsilon) const;
+    double calculateWCD() const;
+    double calculateAREM() const;
+    double calculateER() const;
+    std::vector<size_t> Evaluator::calculateBitwiseHDVector() const;
+    double calculateMHD() const;
 };
 
 #endif
