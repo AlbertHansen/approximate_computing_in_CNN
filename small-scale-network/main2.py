@@ -7,6 +7,7 @@ import tensorflow_datasets as tfds
 import subprocess
 import csv
 import tqdm
+import time
 
 from contextlib import redirect_stdout
 from tensorflow.keras import datasets, layers, models
@@ -51,29 +52,45 @@ model.build((None, 16, 16, 1))
 # model.summary()
 
 #%%
+def compare_max_indices(file1, file2):
+    df1 = pd.read_csv(file1, header=None)
+    df2 = pd.read_csv(file2, header=None)
+
+    if df1.shape != df2.shape:
+        print('Shapes do not match')
+        return
+    
+    max_indices_df1 = df1.idxmax(axis=1)
+    max_indices_df2 = df2.idxmax(axis=1)
+
+    matches = sum(max_indices_df1 == max_indices_df2)
+
+    print(f'Matches: {matches}/{df1.shape[0]}')
+
+    return matches/df1.shape[0]
+
+
+def evaluate_approx():
+    subprocess.check_call(['cp forward_pass_test/train_images.csv forward_pass_test/batch.csv'], shell=True)
+    subprocess.check_call(['/home/ubuntu/approximate_computing_in_CNN/small-scale-network/AC_FF'])
+
+    acc = compare_max_indices('forward_pass_test/train_labels.csv', 'forward_pass_test/output.csv')
+
+    # Call c++ network
+    subprocess.check_call(['cp forward_pass_test/test_images.csv forward_pass_test/batch.csv'], shell=True)
+    subprocess.check_call(['/home/ubuntu/approximate_computing_in_CNN/small-scale-network/AC_FF'])
+
+    acc_val = compare_max_indices('forward_pass_test/test_labels.csv', 'forward_pass_test/output.csv')
+    
+    return acc, acc_val
+
+#evaluate_approx()
+#%%
 for i in range(5):
-    for j, batch in enumerate(train):
-        if j != 0:
-            continue
-        images, labels = batch
-
-        image = images[0]
-        utils.my_csv.tensor_to_csv(image, f'runs/weight_increment_test_3/iteration_{i}/image')
-        image = image[None, ...]    # add batch dimension
-
-        utils.my_csv.weights_to_csv(model, f'runs/weight_increment_test_3/iteration_{i}')
-        for k, layer in enumerate(model.layers):
-            if k == 0:
-                x = layer(image)
-            else:
-                x = layer(x)
-            utils.my_csv.tensor_to_csv(x, f'runs/weight_increment_test_3/iteration_{i}/layer_{k}')
-
-        labels_approx, labels_predicted = utils.train.iteration_approx(model, batch)
-        utils.my_csv.tensor_to_csv(images, f'runs/weight_increment_test_3/images_{i}')
-        utils.my_csv.tensor_to_csv(labels, f'runs/weight_increment_test_3/labels_{i}')
-        utils.my_csv.tensor_to_csv(labels_approx, f'runs/weight_increment_test_3/labels_approx_{i}')
-        utils.my_csv.tensor_to_csv(labels_predicted, f'runs/weight_increment_test_3/labels_predicted_{i}')
+    
+        
+    acc, acc_val = evaluate_approx()
+    print(f'Accuracy: {acc}, Accuracy_val: {acc_val}')
 
 
 #%%
