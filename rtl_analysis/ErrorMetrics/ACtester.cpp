@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <vector>
 #include <iostream>
+#include <fstream>
 
 uint16_t add8u_6P8(uint8_t a, uint8_t b)
 {
@@ -121,21 +122,41 @@ uint16_t add8u_6P8(uint8_t a, uint8_t b)
   return c;
 }
 
+void writeMatrixToCSV(const std::string& filename, const std::vector<std::vector<intmax_t>>& matrix) {
+    std::ofstream outputFile(filename);
+    if (!outputFile.is_open()) {
+        std::cerr << "Error: Could not open file " << filename << " for writing." << std::endl;
+        return;
+    }
+
+    for (size_t i = 0; i < matrix.size(); ++i) {
+        for (size_t j = 0; j < matrix.at(i).size(); ++j) {
+            outputFile << matrix[i][j];
+            if (j != matrix[i].size() - 1) {
+                outputFile << ","; // Add comma except for the last element in a row
+            }
+        }
+        outputFile << std::endl; // Move to the next line after each row
+    }
+
+    outputFile.close();
+    //std::cout << "Matrix written to " << filename << " successfully." << std::endl;
+}
+
 int main ()
 {
-    std::vector<uint8_t> additions = {5,2,6};
-    uint8_t result = 1;
-    for (const auto& num : additions)
+  std::vector<std::vector<intmax_t>> matrix;
+    for (intmax_t i = 0; i < 256; i++) 
     {
-        result = add8u_6P8(result,num);
+      std::vector<intmax_t> interMatrix;
+      for (intmax_t j = 0; j < 256; j++) 
+      {
+          intmax_t result = add8u_6P8(i, j);
+          interMatrix.push_back(result);
+      }
+      matrix.push_back(interMatrix);
     }
-    uint8_t a = 5;
-    
-    std::cout << (int)result;
-
-    
-    //std::cout << result << std::endl;
-
-    return 0;
+  writeMatrixToCSV("output.csv",matrix);
+  return 0;
 
 }
