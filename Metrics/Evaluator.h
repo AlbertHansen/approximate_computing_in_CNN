@@ -5,6 +5,8 @@
 #include <vector>
 #include <fstream>
 #include <iostream>
+#include <sstream>
+#include <limits>
 
 struct Metrics {
     std::vector<intmax_t> diff;
@@ -34,7 +36,7 @@ private:
     double calculateWCD() const;
     double calculateAREM() const;
     double calculateER() const;
-    std::vector<size_t> Evaluator::calculateBitwiseHDVector() const;
+    std::vector<size_t> calculateBitwiseHDVector() const;
     double calculateMHD() const;
 };
 

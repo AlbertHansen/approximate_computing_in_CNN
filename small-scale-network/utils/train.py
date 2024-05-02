@@ -173,7 +173,7 @@ def epoch_approx(model, dataset):
     Returns:
         None
     """
-    for i, batch in enumerate(tqdm.tqdm(dataset)):
+    for batch in tqdm.tqdm(dataset):
         diff = iteration_approx(model, batch)
         #my_csv.tensor_to_csv(diff, f'runs/labels_test/labels_approx_{i}')
 
