@@ -31,52 +31,55 @@ class TimeHistory(tf.keras.callbacks.Callback):
 time_callback = TimeHistory()
 
 summary_names = [
-    'runs/5_classes_summary.txt',
-    'runs/10_classes_summary.txt',
-    'runs/15_classes_summary.txt',
-    'runs/20_classes_summary.txt',
-    'runs/25_classes_summary.txt',
-    'runs/30_classes_summary.txt',
-    'runs/35_classes_summary.txt',
-    'runs/40_classes_summary.txt',
-    'runs/45_classes_summary.txt',
-    'runs/50_classes_summary.txt',
-    'runs/55_classes_summary.txt',
-    'runs/60_classes_summary.txt',
-    'runs/65_classes_summary.txt',
-    'runs/70_classes_summary.txt',
-    'runs/75_classes_summary.txt',
-    'runs/80_classes_summary.txt',
-    'runs/85_classes_summary.txt',
-    'runs/90_classes_summary.txt',
-    'runs/95_classes_summary.txt',
-    'runs/100_classes_summary.txt'
+    'runs/classes_no_bias/5_classes_summary.txt',
+    'runs/classes_no_bias/10_classes_summary.txt',
+    'runs/classes_no_bias/15_classes_summary.txt',
+    'runs/classes_no_bias/20_classes_summary.txt',
+    'runs/classes_no_bias/25_classes_summary.txt',
+    'runs/classes_no_bias/30_classes_summary.txt',
+    'runs/classes_no_bias/35_classes_summary.txt',
+    'runs/classes_no_bias/40_classes_summary.txt',
+    'runs/classes_no_bias/45_classes_summary.txt',
+    'runs/classes_no_bias/50_classes_summary.txt',
+    'runs/classes_no_bias/55_classes_summary.txt',
+    'runs/classes_no_bias/60_classes_summary.txt',
+    'runs/classes_no_bias/65_classes_summary.txt',
+    'runs/classes_no_bias/70_classes_summary.txt',
+    'runs/classes_no_bias/75_classes_summary.txt',
+    'runs/classes_no_bias/80_classes_summary.txt',
+    'runs/classes_no_bias/85_classes_summary.txt',
+    'runs/classes_no_bias/90_classes_summary.txt',
+    'runs/classes_no_bias/95_classes_summary.txt',
+    'runs/classes_no_bias/100_classes_summary.txt'
 ]
 
 csv_names = [
-    'runs/5_classes.csv',
-    'runs/10_classes.csv',
-    'runs/15_classes.csv',
-    'runs/20_classes.csv',
-    'runs/25_classes.csv',
-    'runs/30_classes.csv',
-    'runs/35_classes.csv',
-    'runs/40_classes.csv',
-    'runs/45_classes.csv',
-    'runs/50_classes.csv',
-    'runs/55_classes.csv',
-    'runs/60_classes.csv',
-    'runs/65_classes.csv',
-    'runs/70_classes.csv',
-    'runs/75_classes.csv',
-    'runs/80_classes.csv',
-    'runs/85_classes.csv',
-    'runs/90_classes.csv',
-    'runs/95_classes.csv',
-    'runs/100_classes.csv'
+    'runs/classes_no_bias/5_classes.csv',
+    'runs/classes_no_bias/10_classes.csv',
+    'runs/classes_no_bias/15_classes.csv',
+    'runs/classes_no_bias/20_classes.csv',
+    'runs/classes_no_bias/25_classes.csv',
+    'runs/classes_no_bias/30_classes.csv',
+    'runs/classes_no_bias/35_classes.csv',
+    'runs/classes_no_bias/40_classes.csv',
+    'runs/classes_no_bias/45_classes.csv',
+    'runs/classes_no_bias/50_classes.csv',
+    'runs/classes_no_bias/55_classes.csv',
+    'runs/classes_no_bias/60_classes.csv',
+    'runs/classes_no_bias/65_classes.csv',
+    'runs/classes_no_bias/70_classes.csv',
+    'runs/classes_no_bias/75_classes.csv',
+    'runs/classes_no_bias/80_classes.csv',
+    'runs/classes_no_bias/85_classes.csv',
+    'runs/classes_no_bias/90_classes.csv',
+    'runs/classes_no_bias/95_classes.csv',
+    'runs/classes_no_bias/100_classes.csv'
 ]
 
 #%% Datasets
+class ZeroBias(tf.keras.constraints.Constraint):
+    def __call__(self, w):
+        return tf.zeros_like(w)
 # Classes
 classes = list(range(5,101,5))
 for i, number_of_classes in enumerate(classes):
@@ -95,15 +98,16 @@ for i, number_of_classes in enumerate(classes):
     train, test = utils.dataset_manipulation.get_datasets(train_path, test_path, classes_to_keep)
 
     #%% Model
+
     model = models.Sequential([
-        layers.Conv2D(40, (2, 2), activation='relu'),
+        layers.Conv2D(40, (2, 2), activation='relu', bias_constraint=ZeroBias()),
         layers.MaxPooling2D((2, 2)),
-        layers.Conv2D(40, (2, 2), activation='relu'),
+        layers.Conv2D(40, (2, 2), activation='relu', bias_constraint=ZeroBias()),
         layers.MaxPooling2D((2, 2)),
-        layers.Conv2D(40, (2, 2), activation='relu'),
+        layers.Conv2D(40, (2, 2), activation='relu', bias_constraint=ZeroBias()),
         layers.Flatten(),
-        layers.Dense(40, activation='relu'),
-        layers.Dense(num_classes, activation='relu'),       # OBS!!! last layer will be changed to accommodate no of classes
+        layers.Dense(40, activation='relu', bias_constraint=ZeroBias()),
+        layers.Dense(num_classes, activation='relu', bias_constraint=ZeroBias()),  # OBS!!! last layer will be changed to accommodate no of classes
     ])
 
     model = utils.model_manipulation.compile_model(model)
