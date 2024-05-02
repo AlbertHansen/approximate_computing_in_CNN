@@ -1,0 +1,11 @@
+Conv2D
+MaxPooling2D
+Conv2D
+MaxPooling2D
+Conv2D
+Flatten
+Dense
+Dense
+Total params: 22390
+Trainable params: 22390
+Non-trainable params: 0
