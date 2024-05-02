@@ -101,18 +101,18 @@ void writeMatrixToCSV(const std::string& filename, const std::vector<std::vector
 
 int main()
 {
-    std::string layer0Weights = "weight_increment_test_3/iteration_4/layer_0/weights.csv";
-    std::string layer0Biases = "weight_increment_test_3/iteration_4/layer_0/biases.csv";
-    std::string layer2Weights = "weight_increment_test_3/iteration_4/layer_2/weights.csv";
-    std::string layer2Biases = "weight_increment_test_3/iteration_4/layer_2/biases.csv";
-    std::string layer4Weights = "weight_increment_test_3/iteration_4/layer_4/weights.csv";
-    std::string layer4Biases = "weight_increment_test_3/iteration_4/layer_4/biases.csv";
-    std::string layer6Weights = "weight_increment_test_3/iteration_4/layer_6/weights.csv";
-    std::string layer6Biases = "weight_increment_test_3/iteration_4/layer_6/biases.csv";
-    std::string layer7Weights = "weight_increment_test_3/iteration_4/layer_7/weights.csv";
-    std::string layer7Biases = "weight_increment_test_3/iteration_4/layer_7/biases.csv";
+    std::string layer0Weights = "forward_pass_test/layer_0/weights.csv";
+    std::string layer0Biases = "forward_pass_test/layer_0/biases.csv";
+    std::string layer2Weights = "forward_pass_test/layer_2/weights.csv";
+    std::string layer2Biases = "forward_pass_test/layer_2/biases.csv";
+    std::string layer4Weights = "forward_pass_test/layer_4/weights.csv";
+    std::string layer4Biases = "forward_pass_test/layer_4/biases.csv";
+    std::string layer6Weights = "forward_pass_test/layer_6/weights.csv";
+    std::string layer6Biases = "forward_pass_test/layer_6/biases.csv";
+    std::string layer7Weights = "forward_pass_test/layer_7/weights.csv";
+    std::string layer7Biases = "forward_pass_test/layer_7/biases.csv";
 
-    std::string inputBatches = "weight_increment_test_3/iteration_4/image.csv";
+    std::string inputBatches = "forward_pass_test/image.csv";
 
     
 
@@ -398,5 +398,5 @@ int main()
         //std::cout << denseLayer7out.at(1)<< std::endl;
         outputBatch.push_back(denseLayer7out);
     }
-    writeMatrixToCSV("output2.csv",outputBatch);
+    writeMatrixToCSV("forward_pass_test/output.csv",outputBatch);
 }
