@@ -1,5 +1,6 @@
-VLOG_FILE_NAME=./add8s_83C.v
-TOP_MODULE=add8s_83C
+VLOG_FILE_NAME=./add8se_8R9.v
+C_FILE_NAME=./add8se_8R9.c
+TOP_MODULE=add8se_8R9
 
 #Map to the specified list of gate types. Supported gates types are:
 #           AND, NAND, OR, NOR, XOR, XNOR, ANDNOT, ORNOT, MUX,
@@ -26,6 +27,9 @@ netlist:
 svg:
 	netlistsvg netlist/netlist.json -o figures/netlist.svg
 
+error_file:
+	g++ -std=c++11 -o ./Error/error_executable ./Error/SingleGateEvaluator.cpp ./Error/Evaluator.cpp $(C_FILE_NAME)
+
 report_gates:
 	TOP_MODULE=$(TOP_MODULE) \
 	SUPPRESS_FIGURES=$(SUPPRESS_FIGURES) \
@@ -35,5 +39,12 @@ report_paths:
 	TOP_MODULE=$(TOP_MODULE) \
 	SUPPRESS_FIGURES=$(SUPPRESS_FIGURES) \
 	python3 paths.py
+
+report_error:
+	./Error/error_executable 
+	
+histogram:
+	matlab ./Error/Metrics.m
+
 
 analysis: netlist svg report_gates report_paths
