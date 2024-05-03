@@ -55,7 +55,7 @@ model_approx = models.Sequential([
 model = utils.model_manipulation.compile_model(model)
 model_approx = utils.model_manipulation.compile_model(model_approx)
 model.build((None, 16, 16, 1))
-model_approx.build((None, 16, 16, 1))
+model_approx.build((32, 16, 16, 1))
 model.summary()
 model_approx.summary()
 
@@ -65,6 +65,7 @@ model_approx.set_weights(weights)
 
 #evaluate_approx()
 #%%
+
 for i, batch in enumerate(train):
     if i != 0:
         break

@@ -44,7 +44,7 @@ report_error:
 	./Error/error_executable 
 	
 histogram:
-	matlab ./Error/Metrics.m
+	python3 ./Error/make_histogram.py
 
 
 analysis: netlist svg report_gates report_paths
