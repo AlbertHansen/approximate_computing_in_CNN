@@ -76,12 +76,14 @@ def evaluate_approx():
     subprocess.check_call(['/home/ubuntu/approximate_computing_in_CNN/small-scale-network/AC_FF'])
 
     acc = compare_max_indices('forward_pass_test/train_labels.csv', 'forward_pass_test/output.csv')
+    print(f"From within evaluate_approx: acc = {acc}")
 
     # Call c++ network
     subprocess.check_call(['cp forward_pass_test/test_images.csv forward_pass_test/batch.csv'], shell=True)
     subprocess.check_call(['/home/ubuntu/approximate_computing_in_CNN/small-scale-network/AC_FF'])
 
     acc_val = compare_max_indices('forward_pass_test/test_labels.csv', 'forward_pass_test/output.csv')
+    print(f"From within evaluate_approx: acc_val = {acc_val}")
     
     return acc, acc_val
 
