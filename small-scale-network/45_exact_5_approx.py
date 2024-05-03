@@ -87,7 +87,7 @@ def evaluate_approx():
 
 #evaluate_approx()
 #%%
-with open('runs/ste_training/45_exact_5_approx.csv', 'a') as file:
+with open('runs/ste_training/45_exact_5_approx.csv', 'w') as file:
     writer = csv.writer(file)
     writer.writerow(['accuracy', 'accuracy_val', 'time'])
 
