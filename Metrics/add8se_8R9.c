@@ -92,7 +92,7 @@ uint64_t add8se_8R9(const uint64_t B,const uint64_t A)
    dout_83=dout_31^dout_74;
    dout_84=dout_32^dout_76;
 
-   O = 0;
+   O=0;
    O |= (dout_17&1) << 0;
    O |= (dout_77&1) << 1;
    O |= (dout_78&1) << 2;
