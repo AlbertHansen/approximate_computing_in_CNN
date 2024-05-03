@@ -36,6 +36,7 @@ double Evaluator::calculateMSE() const
         intmax_t diff = expected.at(i) - actual.at(i);  // Change diff to integer type
         sum += diff * diff;
     }
+
     return static_cast<double>(sum) / expected.size();  // Convert sum back to double for division
 }
 
@@ -63,9 +64,15 @@ double Evaluator::calculateWCD() const {
 double Evaluator::calculateAREM() const 
 {
     double sum = 0.0;
+    double sumOfSquares = 0.0;
+    for (const auto& val : expected) {
+        sumOfSquares += val * val;
+    }
+    double norm = std::sqrt(sumOfSquares);
+    std::cout << "norm " << norm;
     for (size_t i = 0; i < expected.size(); ++i) 
     {
-        double error = static_cast<double>(std::abs(expected.at(i) - actual.at(i))) / expected.at(i);
+        double error = static_cast<double>(std::abs(expected.at(i) - actual.at(i))) / norm;
         sum += error;
     }
     return sum / expected.size();

@@ -177,6 +177,7 @@ int main()
         std::vector<Matrix> FMLayer0beforeRelu = conv2d.applyConvolution(singleInputFixedPointMatrix);
         
         
+        
 
         /************************ APPLY ReLU **********************************************************************************/
         std::vector<Matrix> FMLayer0;
@@ -184,6 +185,8 @@ int main()
         {
             FMLayer0.push_back(FMLayer0beforeRelu.at(j).applyRelu());
         }
+        
+        /******************** Albert jeg skriver ud til dig her *******************************************/
         
         
         /******************** MAX_POOLING_1*****************************************************/
