@@ -60,7 +60,6 @@ class MyDenseLayer(tf.keras.layers.Layer):
         # Apply an activation function
         # output = tf.matmul(inputs, self.kernel)
         output = tf.nn.relu(output)
-        print(output.shape)
 
         end = time.time()
         print(f"Time taken: {end-start}")

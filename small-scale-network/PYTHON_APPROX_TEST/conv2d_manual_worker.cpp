@@ -1,12 +1,17 @@
 #include <vector>
+#include <iostream>
 
 extern "C" {
-    void worker(int i, std::vector<std::vector<std::vector<std::vector<double>>>>& inputs, std::vector<std::vector<std::vector<std::vector<double>>>>& kernel, std::vector<std::vector<std::vector<double>>>& output) {
+    void worker(int i, std::vector<std::vector<std::vector<std::vector<float>>>>& inputs, std::vector<std::vector<std::vector<std::vector<float>>>>& kernel, std::vector<std::vector<std::vector<float>>>& output) {
+        std::cout << "Test";
         int j_dim = inputs[0].size() - kernel[0].size() + 1;
+        std::cout << j_dim;
         int k_dim = inputs[0][0].size() - kernel[0][0].size() + 1;
-        int l_dim = kernel[0][0][0].size();
+        std::cout << k_dim;
+        int l_dim = kernel[0][0][0].size();        
+        std::cout << l_dim;
 
-        output = std::vector<std::vector<std::vector<double>>>(j_dim, std::vector<std::vector<double>>(k_dim, std::vector<double>(l_dim, 0)));
+        output = std::vector<std::vector<std::vector<float>>>(j_dim, std::vector<std::vector<float>>(k_dim, std::vector<float>(l_dim, 0)));
 
         for (int j = 0; j < j_dim; ++j) {
             for (int k = 0; k < k_dim; ++k) {
