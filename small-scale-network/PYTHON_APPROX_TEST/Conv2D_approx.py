@@ -2,6 +2,7 @@ import tensorflow as tf
 import numpy as np
 import tqdm
 from multiprocessing import Pool
+import time
 
 def worker(args):
     i, inputs, kernel = args
@@ -32,7 +33,7 @@ def conv2d_manual(inputs, kernel):
     output_shape      = [batch_size, output_height, output_width, filter_count]
 
     # Initialize the output tensor
-    output = np.zeros((inputs.shape[0], inputs.shape[1] - kernel_height + 1, inputs.shape[2] - kernel_width + 1, kernel.shape[-1]))
+    output = np.zeros((inputs.shape[0], inputs.shape[1] - kernel_height + 1, inputs.shape[2] - kernel_width + 1, kernel.shape[-1]), dtype=np.float32)
 
     # Perform the convolution
     with Pool() as p:
@@ -59,6 +60,8 @@ class MyConv2DLayer(tf.keras.layers.Layer):
                                       trainable=True)
 
     def call(self, inputs):
+        start = time.time()
+
         # Define the forward pass
         try: 
             print("Using the approximation")
@@ -70,4 +73,6 @@ class MyConv2DLayer(tf.keras.layers.Layer):
         # Apply an activation function
         output = tf.nn.relu(output)
 
+        end = time.time()
+        print(f"Time taken: {end-start}")
         return output
