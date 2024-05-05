@@ -7,12 +7,12 @@ import time
 def worker(args):
     i, inputs, kernel = args
     output = np.zeros((inputs.shape[1] - kernel.shape[0] + 1, inputs.shape[2] - kernel.shape[1] + 1, kernel.shape[-1]))
-    for j in range(inputs.shape[1] - kernel.shape[0] + 1):    # Column
-        for k in range(inputs.shape[2] - kernel.shape[1] + 1): # Row
-            for l in range(kernel.shape[-1]):               # Filter
-                for m in range(kernel.shape[0]):               # filter width
-                    for n in range(kernel.shape[1]):          # filter height
-                        for o in range(inputs.shape[-1]):   # input channels
+    for j in range(inputs.shape[1] - kernel.shape[0] + 1):      # Column
+        for k in range(inputs.shape[2] - kernel.shape[1] + 1):  # Row
+            for l in range(kernel.shape[-1]):                   # Filter
+                for m in range(kernel.shape[0]):                # filter width
+                    for n in range(kernel.shape[1]):            # filter height
+                        for o in range(inputs.shape[-1]):       # input channels
                             output[j, k, l] += inputs[i, j+m, k+n, o] * kernel[m, n, o, l]
     return output
 
