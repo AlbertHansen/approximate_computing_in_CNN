@@ -1,0 +1,4 @@
+Accurate adders and multipliers
+fp conversion of weight
+inputs and weight are 8-bit
+multiplication performed exact, but truncated to 8-bits afterwards
