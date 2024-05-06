@@ -160,12 +160,13 @@ def weights_to_csv(model, path):
                 
                 
                 #writer.writerow(weights[0])
-
+            '''
             # Save the biases
             path_bias = f"{path}/layer_{i}/biases.csv"
             with open(path_bias, 'w', newline='') as file:
                 writer = csv.writer(file)
                 writer.writerow(weights[1].flatten())
+            '''
 
 ''' Original weights_to_csv (WORKS)
 def weights_to_csv(model, path):

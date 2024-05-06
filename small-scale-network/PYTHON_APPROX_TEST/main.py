@@ -75,20 +75,29 @@ for i, batch in enumerate(train):
     for j, layer in enumerate(model.layers):
         if j == 0:
             y_predicted = layer(x)
+
         elif j < len(model.layers)-3:
             y_predicted = layer(y_predicted)
+
+        utils.my_csv.tensor_to_csv(y_predicted, f'y_predicted_{i}')
+
     end = time.time()
     print(f"Exact model: {end-start}")
-    utils.my_csv.tensor_to_csv(y_predicted, 'y_predicted')  
+    
 
 
     start = time.time()
     for j, layer in enumerate(model_approx.layers):
         if j == 0:
             y_approximated = layer(x)
+            
         elif j < len(model_approx.layers)-3:
             y_approximated = layer(y_approximated)
+
+        utils.my_csv.tensor_to_csv(y_approximated, f'y_approximated_{i}')
+
     end = time.time()
     print(f"Approximated model: {end-start}")
-    utils.my_csv.tensor_to_csv(y_approximated, 'y_approximated')
 
+utils.my_csv.weights_to_csv(model, 'model')
+utils.my_csv.weights_to_csv(model_approx, 'model_approx')

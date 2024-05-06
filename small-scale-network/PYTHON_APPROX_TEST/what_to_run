@@ -4,3 +4,5 @@ mkdir build
 cd build
 cmake ..
 make
+cd ..
+cp build/libtest.so ./test.so

@@ -83,7 +83,7 @@ class MyConv2DLayer(tf.keras.layers.Layer):
         # Define the forward pass
         try: 
             print("Using the approximation")
-            kernel = np.array(K.get_value(self.kernel), dtype=np.float32)
+            kernel = np.array(K.get_value(self.kernel), dtype=np.float64)
             output = conv2d_manual(inputs, kernel)
         except Exception as e:
             print(f"Error in the loop: \n\t{e}")

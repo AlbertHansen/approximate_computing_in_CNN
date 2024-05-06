@@ -41,7 +41,7 @@ report_paths:
 	python3 paths.py
 
 report_error:
-	./Error/error_executable 
+	./Error/error_executable
 	
 histogram:
 	python3 ./Error/make_histogram.py
