@@ -91,12 +91,12 @@ int main() {
     std::vector<intmax_t> Expected = testAllCombinationsAccurate(add);
     std::vector<intmax_t> Actual = testAllCombinations(add8se_8R9);
     
-    writeVectorToCSV("Expected.csv",Expected);
-    writeVectorToCSV("Actual.csv",Actual);
+    writeVectorToCSV("./Error/Error_files/Expected.csv",Expected);
+    writeVectorToCSV("./Error/Error_files/Actual.csv",Actual);
 
     Evaluator eval_add8se_8R9(Expected,Actual);
     Metrics add8se_8R9_metrics = eval_add8se_8R9.calculateMetrics();
-    eval_add8se_8R9.writeMetricsToCSV("metrics.csv",add8se_8R9_metrics);    //(filename, evaluator.metrics)
+    eval_add8se_8R9.writeMetricsToCSV("./Error/Error_files/metrics.csv",add8se_8R9_metrics);    //(filename, evaluator.metrics)
     
 
     /* Display the results (optional)

@@ -28,8 +28,8 @@ plt.rc('xtick',     labelsize   = SMALL_SIZE)   # fontsize of the tick labels
 plt.rc('ytick',     labelsize   = SMALL_SIZE)   # fontsize of the tick labels
 plt.rc('legend',    fontsize    = SMALL_SIZE)   # legend fontsize
 plt.rc('figure',    titlesize   = BIGGER_SIZE)  # fontsize of the figure title
-plt.rc('text',      usetex      = True)         # use latex for interpreter
-plt.rc('font',      family      = 'Computer Modern Serif')      # use serif font (to look like latex)
+# plt.rc('text',      usetex      = True)         # use latex for interpreter
+# plt.rc('font',      family      = 'Computer Modern Serif')      # use serif font (to look like latex)
 plt.rc('font',      weight      = 'heavy')     # controls font weight
 
 cm = 1/2.54                                     # centimeters in inches
@@ -37,8 +37,8 @@ cm = 1/2.54                                     # centimeters in inches
 colors = dc(1)
 
 # Load data from CSV files
-actual = np.loadtxt("Actual.csv", delimiter=",")
-expected = np.loadtxt("Expected.csv", delimiter=",")
+actual = np.loadtxt("./Error/Error_files/Actual.csv", delimiter=",")
+expected = np.loadtxt("./Error/Error_files/Expected.csv", delimiter=",")
 
 # Calculate the difference
 diff = expected - actual
