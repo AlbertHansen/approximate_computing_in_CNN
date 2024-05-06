@@ -113,7 +113,19 @@ int main()
     std::string layer7Biases = "forward_pass_test/layer_7/biases.csv";
 
     std::string inputBatches = "forward_pass_test/image.csv";
+    /*
+    std::string layer0Weights = "./weight_increment_test_3/iteration_4/layer_0/weights.csv";
+    std::string layer0Biases = "./weight_increment_test_3/iteration_4/layer_0/biases.csv";
+    std::string layer2Weights = "./weight_increment_test_3/iteration_4/layer_2/weights.csv";
+    std::string layer2Biases = "./weight_increment_test_3/iteration_4/layer_2/biases.csv";
+    std::string layer4Weights = "./weight_increment_test_3/iteration_4/layer_4/weights.csv";
+    std::string layer4Biases = "./weight_increment_test_3/iteration_4/layer_4/biases.csv";
+    std::string layer6Weights = "./weight_increment_test_3/iteration_4/layer_6/weights.csv";
+    std::string layer6Biases = "./weight_increment_test_3/iteration_4/layer_6/biases.csv";
+    std::string layer7Weights = "./weight_increment_test_3/iteration_4/layer_7/weights.csv";
+    std::string layer7Biases = "./weight_increment_test_3/iteration_4/layer_7/biases.csv";
 
+    std::string inputBatches = "./weight_increment_test_3/images_4.csv";*/
     
 
     ReadParameters layer0(layer0Weights, layer0Biases);
@@ -132,9 +144,9 @@ int main()
     FullyConnectedLayer dense1(40,10);         //(InputNodes, OutputNodes)
 
     /********************* FIXEDPOINT CONVERTER *******************************/
-    FixedPointConverter<intmax_t> converter(1, 20);
-    FixedPointConverter<double> converter2(4, 20); // int type, 4 decimal bits, 4 fractional bits
-    FixedPointConverter<intmax_t> converter3(4, 40);
+    FixedPointConverter<intmax_t> converter(1, 8);
+    FixedPointConverter<double> converter2(4, 8); // int type, 4 decimal bits, 4 fractional bits
+    FixedPointConverter<intmax_t> converter3(4, 16);
     /********************* READ INPUT ****************************************/
     std::vector<std::vector<float>> inputBatch = readInput(inputBatches);
 
@@ -198,16 +210,17 @@ int main()
         for (int j = 0; j < pooledFMLayer0.size(); j++)
         {
             Matrix truncateMatrixLayer0(pooledFMLayer0.at(j).numRows(),pooledFMLayer0.at(j).numCols());
-            truncateMatrixLayer0.unflatten(converter3.truncateLSBs(pooledFMLayer0.at(j).flatten(), 20));
+            truncateMatrixLayer0.unflatten(converter3.truncateLSBs(pooledFMLayer0.at(j).flatten(), 8));
             FMLayer0out.push_back(truncateMatrixLayer0);
         }
 
+        /*
         std::vector<double> test = converter2.convertToDouble(FMLayer0out.at(0).flatten());
         for (int j = 0; j < test.size(); j++)
         {
             std::cout << test.at(j) << " " ;
         }
-        std::cout << std::endl;
+        std::cout << std::endl;*/
 
         /******************* LAYER 2 INSTANTIATE *************************************************************/
         LayerParams ParametersForLayer2 = layer2.getLayer();
@@ -276,7 +289,7 @@ int main()
         for (int j = 0; j < pooledFMLayer2.size(); j++)
         {
             Matrix truncateMatrixLayer2(pooledFMLayer2.at(j).numRows(),pooledFMLayer2.at(j).numCols());
-            truncateMatrixLayer2.unflatten(converter3.truncateLSBs(pooledFMLayer2.at(j).flatten(), 20));
+            truncateMatrixLayer2.unflatten(converter3.truncateLSBs(pooledFMLayer2.at(j).flatten(), 8));
             FMLayer2out.push_back(truncateMatrixLayer2);
         }
         
@@ -360,7 +373,7 @@ int main()
         }
 
         /************************ TUNCATE FXP **********************************************************************************/
-        std::vector<intmax_t> flattenedOut = converter3.truncateLSBs(flattenedVector,20);      
+        std::vector<intmax_t> flattenedOut = converter3.truncateLSBs(flattenedVector,8);      
         
         
 
@@ -379,7 +392,7 @@ int main()
         //std::cout << "t: " << flattenedOut.at(0) << std::endl;
         std::vector<intmax_t> denseLayer6 = dense.forward(flattenedOut,layer6weightsFixed,layer6biasesFixed);
         /************************ TUNCATE FXP **********************************************************************************/
-        std::vector<intmax_t> denseLayer6out = converter3.truncateLSBs(denseLayer6,20);      
+        std::vector<intmax_t> denseLayer6out = converter3.truncateLSBs(denseLayer6,8);      
         
         
         
@@ -397,7 +410,7 @@ int main()
         /*************************** RUN DENSE LAYER7 ********************************************************************************/
         std::vector<intmax_t> denseLayer7 = dense1.forward(denseLayer6out,layer7weightsFixed,layer7biasesFixed);
         /************************ TUNCATE FXP **********************************************************************************/
-        std::vector<double> denseLayer7out = converter2.convertToDouble(converter3.truncateLSBs(denseLayer7,20));
+        std::vector<double> denseLayer7out = converter2.convertToDouble(converter3.truncateLSBs(denseLayer7,8));
         //std::cout << denseLayer7out.at(1)<< std::endl;
         outputBatch.push_back(denseLayer7out);
     }
