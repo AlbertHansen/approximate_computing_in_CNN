@@ -112,7 +112,7 @@ int main()
     std::string layer7Weights = "forward_pass_test/layer_7/weights.csv";
     std::string layer7Biases = "forward_pass_test/layer_7/biases.csv";
 
-    std::string inputBatches = "forward_pass_test/image.csv";
+    std::string inputBatches = "forward_pass_test/batch.csv";
     /*
     std::string layer0Weights = "./weight_increment_test_3/iteration_4/layer_0/weights.csv";
     std::string layer0Biases = "./weight_increment_test_3/iteration_4/layer_0/biases.csv";
