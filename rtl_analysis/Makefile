@@ -1,5 +1,5 @@
 VLOG_FILE_NAME=./add8se_8R9.v
-C_FILE_NAME=./add8se_8R9.c
+C_FILE_NAME=./mul8s_1KV9.c
 TOP_MODULE=add8se_8R9
 
 #Map to the specified list of gate types. Supported gates types are:
@@ -41,7 +41,7 @@ report_paths:
 	python3 paths.py
 
 report_error:
-	./Error/error_executable 
+	./Error/error_executable
 	
 histogram:
 	python3 ./Error/make_histogram.py
