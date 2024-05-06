@@ -1,0 +1,6 @@
+export pybind11_DIR=/home/ubuntu/.local/lib/python3.10/site-packages/pybind11/share/cmake/pybind11
+
+mkdir build
+cd build
+cmake ..
+make

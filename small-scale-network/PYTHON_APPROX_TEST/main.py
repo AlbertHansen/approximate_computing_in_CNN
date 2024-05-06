@@ -70,7 +70,15 @@ for i, batch in enumerate(train):
     if i != 0:
         break
     x, y = batch
-    y_predicted    = model(x)
+    
+    start = time.time()
+    y_predicted = model(x)
+    end = time.time()
+    print(f"Exact model: {end-start}")
+    utils.my_csv.tensor_to_csv(y_predicted, 'y_predicted')  
+    start = time.time()
     y_approximated = model_approx(x)
-    utils.my_csv.tensor_to_csv(y_predicted, 'y_predicted.csv')
-    utils.my_csv.tensor_to_csv(y_approximated, 'y_approximated.csv')
+    end = time.time()
+    print(f"Approximated model: {end-start}")
+    utils.my_csv.tensor_to_csv(y_approximated, 'y_approximated')
+
