@@ -89,11 +89,12 @@ def evaluate_approx():
 
 #evaluate_approx()
 #%%
-with open('runs/ste_training/45_exact_5_approx.csv', 'w') as file:
+with open('runs/ste_training_lowbit/50_approx.csv', 'w') as file:
     writer = csv.writer(file)
     writer.writerow(['accuracy', 'accuracy_val', 'time'])
 
     # 45 training epochs with exact training
+    '''
     for i in range(45):
         print(f"----- Epoch {i} -----")
         start_epoch = time.time()
@@ -102,10 +103,11 @@ with open('runs/ste_training/45_exact_5_approx.csv', 'w') as file:
         epoch_time = time.time() - start_epoch
         print(f'Accuracy: {acc}, Accuracy_val: {acc_val}, Time: {epoch_time}')
         writer.writerow([acc, acc_val, epoch_time])
+    '''
 
     # 5 training epochs with approximate training (STE)
-    for i in range(5):
-        print(f"----- Epoch {i+45} -----")
+    for i in range(50):
+        print(f"----- Epoch {i} -----")
         start_epoch = time.time()
         utils.train.epoch_approx(model, train)
         acc, acc_val = evaluate_approx()
