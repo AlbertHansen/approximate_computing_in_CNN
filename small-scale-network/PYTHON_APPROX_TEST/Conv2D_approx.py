@@ -6,7 +6,7 @@ import time
 import test
 import tensorflow.keras.backend as K
 
-'''
+''' 
 def worker(args):
     i, inputs, kernel = args
     output = np.zeros((inputs.shape[1] - kernel.shape[0] + 1, inputs.shape[2] - kernel.shape[1] + 1, kernel.shape[-1]))
@@ -83,7 +83,8 @@ class MyConv2DLayer(tf.keras.layers.Layer):
         # Define the forward pass
         try: 
             print("Using the approximation")
-            output = conv2d_manual(inputs, self.kernel)
+            kernel = np.array(K.get_value(self.kernel), dtype=np.float32)
+            output = conv2d_manual(inputs, kernel)
         except Exception as e:
             print(f"Error in the loop: \n\t{e}")
             output = tf.nn.conv2d(inputs, self.kernel, strides=[1, 1, 1, 1], padding='VALID')

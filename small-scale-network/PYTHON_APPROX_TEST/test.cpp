@@ -28,8 +28,8 @@ py::array_t<double> worker(py::array_t<double> inputs, py::array_t<double> kerne
                     for (ssize_t m = 0; m < kernel_info.shape[0]; ++m) {
                         for (ssize_t n = 0; n < kernel_info.shape[1]; ++n) {
                             for (ssize_t o = 0; o < inputs_info.shape[3]; ++o) {
-                                r(i, j, k, l) += inputs_ptr[i * inputs_info.strides[0] + (j+m) * inputs_info.strides[1] + (k+n) * inputs_info.strides[2] + o * inputs_info.strides[3]] * 
-                                                 kernel_ptr[m * kernel_info.strides[0] + n * kernel_info.strides[1] + o * kernel_info.strides[2] + l * kernel_info.strides[3]];
+                                r(i, j, k, l) += inputs_ptr[i * inputs_info.shape[1] * inputs_info.shape[2] * inputs_info.shape[3] + (j+m) * inputs_info.shape[2] * inputs_info.shape[3] + (k+n) * inputs_info.shape[3] + o] * 
+                                                 kernel_ptr[m * kernel_info.shape[1] * kernel_info.shape[2] * kernel_info.shape[3] + n * kernel_info.shape[2] * kernel_info.shape[3] + o * kernel_info.shape[3] + l];
                             }
                         }
                     }
