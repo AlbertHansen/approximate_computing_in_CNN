@@ -1,5 +1,5 @@
 # %%
-# Import packages
+# Import packages 
 import numpy as np
 import pandas as pd
 import tensorflow as tf
@@ -72,12 +72,22 @@ for i, batch in enumerate(train):
     x, y = batch
     
     start = time.time()
-    y_predicted = model(x)
+    for j, layer in enumerate(model.layers):
+        if j == 0:
+            y_predicted = layer(x)
+        elif j < len(model.layers)-3:
+            y_predicted = layer(y_predicted)
     end = time.time()
     print(f"Exact model: {end-start}")
     utils.my_csv.tensor_to_csv(y_predicted, 'y_predicted')  
+
+
     start = time.time()
-    y_approximated = model_approx(x)
+    for j, layer in enumerate(model_approx.layers):
+        if j == 0:
+            y_approximated = layer(x)
+        elif j < len(model_approx.layers)-3:
+            y_approximated = layer(y_approximated)
     end = time.time()
     print(f"Approximated model: {end-start}")
     utils.my_csv.tensor_to_csv(y_approximated, 'y_approximated')
