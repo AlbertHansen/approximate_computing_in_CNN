@@ -3,7 +3,10 @@ import numpy as np
 import tqdm
 from multiprocessing import Pool
 import time
+import test
+import tensorflow.keras.backend as K
 
+'''
 def worker(args):
     i, inputs, kernel = args
     output = np.zeros((inputs.shape[1] - kernel.shape[0] + 1, inputs.shape[2] - kernel.shape[1] + 1, kernel.shape[-1]))
@@ -16,6 +19,18 @@ def worker(args):
                             output[j, k, l] += inputs[i, j+m, k+n, o] * kernel[m, n, o, l]
     return output
 
+def worker(args):
+    i, inputs, kernel = args
+    inputs = np.array(inputs, dtype=np.float64)
+    kernel = np.array(K.get_value(kernel), dtype=np.float64)
+    output = test.worker(i, inputs, kernel)
+    return output
+
+    '''
+
+
+
+    
 def conv2d_manual(inputs, kernel):
     # Get the height and width of the input tensor and the kernel
     input_shape = tf.shape(inputs)
@@ -35,12 +50,15 @@ def conv2d_manual(inputs, kernel):
     # Initialize the output tensor
     output = np.zeros((inputs.shape[0], inputs.shape[1] - kernel_height + 1, inputs.shape[2] - kernel_width + 1, kernel.shape[-1]), dtype=np.float32)
 
+    '''
     # Perform the convolution
     with Pool() as p:
         results = p.map(worker, [(i, inputs, kernel) for i in range(inputs.shape[0])])
 
     # Combine results into a single output array
     output = np.stack(results)
+    '''
+    output = test.worker(inputs, kernel)
 
     return output
 
