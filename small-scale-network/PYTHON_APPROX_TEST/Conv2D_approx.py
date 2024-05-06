@@ -1,4 +1,20 @@
 import tensorflow as tf
+import numpy as np
+import tqdm
+from multiprocessing import Pool
+import time
+
+def worker(args):
+    i, inputs, kernel = args
+    output = np.zeros((inputs.shape[1] - kernel.shape[0] + 1, inputs.shape[2] - kernel.shape[1] + 1, kernel.shape[-1]))
+    for j in range(inputs.shape[1] - kernel.shape[0] + 1):      # Column
+        for k in range(inputs.shape[2] - kernel.shape[1] + 1):  # Row
+            for l in range(kernel.shape[-1]):                   # Filter
+                for m in range(kernel.shape[0]):                # filter width
+                    for n in range(kernel.shape[1]):            # filter height
+                        for o in range(inputs.shape[-1]):       # input channels
+                            output[j, k, l] += inputs[i, j+m, k+n, o] * kernel[m, n, o, l]
+    return output
 
 def conv2d_manual(inputs, kernel):
     # Get the height and width of the input tensor and the kernel
@@ -10,28 +26,23 @@ def conv2d_manual(inputs, kernel):
     kernel_height, kernel_width = kernel_shape_np[0], kernel_shape_np[1]
 
     # Calculate the dimensions of the output tensor
-    output_height = input_height - kernel_height + 1
-    output_width = input_width - kernel_width + 1
+    batch_size        = input_shape[0]
+    output_height     = input_height - kernel_height + 1
+    output_width      = input_width - kernel_width + 1
+    filter_count      = kernel_shape[-1]
+    output_shape      = [batch_size, output_height, output_width, filter_count]
 
-    # Initialize the output tensor array
-    output_array = tf.TensorArray(tf.float32, size=output_height*output_width)
+    # Initialize the output tensor
+    output = np.zeros((inputs.shape[0], inputs.shape[1] - kernel_height + 1, inputs.shape[2] - kernel_width + 1, kernel.shape[-1]), dtype=np.float32)
 
-    # Perform the convolution operation
-    for i in range(output_height):
-        for j in range(output_width):
-            # Extract the current patch of the input tensor
-            patch = tf.expand_dims(inputs[:, i:i+kernel_height, j:j+kernel_width, :], -1)
-            # Perform element-wise multiplication between the patch and the kernel, and sum the result
-            output_slice = tf.reduce_sum(patch * kernel, axis=[1, 2, 3])
-            # Store the output slice in the tensor array
-            output_array = output_array.write(i*output_width + j, output_slice)
+    # Perform the convolution
+    with Pool() as p:
+        results = p.map(worker, [(i, inputs, kernel) for i in range(inputs.shape[0])])
 
-    # Stack the output slices together to form the final output tensor
-    output = tf.reshape(output_array.stack(), (input_shape[0], output_height, output_width, kernel_shape[3]))
+    # Combine results into a single output array
+    output = np.stack(results)
 
     return output
-
-
 
 class MyConv2DLayer(tf.keras.layers.Layer):
     def __init__(self, num_filters, kernel_size, **kwargs):
@@ -49,11 +60,19 @@ class MyConv2DLayer(tf.keras.layers.Layer):
                                       trainable=True)
 
     def call(self, inputs):
+        start = time.time()
+
         # Define the forward pass
-        # output = tf.nn.conv2d(inputs, self.kernel, strides=[1, 1, 1, 1], padding='VALID')
-        output = conv2d_manual(inputs, self.kernel)
+        try: 
+            print("Using the approximation")
+            output = conv2d_manual(inputs, self.kernel)
+        except Exception as e:
+            print(f"Error in the loop: \n\t{e}")
+            output = tf.nn.conv2d(inputs, self.kernel, strides=[1, 1, 1, 1], padding='VALID')
 
         # Apply an activation function
         output = tf.nn.relu(output)
 
+        end = time.time()
+        print(f"Time taken: {end-start}")
         return output
