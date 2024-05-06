@@ -414,5 +414,5 @@ int main()
         //std::cout << denseLayer7out.at(1)<< std::endl;
         outputBatch.push_back(denseLayer7out);
     }
-    writeMatrixToCSV("forward_pass_test/output.csv",outputBatch);
+    writeMatrixToCSV("./forward_pass_test/output.csv",outputBatch);
 }
