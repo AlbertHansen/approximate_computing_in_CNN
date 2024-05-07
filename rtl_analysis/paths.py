@@ -15,15 +15,15 @@ if 'SUPPRESS_FIGURES' in os.environ:
 #%%
 # based on edge-copilot
 delay_ns = {
-    'AND'   : 20,   # https://web.ece.ucsb.edu/Faculty/Johnson/ECE152A/handouts/L4%20-%20Propagation%20Delay,%20Circuit%20Timing%20&%20Adder%20Design.pdf
-    'NAND'  : 18,   # https://electronics.stackexchange.com/questions/197151/how-to-calculate-overall-propagation-time-for-circuitry
-    'OR'    : 12,   # https://vlsimaster.com/propogation-delay/
-    'NOR'   : 4,    # https://electronics.stackexchange.com/questions/197151/how-to-calculate-overall-propagation-time-for-circuitry
-    'XOR'   : 4,    # https://electronics.stackexchange.com/questions/236925/propagation-delay-of-a-digital-logic-circuit
-    'XNOR'  : 4,    # https://en.wikipedia.org/wiki/XNOR_gate
-    'ANDNOT': 28,   # https://web.ece.ucsb.edu/Faculty/Johnson/ECE152A/handouts/L4%20-%20Propagation%20Delay,%20Circuit%20Timing%20&%20Adder%20Design.pdf
-    'ORNOT' : 20,   # https://vlsimaster.com/propogation-delay/
-    'NOT'   : 5    # https://controllerstech.com/create-1-microsecond-delay-stm32/
+    'AND'   : 3,   # https://web.ece.ucsb.edu/Faculty/Johnson/ECE152A/handouts/L4%20-%20Propagation%20Delay,%20Circuit%20Timing%20&%20Adder%20Design.pdf
+    'NAND'  : 0.15,   # https://electronics.stackexchange.com/questions/197151/how-to-calculate-overall-propagation-time-for-circuitry
+    'OR'    : 0.3,   # https://vlsimaster.com/propogation-delay/
+    'NOR'   : 0.15,    # https://electronics.stackexchange.com/questions/197151/how-to-calculate-overall-propagation-time-for-circuitry
+    'XOR'   : 0.45,    # https://electronics.stackexchange.com/questions/236925/propagation-delay-of-a-digital-logic-circuit
+    'XNOR'  : 0.45,    # https://en.wikipedia.org/wiki/XNOR_gate
+    'ANDNOT': 0.15,   # https://web.ece.ucsb.edu/Faculty/Johnson/ECE152A/handouts/L4%20-%20Propagation%20Delay,%20Circuit%20Timing%20&%20Adder%20Design.pdf
+    'ORNOT' : 0.15,   # https://vlsimaster.com/propogation-delay/
+    'NOT'   : 0.15    # https://controllerstech.com/create-1-microsecond-delay-stm32/
 }
 
 #%% Functions
@@ -141,14 +141,20 @@ def add_cell_edges(graph, driver_list, json_netlist, top_module, delay_ns=delay_
 
         for name, connections in cell_data['connections'].items():
             for net in connections:
+                
                 if name not in inputs:
+                    print("hej3")
                     continue
-
+                
                 # add edge and weigh based on the type driving cell
                 driver = driver_list[net]
+                
                 try :
+                    print("hej")
                     gate_type = json_netlist['modules'][top_module]['cells'][driver]['type']
+                    print("hej2")
                     gate_type = gate_type.strip('$_')
+                    print(gate_type)
                     gate_delay = delay_ns[gate_type]
                     graph.add_edge(driver, cell_name, weight=gate_delay)
                     #graph[driver][cell_name]['weight'] = gate_delay   
@@ -224,7 +230,7 @@ def save_summary(longest_path, gates, delay):
     """
     with open('summary/path.txt', 'w') as f:
         f.write(f"Number of Gates:\t{gates}\n")
-        f.write(f"Total Delay:\t {delay} ns\n")
+        f.write(f"Total Delay:\t{delay} ns\n")
         f.write(f"Longest path:\n")
         for node in longest_path:
             f.write(f"\t{node}\n")

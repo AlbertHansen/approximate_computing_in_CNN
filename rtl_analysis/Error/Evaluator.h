@@ -13,7 +13,7 @@ struct Metrics {
     double mse;         //Mean square error
     double mae;         //Mean Absolute error
     double wcd;         //Worst-case error
-    double arem;        //Average relative error magnitude
+    double mre;        //Average relative error magnitude
     double er;          //ErrorRate
     double mhd;         //Mean Hamming distance
     std::vector<size_t> hd;
@@ -34,7 +34,7 @@ private:
     double calculateMSE() const;
     double calculateMAE() const;
     double calculateWCD() const;
-    double calculateAREM() const;
+    double calculateMRE() const;
     double calculateER() const;
     std::vector<size_t> calculateBitwiseHDVector() const;
     double calculateMHD() const;

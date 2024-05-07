@@ -12,8 +12,7 @@ Metrics Evaluator::calculateMetrics() const {
     metrics.diff = calculateDIFF();
     metrics.mse = calculateMSE();
     metrics.mae = calculateMAE();
-    metrics.wcd = calculateWCD();
-    metrics.arem = calculateAREM(); 
+    metrics.wcd = calculateWCD(); 
     metrics.er = calculateER(); 
     metrics.hd = calculateBitwiseHDVector();
     metrics.mhd = calculateMHD();  
@@ -61,23 +60,6 @@ double Evaluator::calculateWCD() const {
     return maxDiff;
 }
 
-double Evaluator::calculateAREM() const 
-{
-    double sum = 0.0;
-    double sumOfSquares = 0.0;
-    for (const auto& val : expected) {
-        sumOfSquares += val * val;
-    }
-    double norm = std::sqrt(sumOfSquares);
-    std::cout << "norm " << norm;
-    for (size_t i = 0; i < expected.size(); ++i) 
-    {
-        double error = static_cast<double>(std::abs(expected.at(i) - actual.at(i))) / norm;
-        sum += error;
-    }
-    return sum / expected.size();
-}
-
 double Evaluator::calculateER() const {
     size_t incorrectCount = 0;
     for (size_t i = 0; i < expected.size(); ++i) {
@@ -123,13 +105,12 @@ void Evaluator::writeMetricsToCSV(const std::string& filename, const Metrics& me
         }
 
         // Write header
-        outfile << "mse,mae,wcd,arem,er,mhd" << std::endl;
+        outfile << "mse,mae,wcd,er,mhd" << std::endl;
 
         // Write data
         outfile << metrics.mse << ","
                 << metrics.mae << ","
                 << metrics.wcd << ","
-                << metrics.arem << ","
                 << metrics.er << ","
                 << metrics.mhd << std::endl;
 
