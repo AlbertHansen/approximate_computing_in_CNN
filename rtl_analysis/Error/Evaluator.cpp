@@ -1,4 +1,10 @@
 // Evaluator.cpp
+#include <cmath>
+#include <vector>
+#include <fstream>
+#include <iostream>
+#include <sstream>
+#include <limits>
 #include "Evaluator.h"
 
 Evaluator::Evaluator(const std::vector<intmax_t>& expected, const std::vector<intmax_t>& actual)
