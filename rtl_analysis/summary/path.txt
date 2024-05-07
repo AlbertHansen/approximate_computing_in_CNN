@@ -1,30 +1,34 @@
-Number of Gates:	25
-Total Delay:	21.599999999999984 ns
+Number of Gates:	29
+Total Delay:	40.95 ns
 Longest path:
 	A
-	$abc$275$auto$blifparse.cc:371:parse_blif$410
-	$abc$275$auto$blifparse.cc:371:parse_blif$460
-	$abc$275$auto$blifparse.cc:371:parse_blif$461
-	$abc$275$auto$blifparse.cc:371:parse_blif$462
-	$abc$275$auto$blifparse.cc:371:parse_blif$463
-	$abc$275$auto$blifparse.cc:371:parse_blif$464
-	$abc$275$auto$blifparse.cc:371:parse_blif$489
-	$abc$275$auto$blifparse.cc:371:parse_blif$491
-	$abc$275$auto$blifparse.cc:371:parse_blif$514
-	$abc$275$auto$blifparse.cc:371:parse_blif$515
-	$abc$275$auto$blifparse.cc:371:parse_blif$561
-	$abc$275$auto$blifparse.cc:371:parse_blif$567
-	$abc$275$auto$blifparse.cc:371:parse_blif$599
-	$abc$275$auto$blifparse.cc:371:parse_blif$600
-	$abc$275$auto$blifparse.cc:371:parse_blif$601
-	$abc$275$auto$blifparse.cc:371:parse_blif$602
-	$abc$275$auto$blifparse.cc:371:parse_blif$603
-	$abc$275$auto$blifparse.cc:371:parse_blif$604
-	$abc$275$auto$blifparse.cc:371:parse_blif$605
-	$abc$275$auto$blifparse.cc:371:parse_blif$606
-	$abc$275$auto$blifparse.cc:371:parse_blif$607
-	$abc$275$auto$blifparse.cc:371:parse_blif$608
-	$abc$275$auto$blifparse.cc:371:parse_blif$609
-	$abc$275$auto$blifparse.cc:371:parse_blif$610
-	$abc$275$auto$blifparse.cc:371:parse_blif$613
+	$abc$371$auto$blifparse.cc:396:parse_blif$438
+	$abc$371$auto$blifparse.cc:396:parse_blif$479
+	$abc$371$auto$blifparse.cc:396:parse_blif$522
+	$abc$371$auto$blifparse.cc:396:parse_blif$567
+	$abc$371$auto$blifparse.cc:396:parse_blif$568
+	$abc$371$auto$blifparse.cc:396:parse_blif$574
+	$abc$371$auto$blifparse.cc:396:parse_blif$613
+	$abc$371$auto$blifparse.cc:396:parse_blif$615
+	$abc$371$auto$blifparse.cc:396:parse_blif$616
+	$abc$371$auto$blifparse.cc:396:parse_blif$617
+	$abc$371$auto$blifparse.cc:396:parse_blif$621
+	$abc$371$auto$blifparse.cc:396:parse_blif$622
+	$abc$371$auto$blifparse.cc:396:parse_blif$623
+	$abc$371$auto$blifparse.cc:396:parse_blif$627
+	$abc$371$auto$blifparse.cc:396:parse_blif$628
+	$abc$371$auto$blifparse.cc:396:parse_blif$629
+	$abc$371$auto$blifparse.cc:396:parse_blif$633
+	$abc$371$auto$blifparse.cc:396:parse_blif$634
+	$abc$371$auto$blifparse.cc:396:parse_blif$635
+	$abc$371$auto$blifparse.cc:396:parse_blif$637
+	$abc$371$auto$blifparse.cc:396:parse_blif$643
+	$abc$371$auto$blifparse.cc:396:parse_blif$669
+	$abc$371$auto$blifparse.cc:396:parse_blif$675
+	$abc$371$auto$blifparse.cc:396:parse_blif$694
+	$abc$371$auto$blifparse.cc:396:parse_blif$710
+	$abc$371$auto$blifparse.cc:396:parse_blif$713
+	$abc$371$auto$blifparse.cc:396:parse_blif$722
+	$abc$371$auto$blifparse.cc:396:parse_blif$723
+	$abc$371$auto$blifparse.cc:396:parse_blif$728
 	O
