@@ -111,13 +111,22 @@ def add_port_edges(graph, driver_list, json_netlist, top_module):
         None
     """
     for port_name, port_data in json_netlist['modules'][top_module]['ports'].items():
-        
         if port_data['direction'] != 'output':
             continue
 
         for net in port_data['bits']:
             if net in driver_list:
-                graph.add_edge(driver_list[net], port_name)
+                driver = driver_list[net]
+                try:
+                    gate_type = json_netlist['modules'][top_module]['cells'][driver]['type']
+                    gate_type = gate_type.strip('$_')
+                    gate_delay = delay_ns[gate_type]
+                    graph.add_edge(driver_list[net], port_name, weight=gate_delay)
+                except:
+                    print(f"Warning: No gate delay specified for {driver}. Using default value of 0.")
+                    graph.add_edge(driver_list[net], port_name, weight=0)
+
+                
 
 # add edges, cells
 def add_cell_edges(graph, driver_list, json_netlist, top_module, delay_ns=delay_ns):
@@ -141,23 +150,20 @@ def add_cell_edges(graph, driver_list, json_netlist, top_module, delay_ns=delay_
 
         for name, connections in cell_data['connections'].items():
             for net in connections:
-                
                 if name not in inputs:
-                    print("hej3")
                     continue
                 
                 # add edge and weigh based on the type driving cell
                 driver = driver_list[net]
                 
                 try :
-                    print("hej")
                     gate_type = json_netlist['modules'][top_module]['cells'][driver]['type']
-                    print("hej2")
                     gate_type = gate_type.strip('$_')
-                    print(gate_type)
                     gate_delay = delay_ns[gate_type]
+
                     graph.add_edge(driver, cell_name, weight=gate_delay)
                     #graph[driver][cell_name]['weight'] = gate_delay   
+
                 except KeyError:
                     print(f"Warning: No gate delay specified for {driver}. Using default value of 0.")
                     graph.add_edge(driver, cell_name, weight=0)
@@ -259,8 +265,7 @@ def main():
 
     # Check for cycles
     check_acyclic(G)
-
-
+    
     path, gates, delay = longest_path(G)
     save_summary(path, gates, delay)
 
@@ -275,8 +280,8 @@ def main():
     # Draw the graph
     layout = graphviz_layout(G, prog='dot')
     nx.draw(G, layout, node_color=color_map, arrows=True, node_size=100)
-    plt.show()
     plt.savefig('figures/graph.pdf', bbox_inches='tight')
+    plt.show()
     plt.close()
 
 if __name__ == '__main__':

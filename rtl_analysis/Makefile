@@ -53,4 +53,5 @@ approximate_tripod:
 	SUPPRESS_FIGURES=$(SUPPRESS_FIGURES) \
 	python3 ./Error/approximate_tripod.py
 
-analysis: netlist svg error_file report_gates report_paths report_error histogram
+# analysis: netlist svg error_file report_gates report_paths report_error histogram
+analysis: netlist svg report_gates report_paths 
