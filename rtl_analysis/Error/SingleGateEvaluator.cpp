@@ -17,7 +17,7 @@ void printBits(T value)
 
 typedef int16_t (*BinaryOperation)(const int8_t, const int8_t);
 /*********** Approx multiplier ***************/
-int16_t mul8s_1KV9(const int8_t B, const int8_t A);
+int16_t mul8s_1L12(const int8_t B, const int8_t A);
 
 /*********** Accurate multiplier ***********/
 int16_t add(const int8_t B, const int8_t A) {
@@ -88,8 +88,9 @@ void writeVectorToCSV(const std::string& filename, const std::vector<intmax_t>& 
 }
 
 int main() {
+    
     std::vector<intmax_t> Expected = testAllCombinationsAccurate(add);
-    std::vector<intmax_t> Actual = testAllCombinations(mul8s_1KV9);
+    std::vector<intmax_t> Actual = testAllCombinations(mul8s_1L12);
     
     writeVectorToCSV("./Error/Error_files/Expected.csv",Expected);
     writeVectorToCSV("./Error/Error_files/Actual.csv",Actual);

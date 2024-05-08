@@ -6,7 +6,7 @@
 class Multiplier {
 public:
     // Multiply two numbers
-    std::intmax_t multiply(intmax_t a, intmax_t b) {
+    int16_t multiply(int8_t a, int8_t b) {
         return a * b;
     }
 
