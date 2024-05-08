@@ -50,12 +50,13 @@ freq = value_counts / len(diff)
 
 # Create the histogram
 fig = plt.figure(layout='constrained', figsize=(17.01*cm, 8*cm))
-plt.bar(unique_values,freq)
+#plt.bar(unique_values,freq)
+plt.hist(diff,bins=100,density=True)
 plt.xlabel("Error [.]")
 plt.ylabel("Probability [.]")
 plt.grid(True)
 # plt.xlim(-2, 2)
-plt.ylim(0, 1)
+#plt.ylim(0, 1)
 
 # Save the plot as PDF
 plt.savefig("./figures/histogram.pdf", dpi=150)
