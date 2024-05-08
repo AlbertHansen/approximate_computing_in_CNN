@@ -1,12 +1,13 @@
-VLOG_FILE_NAME=./add8se_8R9.v
-C_FILE_NAME=./mul8s_1KV9.c
-TOP_MODULE=add8se_8R9
+VLOG_FILE_NAME=./mul8s_1KV9/mul8s_1KV9.v
+C_FILE_NAME=./mul8s_1KV9/mul8s_1KV9.c
+TOP_MODULE=mul8s_1KV9
+METRICS=MSE,delay,area_delay
 
 #Map to the specified list of gate types. Supported gates types are:
 #           AND, NAND, OR, NOR, XOR, XNOR, ANDNOT, ORNOT, MUX,
 #           NMUX, AOI3, OAI3, AOI4, OAI4. (NOT will always added)
-#GATES=AND,NAND,XOR
-GATES=NAND
+GATES=gates
+#GATES=NAND
 
 SUPPRESS_FIGURES=1
 
@@ -44,7 +45,13 @@ report_error:
 	./Error/error_executable
 	
 histogram:
+	SUPPRESS_FIGURES=$(SUPPRESS_FIGURES) \
 	python3 ./Error/make_histogram.py
 
+approximate_tripod:
+	METRICS=$(METRICS) \
+	SUPPRESS_FIGURES=$(SUPPRESS_FIGURES) \
+	python3 ./Error/approximate_tripod.py
 
-analysis: netlist svg report_gates report_paths
+# analysis: netlist svg error_file report_gates report_paths report_error histogram
+analysis: netlist svg report_gates report_paths 
