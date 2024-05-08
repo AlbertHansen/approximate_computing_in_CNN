@@ -1,6 +1,6 @@
-VLOG_FILE_NAME=./mul8s_1KV9/mul8s_1KV9.v
-C_FILE_NAME=./mul8s_1KV9/mul8s_1KV9.c
-TOP_MODULE=mul8s_1KV9
+VLOG_FILE_NAME=./mul8s_1L12/mul8s_1L12.v
+C_FILE_NAME=./mul8s_1L12/mul8s_1L12.c
+TOP_MODULE=mul8s_1L12
 METRICS=MSE,delay,area_delay
 
 #Map to the specified list of gate types. Supported gates types are:
@@ -53,5 +53,5 @@ approximate_tripod:
 	SUPPRESS_FIGURES=$(SUPPRESS_FIGURES) \
 	python3 ./Error/approximate_tripod.py
 
-# analysis: netlist svg error_file report_gates report_paths report_error histogram
-analysis: netlist svg report_gates report_paths 
+analysis: netlist svg error_file report_gates report_paths report_error histogram
+#analysis: netlist svg report_gates report_paths 
