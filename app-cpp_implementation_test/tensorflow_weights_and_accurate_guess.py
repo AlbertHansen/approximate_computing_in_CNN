@@ -1,15 +1,8 @@
 # %%
 # Import packages
-import numpy as np
-import pandas as pd
 import tensorflow as tf
 import tensorflow_datasets as tfds
-import subprocess
-import csv
-import tqdm
-import time
-
-from contextlib import redirect_stdout
+from print_versions import get_versions
 from tensorflow.keras import datasets, layers, models
 
 # import custom functions
@@ -52,63 +45,19 @@ model = utils.model_manipulation.compile_model(model)
 model.build((None, 16, 16, 1))
 # model.summary()
 
-#%%
-def compare_max_indices(file1, file2):
-    df1 = pd.read_csv(file1, header=None)
-    df2 = pd.read_csv(file2, header=None)
+#%% Main
+utils.my_csv.weights_to_csv(model, 'forward_pass_test')
 
-    if df1.shape != df2.shape:
-        print('Shapes do not match')
-        return
-    
-    max_indices_df1 = df1.idxmax(axis=1)
-    max_indices_df2 = df2.idxmax(axis=1)
+for i, batch in enumerate(train):
+    if i > 4:
+        break
 
-    matches = sum(max_indices_df1 == max_indices_df2)
+    images, labels = batch
+    utils.my_csv.tensor_to_csv(images, f'forward_pass_test/batch_{i}')
+    predictions = model(images)
+    utils.my_csv.tensor_to_csv(predictions, f'forward_pass_test/predictions_{i}')
 
-    print(f'Matches: {matches}/{df1.shape[0]}')
-
-    return matches/df1.shape[0]
-
-
-def evaluate_approx():
-    subprocess.check_call(['cp forward_pass_test/train_images.csv forward_pass_test/batch.csv'], shell=True)
-    subprocess.check_call(['/home/ubuntu/approximate_computing_in_CNN/small-scale-network/AC_FF'])
-
-    acc = compare_max_indices('forward_pass_test/train_labels.csv', 'forward_pass_test/output.csv')
-    print(f"From within evaluate_approx: acc = {acc}")
-
-    # Call c++ network
-    subprocess.check_call(['cp forward_pass_test/test_images.csv forward_pass_test/batch.csv'], shell=True)
-    subprocess.check_call(['/home/ubuntu/approximate_computing_in_CNN/small-scale-network/AC_FF'])
-
-    acc_val = compare_max_indices('forward_pass_test/test_labels.csv', 'forward_pass_test/output.csv')
-    print(f"From within evaluate_approx: acc_val = {acc_val}")
-    
-    return acc, acc_val
-
-#evaluate_approx()
-#%%
-with open('runs/ste_training_lowbit/45_exact_5_approx.csv', 'w') as file:
-    writer = csv.writer(file)
-    writer.writerow(['accuracy', 'accuracy_val', 'time'])
-
-    # 45 training epochs with exact training
-    for i in range(45):
-        print(f"----- Epoch {i} -----")
-        start_epoch = time.time()
-        utils.train.epoch(model, train)
-        acc, acc_val = evaluate_approx()
-        epoch_time = time.time() - start_epoch
-        print(f'Accuracy: {acc}, Accuracy_val: {acc_val}, Time: {epoch_time}')
-        writer.writerow([acc, acc_val, epoch_time])
-
-    # 5 training epochs with approximate training (STE)
-    for i in range(5):
-        print(f"----- Epoch {i+45} -----")
-        start_epoch = time.time()
-        utils.train.epoch_approx(model, train)
-        acc, acc_val = evaluate_approx()
-        epoch_time = time.time() - start_epoch
-        print(f'Accuracy: {acc}, Accuracy_val: {acc_val}, Time: {epoch_time}')
-        writer.writerow([acc, acc_val, epoch_time])
+# %% Packages and Versions
+versions = get_versions(locals())
+for package, version in versions.items():
+    print(f'{package}: {version}')
