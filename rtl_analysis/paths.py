@@ -15,15 +15,15 @@ if 'SUPPRESS_FIGURES' in os.environ:
 #%%
 # based on edge-copilot
 delay_ns = {
-    'AND'   : 20,   # https://web.ece.ucsb.edu/Faculty/Johnson/ECE152A/handouts/L4%20-%20Propagation%20Delay,%20Circuit%20Timing%20&%20Adder%20Design.pdf
-    'NAND'  : 18,   # https://electronics.stackexchange.com/questions/197151/how-to-calculate-overall-propagation-time-for-circuitry
-    'OR'    : 12,   # https://vlsimaster.com/propogation-delay/
-    'NOR'   : 4,    # https://electronics.stackexchange.com/questions/197151/how-to-calculate-overall-propagation-time-for-circuitry
-    'XOR'   : 4,    # https://electronics.stackexchange.com/questions/236925/propagation-delay-of-a-digital-logic-circuit
-    'XNOR'  : 4,    # https://en.wikipedia.org/wiki/XNOR_gate
-    'ANDNOT': 28,   # https://web.ece.ucsb.edu/Faculty/Johnson/ECE152A/handouts/L4%20-%20Propagation%20Delay,%20Circuit%20Timing%20&%20Adder%20Design.pdf
-    'ORNOT' : 20,   # https://vlsimaster.com/propogation-delay/
-    'NOT'   : 5    # https://controllerstech.com/create-1-microsecond-delay-stm32/
+    'AND'   : 3,   # https://web.ece.ucsb.edu/Faculty/Johnson/ECE152A/handouts/L4%20-%20Propagation%20Delay,%20Circuit%20Timing%20&%20Adder%20Design.pdf
+    'NAND'  : 0.15,   # https://electronics.stackexchange.com/questions/197151/how-to-calculate-overall-propagation-time-for-circuitry
+    'OR'    : 0.3,   # https://vlsimaster.com/propogation-delay/
+    'NOR'   : 0.15,    # https://electronics.stackexchange.com/questions/197151/how-to-calculate-overall-propagation-time-for-circuitry
+    'XOR'   : 0.45,    # https://electronics.stackexchange.com/questions/236925/propagation-delay-of-a-digital-logic-circuit
+    'XNOR'  : 0.45,    # https://en.wikipedia.org/wiki/XNOR_gate
+    'ANDNOT': 0.15,   # https://web.ece.ucsb.edu/Faculty/Johnson/ECE152A/handouts/L4%20-%20Propagation%20Delay,%20Circuit%20Timing%20&%20Adder%20Design.pdf
+    'ORNOT' : 0.15,   # https://vlsimaster.com/propogation-delay/
+    'NOT'   : 0.15    # https://controllerstech.com/create-1-microsecond-delay-stm32/
 }
 
 #%% Functions
@@ -111,13 +111,22 @@ def add_port_edges(graph, driver_list, json_netlist, top_module):
         None
     """
     for port_name, port_data in json_netlist['modules'][top_module]['ports'].items():
-        
         if port_data['direction'] != 'output':
             continue
 
         for net in port_data['bits']:
             if net in driver_list:
-                graph.add_edge(driver_list[net], port_name)
+                driver = driver_list[net]
+                try:
+                    gate_type = json_netlist['modules'][top_module]['cells'][driver]['type']
+                    gate_type = gate_type.strip('$_')
+                    gate_delay = delay_ns[gate_type]
+                    graph.add_edge(driver_list[net], port_name, weight=gate_delay)
+                except:
+                    print(f"Warning: No gate delay specified for {driver}. Using default value of 0.")
+                    graph.add_edge(driver_list[net], port_name, weight=0)
+
+                
 
 # add edges, cells
 def add_cell_edges(graph, driver_list, json_netlist, top_module, delay_ns=delay_ns):
@@ -143,15 +152,18 @@ def add_cell_edges(graph, driver_list, json_netlist, top_module, delay_ns=delay_
             for net in connections:
                 if name not in inputs:
                     continue
-
+                
                 # add edge and weigh based on the type driving cell
                 driver = driver_list[net]
+                
                 try :
                     gate_type = json_netlist['modules'][top_module]['cells'][driver]['type']
                     gate_type = gate_type.strip('$_')
                     gate_delay = delay_ns[gate_type]
+
                     graph.add_edge(driver, cell_name, weight=gate_delay)
                     #graph[driver][cell_name]['weight'] = gate_delay   
+
                 except KeyError:
                     print(f"Warning: No gate delay specified for {driver}. Using default value of 0.")
                     graph.add_edge(driver, cell_name, weight=0)
@@ -224,7 +236,7 @@ def save_summary(longest_path, gates, delay):
     """
     with open('summary/path.txt', 'w') as f:
         f.write(f"Number of Gates:\t{gates}\n")
-        f.write(f"Total Delay:\t {delay} ns\n")
+        f.write(f"Total Delay:\t{delay} ns\n")
         f.write(f"Longest path:\n")
         for node in longest_path:
             f.write(f"\t{node}\n")
@@ -253,8 +265,7 @@ def main():
 
     # Check for cycles
     check_acyclic(G)
-
-
+    
     path, gates, delay = longest_path(G)
     save_summary(path, gates, delay)
 
@@ -269,8 +280,8 @@ def main():
     # Draw the graph
     layout = graphviz_layout(G, prog='dot')
     nx.draw(G, layout, node_color=color_map, arrows=True, node_size=100)
-    plt.show()
     plt.savefig('figures/graph.pdf', bbox_inches='tight')
+    plt.show()
     plt.close()
 
 if __name__ == '__main__':

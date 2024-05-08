@@ -1,0 +1,2 @@
+AND,NAND,XOR,XNOR,ORNOT,ANDNOT,OR,NOR,gatecount,transistorcount
+92,128,18,50,12,11,36,10,357,2184
