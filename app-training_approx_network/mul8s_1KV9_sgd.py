@@ -50,7 +50,7 @@ model = models.Sequential([
 
 # model = utils.model_manipulation.compile_model(model)
 models = model.compile(
-        optimizer=tf.keras.optimizers.SGD(learning_rate=0.0005, momentum=0),
+        optimizer=tf.keras.optimizers.SGD(learning_rate=0.005, momentum=0),
         loss=tf.keras.losses.BinaryFocalCrossentropy(),
         metrics=['accuracy']
     )
