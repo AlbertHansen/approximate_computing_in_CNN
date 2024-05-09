@@ -103,7 +103,7 @@ for i, batch in enumerate(train):
         elif j < len(model.layers)-3:
             y_predicted = layer(y_predicted)
 
-        utils.my_csv.tensor_to_csv(y_predicted, f'y_predicted_{i}')
+        utils.my_csv.tensor_to_csv(y_predicted, f'y_predicted_{j}')
 
     end = time.time()
     print(f"Exact model: {end-start}")
@@ -118,7 +118,7 @@ for i, batch in enumerate(train):
         elif j < len(model_approx.layers)-3:
             y_approximated = layer(y_approximated)
 
-        utils.my_csv.tensor_to_csv(y_approximated, f'y_approximated_{i}')
+        utils.my_csv.tensor_to_csv(y_approximated, f'y_approximated_{j}')
 
     end = time.time()
     print(f"Approximated model: {end-start}")
