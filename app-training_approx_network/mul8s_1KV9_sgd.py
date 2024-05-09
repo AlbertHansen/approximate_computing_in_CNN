@@ -48,9 +48,16 @@ model = models.Sequential([
 ])
 
 
-model = utils.model_manipulation.compile_model(model)
+# model = utils.model_manipulation.compile_model(model)
+models = model.compile(
+        optimizer='sgd',
+        loss=tf.keras.losses.BinaryFocalCrossentropy(),
+        metrics=['accuracy']
+    )
+
 model.build((None, 16, 16, 1))
 # model.summary()
+
 
 #%%
 def compare_max_indices(file1, file2):
@@ -72,56 +79,36 @@ def compare_max_indices(file1, file2):
 
 
 def evaluate_approx():
-    subprocess.check_call(['cp forward_pass_test/train_images.csv forward_pass_test/batch.csv'], shell=True)
-    subprocess.check_call(['/home/ubuntu/approximate_computing_in_CNN/small-scale-network/AC_FF'])
+    subprocess.check_call(['cp weights_0/train_images.csv weights_0/batch.csv'], shell=True)
+    subprocess.check_call(['/home/ubuntu/approximate_computing_in_CNN/small-scale-network/AC_FF_0'])
 
-    acc = compare_max_indices('forward_pass_test/train_labels.csv', 'forward_pass_test/output.csv')
+    acc = compare_max_indices('weights_0/train_labels.csv', 'weights_0/output.csv')
     print(f"From within evaluate_approx: acc = {acc}")
 
     # Call c++ network
-    subprocess.check_call(['cp forward_pass_test/test_images.csv forward_pass_test/batch.csv'], shell=True)
-    subprocess.check_call(['/home/ubuntu/approximate_computing_in_CNN/small-scale-network/AC_FF'])
+    subprocess.check_call(['cp weights_0/test_images.csv weights_0/batch.csv'], shell=True)
+    subprocess.check_call(['/home/ubuntu/approximate_computing_in_CNN/small-scale-network/AC_FF_0'])
 
-    acc_val = compare_max_indices('forward_pass_test/test_labels.csv', 'forward_pass_test/output.csv')
+    acc_val = compare_max_indices('weights_0/test_labels.csv', 'weights_0/output.csv')
     print(f"From within evaluate_approx: acc_val = {acc_val}")
     
     return acc, acc_val
 
 #evaluate_approx()
 #%%
-with open('runs/mul8s_1KV9/45_exact_5_approx.csv', 'w') as file, open('runs/mul8s_1KV9/tensorflow_model.csv', 'w') as tensorflow_file:
+with open('mul8s_1KV9_sgd.csv', 'w') as file:
     writer = csv.writer(file)
-    tensorflow_writer = csv.writer(tensorflow_file)
 
     writer.writerow(['accuracy', 'accuracy_val', 'time'])
-    writer.writerow(['accuracy', 'accuracy_val'])
-
-    # 45 training epochs with exact training
-    for i in range(45):
-        print(f"----- Epoch {i} -----")
-        start_epoch = time.time()
-
-        utils.train.epoch(model, train)
-        acc = utils.train.evaluate_model(model, train)
-        acc_val = utils.train.evaluate_model(model, test)
-        tensorflow_writer.writerow([acc, acc_val])
-
-        acc, acc_val = evaluate_approx()
-        epoch_time = time.time() - start_epoch
-        print(f'Accuracy: {acc}, Accuracy_val: {acc_val}, Time: {epoch_time}')
-        writer.writerow([acc, acc_val, epoch_time])
 
     # 5 training epochs with approximate training (STE)
-    for i in range(5):
-        print(f"----- Epoch {i+45} -----")
+    for i in range(1):
+        print(f"----- Epoch {i} -----")
         start_epoch = time.time()
-
-        utils.train.epoch_approx(model, train)
-        acc = utils.train.evaluate_model(model, train)
-        acc_val = utils.train.evaluate_model(model, test)
-        tensorflow_writer.writerow([acc, acc_val])
         
+        utils.train_0.epoch_approx(model, train)
         acc, acc_val = evaluate_approx()
         epoch_time = time.time() - start_epoch
         print(f'Accuracy: {acc}, Accuracy_val: {acc_val}, Time: {epoch_time}')
         writer.writerow([acc, acc_val, epoch_time])
+# %%
