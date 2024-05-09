@@ -62,12 +62,12 @@ def iteration_approx(model, batch):
     images, labels = batch
 
     # save batch and weights
-    my_csv.tensor_to_csv(images, 'weights_2/batch')
-    my_csv.weights_to_csv(model, 'weights_2')
+    my_csv.tensor_to_csv(images, 'weights2/batch')
+    my_csv.weights_to_csv(model, 'weights2')
 
     # Call c++ network
-    subprocess.check_call(['/home/ubuntu/approximate_computing_in_CNN/small-scale-network/AC_FF_2'])
-    labels_approximated = my_csv.csv_to_tensor('weights_2/output.csv')
+    subprocess.check_call(['/home/ubuntu/approximate_computing_in_CNN/app-training_approx_network/AC_FF_2'])
+    labels_approximated = my_csv.csv_to_tensor('weights2/output.csv')
 
     # Use GradientTape() for auto differentiation, FORWARD PASS(ES)
     with tf.GradientTape() as tape:     # OBS! tape will not be destroyed when exiting this scope
@@ -100,7 +100,7 @@ def iteration(model, batch):
     images, labels = batch
 
     # Save weights, for approx model evaluation
-    my_csv.weights_to_csv(model, 'weights_2')
+    my_csv.weights_to_csv(model, 'weights2')
 
     # Use GradientTape() for auto differentiation, FORWARD PASS(ES)
     with tf.GradientTape() as tape:     # OBS! tape will not be destroyed when exiting this scope

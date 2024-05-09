@@ -72,17 +72,17 @@ def compare_max_indices(file1, file2):
 
 
 def evaluate_approx():
-    subprocess.check_call(['cp weighhts_2/train_images.csv weighhts_2/batch.csv'], shell=True)
-    subprocess.check_call(['/home/ubuntu/approximate_computing_in_CNN/small-scale-network/AC_FF_2'])
+    subprocess.check_call(['cp weights2/train_images.csv weights2/batch.csv'], shell=True)
+    subprocess.check_call(['/home/ubuntu/approximate_computing_in_CNN/app-training_approx_network/AC_FF_2'])
 
-    acc = compare_max_indices('weighhts_2/train_labels.csv', 'weighhts_2/output.csv')
+    acc = compare_max_indices('weights2/train_labels.csv', 'weights2/output.csv')
     print(f"From within evaluate_approx: acc = {acc}")
 
     # Call c++ network
-    subprocess.check_call(['cp weighhts_2/test_images.csv weighhts_2/batch.csv'], shell=True)
-    subprocess.check_call(['/home/ubuntu/approximate_computing_in_CNN/small-scale-network/AC_FF_2'])
+    subprocess.check_call(['cp weights2/test_images.csv weights2/batch.csv'], shell=True)
+    subprocess.check_call(['/home/ubuntu/approximate_computing_in_CNN/app-training_approx_network/AC_FF_2'])
 
-    acc_val = compare_max_indices('weighhts_2/test_labels.csv', 'weighhts_2/output.csv')
+    acc_val = compare_max_indices('weights2/test_labels.csv', 'weights2/output.csv')
     print(f"From within evaluate_approx: acc_val = {acc_val}")
     
     return acc, acc_val
@@ -95,7 +95,7 @@ with open('mul8s_1KV9_wo_pre.csv', 'w') as file:
     writer.writerow(['accuracy', 'accuracy_val', 'time'])
 
     # 5 training epochs with approximate training (STE)
-    for i in range(15):
+    for i in range(1):
         print(f"----- Epoch {i} -----")
         start_epoch = time.time()
         

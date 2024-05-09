@@ -50,7 +50,7 @@ model = models.Sequential([
 
 # model = utils.model_manipulation.compile_model(model)
 models = model.compile(
-        optimizer=tf.keras.optimizers.SGD(learning_rate=0.005, momentum=0),
+        optimizer=tf.keras.optimizers.SGD(learning_rate=0.00005, momentum=0.0),
         loss=tf.keras.losses.BinaryFocalCrossentropy(),
         metrics=['accuracy']
     )
@@ -81,17 +81,17 @@ def compare_max_indices(file1, file2):
 
 
 def evaluate_approx():
-    subprocess.check_call(['cp weights_0/train_images.csv weights_0/batch.csv'], shell=True)
-    subprocess.check_call(['/home/ubuntu/approximate_computing_in_CNN/small-scale-network/AC_FF_0'])
+    subprocess.check_call(['cp weights0/train_images.csv weights0/batch.csv'], shell=True)
+    subprocess.check_call(['//home/ubuntu/approximate_computing_in_CNN/app-training_approx_network/AC_FF_0'])
 
-    acc = compare_max_indices('weights_0/train_labels.csv', 'weights_0/output.csv')
+    acc = compare_max_indices('weights0/train_labels.csv', 'weights0/output.csv')
     print(f"From within evaluate_approx: acc = {acc}")
 
     # Call c++ network
-    subprocess.check_call(['cp weights_0/test_images.csv weights_0/batch.csv'], shell=True)
-    subprocess.check_call(['/home/ubuntu/approximate_computing_in_CNN/small-scale-network/AC_FF_0'])
+    subprocess.check_call(['cp weights0/test_images.csv weights0/batch.csv'], shell=True)
+    subprocess.check_call(['/home/ubuntu/approximate_computing_in_CNN/app-training_approx_network/AC_FF_0'])
 
-    acc_val = compare_max_indices('weights_0/test_labels.csv', 'weights_0/output.csv')
+    acc_val = compare_max_indices('weights0/test_labels.csv', 'weights0/output.csv')
     print(f"From within evaluate_approx: acc_val = {acc_val}")
     
     return acc, acc_val
