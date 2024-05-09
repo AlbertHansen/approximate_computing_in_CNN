@@ -54,6 +54,7 @@ def conv2d_manual(inputs, kernel):
     output = np.zeros((inputs.shape[0], inputs.shape[1] - kernel_height + 1, inputs.shape[2] - kernel_width + 1, kernel.shape[-1]), dtype=np.float32)
 
     # Perform the convolution
+    '''
     with Pool() as p:
         results = p.map(worker, [(i, inputs, kernel) for i in range(inputs.shape[0])])
 
@@ -62,7 +63,6 @@ def conv2d_manual(inputs, kernel):
     '''
     # output = test.worker(inputs, kernel)
     output = conv2d(inputs, kernel)
-    '''
 
     return output
 
