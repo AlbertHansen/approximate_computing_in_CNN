@@ -89,13 +89,15 @@ def evaluate_approx():
 
 #evaluate_approx()
 #%%
-with open('mul8s_1KV9_sgd.csv', 'w') as file:
+utils.my_csv.csv_to_weights(model, 'tensorflow_model_weights')
+
+with open('mul8s_1KV9_w_pre.csv', 'w') as file:
     writer = csv.writer(file)
 
     writer.writerow(['accuracy', 'accuracy_val', 'time'])
 
     # 5 training epochs with approximate training (STE)
-    for i in range(1):
+    for i in range(15):
         print(f"----- Epoch {i} -----")
         start_epoch = time.time()
         
