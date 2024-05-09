@@ -50,13 +50,15 @@ model = models.Sequential([
 
 # model = utils.model_manipulation.compile_model(model)
 models = model.compile(
-        optimizer='sgd',
+        optimizer=tf.keras.optimizers.SGD(learning_rate=0.0005, momentum=0),
         loss=tf.keras.losses.BinaryFocalCrossentropy(),
         metrics=['accuracy']
     )
 
 model.build((None, 16, 16, 1))
 # model.summary()
+
+
 
 
 #%%
@@ -96,6 +98,9 @@ def evaluate_approx():
 
 #evaluate_approx()
 #%%
+
+utils.my_csv.csv_to_weights(model, 'tensorflow_model_weights')
+
 with open('mul8s_1KV9_sgd.csv', 'w') as file:
     writer = csv.writer(file)
 
