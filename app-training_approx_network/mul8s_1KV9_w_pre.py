@@ -3,7 +3,7 @@
 import numpy as np
 import pandas as pd
 import tensorflow as tf
-# import tensorflow_datasets as tfds
+import tensorflow_datasets as tfds
 import subprocess
 import csv
 import tqdm
@@ -28,7 +28,7 @@ print(label_names[0:num_classes])
 # import local datasets and preprocess them
 train_path = '/home/ubuntu/tensorflow_datasets/cifar100_grey_16x16_LANCZOS3/train'
 test_path =  '/home/ubuntu/tensorflow_datasets/cifar100_grey_16x16_LANCZOS3/test'
-# train, test = utils.dataset_manipulation.get_datasets(train_path, test_path, classes_to_keep)
+train, test = utils.dataset_manipulation.get_datasets(train_path, test_path, classes_to_keep)
 
 #%% Model
 class ZeroBias(tf.keras.constraints.Constraint):
@@ -52,8 +52,6 @@ model = utils.model_manipulation.compile_model(model)
 model.build((None, 16, 16, 1))
 # model.summary()
 
-utils.my_csv.weights_to_csv(model, 'weights_0')
-
 #%%
 def compare_max_indices(file1, file2):
     df1 = pd.read_csv(file1, header=None)
@@ -74,56 +72,36 @@ def compare_max_indices(file1, file2):
 
 
 def evaluate_approx():
-    subprocess.check_call(['cp forward_pass_test/train_images.csv forward_pass_test/batch.csv'], shell=True)
-    subprocess.check_call(['/home/ubuntu/approximate_computing_in_CNN/small-scale-network/AC_FF'])
+    subprocess.check_call(['cp weighhts_1/train_images.csv weighhts_1/batch.csv'], shell=True)
+    subprocess.check_call(['/home/ubuntu/approximate_computing_in_CNN/small-scale-network/AC_FF_1'])
 
-    acc = compare_max_indices('forward_pass_test/train_labels.csv', 'forward_pass_test/output.csv')
+    acc = compare_max_indices('weighhts_1/train_labels.csv', 'weighhts_1/output.csv')
     print(f"From within evaluate_approx: acc = {acc}")
 
     # Call c++ network
-    subprocess.check_call(['cp forward_pass_test/test_images.csv forward_pass_test/batch.csv'], shell=True)
-    subprocess.check_call(['/home/ubuntu/approximate_computing_in_CNN/small-scale-network/AC_FF'])
+    subprocess.check_call(['cp weighhts_1/test_images.csv weighhts_1/batch.csv'], shell=True)
+    subprocess.check_call(['/home/ubuntu/approximate_computing_in_CNN/small-scale-network/AC_FF_1'])
 
-    acc_val = compare_max_indices('forward_pass_test/test_labels.csv', 'forward_pass_test/output.csv')
+    acc_val = compare_max_indices('weighhts_1/test_labels.csv', 'weighhts_1/output.csv')
     print(f"From within evaluate_approx: acc_val = {acc_val}")
     
     return acc, acc_val
 
 #evaluate_approx()
 #%%
-with open('runs/mul8s_1KV9/45_exact_5_approx.csv', 'w') as file, open('runs/mul8s_1KV9/tensorflow_model.csv', 'w') as tensorflow_file:
+with open('mul8s_1KV9_sgd.csv', 'w') as file:
     writer = csv.writer(file)
-    tensorflow_writer = csv.writer(tensorflow_file)
 
     writer.writerow(['accuracy', 'accuracy_val', 'time'])
-    writer.writerow(['accuracy', 'accuracy_val'])
-
-    # 45 training epochs with exact training
-    for i in range(45):
-        print(f"----- Epoch {i} -----")
-        start_epoch = time.time()
-
-        utils.train.epoch(model, train)
-        acc = utils.train.evaluate_model(model, train)
-        acc_val = utils.train.evaluate_model(model, test)
-        tensorflow_writer.writerow([acc, acc_val])
-
-        acc, acc_val = evaluate_approx()
-        epoch_time = time.time() - start_epoch
-        print(f'Accuracy: {acc}, Accuracy_val: {acc_val}, Time: {epoch_time}')
-        writer.writerow([acc, acc_val, epoch_time])
 
     # 5 training epochs with approximate training (STE)
-    for i in range(5):
-        print(f"----- Epoch {i+45} -----")
+    for i in range(1):
+        print(f"----- Epoch {i} -----")
         start_epoch = time.time()
-
-        utils.train.epoch_approx(model, train)
-        acc = utils.train.evaluate_model(model, train)
-        acc_val = utils.train.evaluate_model(model, test)
-        tensorflow_writer.writerow([acc, acc_val])
         
+        utils.train_1.epoch_approx(model, train)
         acc, acc_val = evaluate_approx()
         epoch_time = time.time() - start_epoch
         print(f'Accuracy: {acc}, Accuracy_val: {acc_val}, Time: {epoch_time}')
         writer.writerow([acc, acc_val, epoch_time])
+# %%
