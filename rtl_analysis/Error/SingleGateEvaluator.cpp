@@ -17,7 +17,7 @@ void printBits(T value)
 
 typedef uint64_t (*BinaryOperation)(const uint64_t, const uint64_t);
 /*********** Approx multiplier ***************/
-uint64_t add8se_839(const uint64_t B, const uint64_t A);
+uint64_t add16se_2UY(const uint64_t B, const uint64_t A);
 
 /*********** Accurate multiplier ***********/
 uint64_t add(const uint64_t B, const uint64_t A) {
@@ -41,37 +41,37 @@ std::vector<intmax_t> convertToSigned(const std::vector<uint64_t>& results, uint
 }
 
 std::vector<intmax_t> testAllCombinations(BinaryOperation operation) {
-    std::vector<intmax_t> results;
+    std::vector<uint64_t> results;
+    
 
-    for (int16_t signedA = -128; signedA <= -127; ++signedA) {
-        for (int16_t signedB = -128; signedB <= -127; ++signedB) {
+    for (intmax_t signedA = -3222; signedA <= 3222; ++signedA) {
+        for (intmax_t signedB = -3222; signedB <= 3222; ++signedB) {
             uint64_t A = static_cast<uint64_t>(signedA);
             uint64_t B = static_cast<uint64_t>(signedB);
-            std::cout << "A: " << A << " ";
-            //printBits(A);
-            std::cout << "B: " << B << " ";
-            //printBits(B);
+            
 
             uint64_t result = operation(B, A); // Note the order of arguments
-            //std::cout << "R: " << result << " ";
-            //printBits(result);
-            results.push_back(static_cast<intmax_t>(result));
+            results.push_back(result);
         }
     }
-    return results;
+    
+    
+    return convertToSigned(results,9);
 }
 
 std::vector<intmax_t> testAllCombinationsAccurate(BinaryOperation operation) {
+    //std::vector<uint64_t> results;
     std::vector<intmax_t> results;
 
-    for (int16_t signedA = -128; signedA <= 127; ++signedA) {
-        for (int16_t signedB = -128; signedB <= 127; ++signedB) {
-            int8_t A = static_cast<int8_t>(signedA);
-            int8_t B = static_cast<int8_t>(signedB);
-
-            intmax_t result = static_cast<intmax_t>(operation(B, A)); // Note the order of arguments
+    for (intmax_t signedA = -3222; signedA <= 3222; ++signedA) {
+        for (intmax_t signedB = -3222; signedB <= 3222; ++signedB) {
+            uint64_t A = static_cast<uint64_t>(signedA);
+            uint64_t B = static_cast<uint64_t>(signedB);
             
-            results.push_back(result);
+
+            uint64_t result = operation(B, A); // Note the order of arguments
+            
+            results.push_back((intmax_t)result);
         }
     }
     return results;
@@ -93,8 +93,8 @@ void writeVectorToCSV(const std::string& filename, const std::vector<intmax_t>& 
 
 int main() {
     
-    std::vector<intmax_t> Expected = testAllCombinations(add);
-    std::vector<intmax_t> Actual = testAllCombinations(add8se_839);
+    std::vector<intmax_t> Expected = testAllCombinationsAccurate(add);
+    std::vector<intmax_t> Actual = testAllCombinations(add);
     
     writeVectorToCSV("./Error/Error_files/Expected.csv",Expected);
     writeVectorToCSV("./Error/Error_files/Actual.csv",Actual);
