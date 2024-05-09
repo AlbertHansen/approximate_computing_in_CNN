@@ -48,8 +48,10 @@ model_approx = models.Sequential([
     layers.MaxPooling2D((2, 2)),
     Conv2D_approx.MyConv2DLayer(num_filters=40, kernel_size=(2, 2)),
     layers.Flatten(),
-    Dense_approx.MyDenseLayer(num_outputs=40),
-    Dense_approx.MyDenseLayer(num_outputs=num_classes),  # OBS!!! last layer will be changed to accommodate no of classes
+    layers.Dense(40, activation='relu', use_bias=False, kernel_regularizer=tf.keras.regularizers.l2(lambda_value)),
+    layers.Dense(num_classes, activation='relu', use_bias=False, kernel_regularizer=tf.keras.regularizers.l2(lambda_value)),  # OBS!!! last layer will be changed to accommodate no of classes
+    #Dense_approx.MyDenseLayer(num_outputs=40),
+    #Dense_approx.MyDenseLayer(num_outputs=num_classes),  # OBS!!! last layer will be changed to accommodate no of classes
 ])
 
 model = utils.model_manipulation.compile_model(model)
@@ -65,7 +67,29 @@ model_approx.set_weights(weights)
 
 #evaluate_approx()
 #%%
+'''
+for i, batch in enumerate(train):
+    if i != 0:
+        break
+    x, y = batch
 
+    start = time.time()        
+    y_predicted = model(x)
+    end = time.time()
+    print(f"Exact model: {end-start}")
+
+    utils.my_csv.tensor_to_csv(y_predicted, f'y_predicted_{i}')
+
+    start = time.time()
+    y_approximated = model_approx(x)
+    end = time.time()
+    print(f"Approximated model: {end-start}")
+
+    utils.my_csv.tensor_to_csv(y_approximated, f'y_approximated_{i}')
+   
+
+
+'''
 for i, batch in enumerate(train):
     if i != 0:
         break

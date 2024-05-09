@@ -6,7 +6,7 @@ import time
 import test
 import tensorflow.keras.backend as K
 
-''' 
+
 def worker(args):
     i, inputs, kernel = args
     output = np.zeros((inputs.shape[1] - kernel.shape[0] + 1, inputs.shape[2] - kernel.shape[1] + 1, kernel.shape[-1]))
@@ -19,14 +19,17 @@ def worker(args):
                             output[j, k, l] += inputs[i, j+m, k+n, o] * kernel[m, n, o, l]
     return output
 
-def worker(args):
-    i, inputs, kernel = args
-    inputs = np.array(inputs, dtype=np.float64)
-    kernel = np.array(K.get_value(kernel), dtype=np.float64)
-    output = test.worker(i, inputs, kernel)
+def conv2d(inputs, kernel):
+    output = np.zeros((inputs.shape[0], inputs.shape[1] - kernel.shape[0] + 1, inputs.shape[2] - kernel.shape[1] + 1, kernel.shape[-1]))
+    for i in range(inputs.shape[0]):                                # Batch
+        for j in range(inputs.shape[1] - kernel.shape[0] + 1):      # Column
+            for k in range(inputs.shape[2] - kernel.shape[1] + 1):  # Row
+                for l in range(kernel.shape[-1]):                   # Filter
+                    for m in range(kernel.shape[0]):                # filter width
+                        for n in range(kernel.shape[1]):            # filter height
+                            for o in range(inputs.shape[-1]):       # input channels
+                                output[i, j, k, l] += inputs[i, j+m, k+n, o] * kernel[m, n, o, l]
     return output
-
-    '''
 
 
 
@@ -50,7 +53,6 @@ def conv2d_manual(inputs, kernel):
     # Initialize the output tensor
     output = np.zeros((inputs.shape[0], inputs.shape[1] - kernel_height + 1, inputs.shape[2] - kernel_width + 1, kernel.shape[-1]), dtype=np.float32)
 
-    '''
     # Perform the convolution
     with Pool() as p:
         results = p.map(worker, [(i, inputs, kernel) for i in range(inputs.shape[0])])
@@ -58,7 +60,9 @@ def conv2d_manual(inputs, kernel):
     # Combine results into a single output array
     output = np.stack(results)
     '''
-    output = test.worker(inputs, kernel)
+    # output = test.worker(inputs, kernel)
+    output = conv2d(inputs, kernel)
+    '''
 
     return output
 
@@ -78,20 +82,20 @@ class MyConv2DLayer(tf.keras.layers.Layer):
                                       trainable=True)
 
     def call(self, inputs):
-        start = time.time()
+        #start = time.time()
 
         # Define the forward pass
         try: 
-            print("Using the approximation")
-            kernel = np.array(K.get_value(self.kernel), dtype=np.float64)
+            # print("Using the approximation")
+            kernel = np.array(K.get_value(self.kernel), dtype=np.float32)
             output = conv2d_manual(inputs, kernel)
         except Exception as e:
             print(f"Error in the loop: \n\t{e}")
             output = tf.nn.conv2d(inputs, self.kernel, strides=[1, 1, 1, 1], padding='VALID')
 
-        # Apply an activation function
-        output = tf.nn.relu(output)
+    
+        #output = tf.nn.relu(output)
 
-        end = time.time()
-        print(f"Time taken: {end-start}")
+        #end = time.time()
+        #print(f"Time taken: {end-start}")
         return output

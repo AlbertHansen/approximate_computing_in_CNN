@@ -89,15 +89,23 @@ def evaluate_approx():
 
 #evaluate_approx()
 #%%
-with open('runs/mul8s_1KV9/45_exact_5_approx.csv', 'w') as file:
+with open('runs/mul8s_1KV9/45_exact_5_approx.csv', 'w') as file, open('runs/mul8s_1KV9/tensorflow_model.csv', 'w') as tensorflow_file:
     writer = csv.writer(file)
+    tensorflow_writer = csv.writer(tensorflow_file)
+
     writer.writerow(['accuracy', 'accuracy_val', 'time'])
+    writer.writerow(['accuracy', 'accuracy_val'])
 
     # 45 training epochs with exact training
     for i in range(45):
         print(f"----- Epoch {i} -----")
         start_epoch = time.time()
+
         utils.train.epoch(model, train)
+        acc = utils.train.evaluate_model(model, train)
+        acc_val = utils.train.evaluate_model(model, test)
+        tensorflow_writer.writerow([acc, acc_val])
+
         acc, acc_val = evaluate_approx()
         epoch_time = time.time() - start_epoch
         print(f'Accuracy: {acc}, Accuracy_val: {acc_val}, Time: {epoch_time}')
@@ -107,7 +115,12 @@ with open('runs/mul8s_1KV9/45_exact_5_approx.csv', 'w') as file:
     for i in range(5):
         print(f"----- Epoch {i+45} -----")
         start_epoch = time.time()
+
         utils.train.epoch_approx(model, train)
+        acc = utils.train.evaluate_model(model, train)
+        acc_val = utils.train.evaluate_model(model, test)
+        tensorflow_writer.writerow([acc, acc_val])
+        
         acc, acc_val = evaluate_approx()
         epoch_time = time.time() - start_epoch
         print(f'Accuracy: {acc}, Accuracy_val: {acc_val}, Time: {epoch_time}')
