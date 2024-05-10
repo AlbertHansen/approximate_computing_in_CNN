@@ -43,18 +43,21 @@ expected = np.loadtxt("./Error/Error_files/Expected.csv", delimiter=",")
 # Calculate the difference
 diff = expected - actual
 
-# Define bin edges for histogram
-bin_edges = np.linspace(-19.5, 19.5, 80)
+# Count for bins
+unique_values, value_counts = np.unique(diff, return_counts=True)
+freq = value_counts / len(diff)
+
 
 # Create the histogram
 fig = plt.figure(layout='constrained', figsize=(17.01*cm, 8*cm))
-plt.hist(diff, bins=bin_edges, density=True)
+#plt.bar(unique_values,freq)
+plt.hist(diff,bins=150,density=True)
 plt.xlabel("Error [.]")
 plt.ylabel("Probability [.]")
 plt.grid(True)
 # plt.xlim(-2, 2)
-plt.ylim(0, 1)
+#plt.ylim(0, 1)
 
 # Save the plot as PDF
-plt.savefig("histogram.pdf", dpi=150)
+plt.savefig("./figures/histogram.pdf", dpi=150)
 plt.show()

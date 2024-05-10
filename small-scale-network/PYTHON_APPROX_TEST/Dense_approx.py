@@ -48,10 +48,10 @@ class MyDenseLayer(tf.keras.layers.Layer):
                                     trainable=True)
 
     def call(self, inputs):
-        start = time.time()
+        # start = time.time()
         # Define the forward pass
         try:
-            print("Using the approximation")
+            # print("Using the approximation")
             output = matmul(inputs, self.kernel)
         except Exception as e:
             print(f"Error in the loop: \n\t{e}")
@@ -61,8 +61,8 @@ class MyDenseLayer(tf.keras.layers.Layer):
         # output = tf.matmul(inputs, self.kernel)
         output = tf.nn.relu(output)
 
-        end = time.time()
-        print(f"Time taken: {end-start}")
+        #end = time.time()
+        #print(f"Time taken: {end-start}")
         return output
 
     

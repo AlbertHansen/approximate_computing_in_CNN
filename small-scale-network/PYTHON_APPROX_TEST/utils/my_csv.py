@@ -37,7 +37,11 @@ def tensor_to_csv(tensor, file):
                 for j in range(tensor.shape[-1]):       #
                     for k in range(tensor.shape[2]):    # columns
                         for l in range(tensor.shape[1]):# rows
-                            line.append(tensor[i, l, k, j].numpy())
+                            try:
+                                line.append(tensor[i, l, k, j].numpy())
+                            except:
+                                line.append(tensor[i, l, k, j])
+
                 writer.writerow(line)
         else:
             print(f"The tensor has an unexpected shape: {tensor.shape}.")
