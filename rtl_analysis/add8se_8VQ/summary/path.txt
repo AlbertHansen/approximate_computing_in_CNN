@@ -1,0 +1,11 @@
+Number of Gates:	6
+Total Delay:	1.65 ns
+Longest path:
+	B
+	$abc$92$auto$blifparse.cc:371:parse_blif$94
+	$abc$92$auto$blifparse.cc:371:parse_blif$95
+	$abc$92$auto$blifparse.cc:371:parse_blif$97
+	$abc$92$auto$blifparse.cc:371:parse_blif$100
+	$abc$92$auto$blifparse.cc:371:parse_blif$102
+	$abc$92$auto$blifparse.cc:371:parse_blif$106
+	O
