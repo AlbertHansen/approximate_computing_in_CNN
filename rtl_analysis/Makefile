@@ -1,6 +1,6 @@
-VLOG_FILE_NAME=./mul8s_1L12/mul8s_1L12.v
-C_FILE_NAME=./mul8s_1L12/mul8s_1L12.c
-TOP_MODULE=mul8s_1L12
+VLOG_FILE_NAME=./mul8s_1L2J/mul8s_1L2J.v
+C_FILE_NAME=./mul8s_1L2J/mul8s_1L2J.c
+TOP_MODULE=mul8s_1L2J
 METRICS=MSE,delay,area_delay
 
 #Map to the specified list of gate types. Supported gates types are:
