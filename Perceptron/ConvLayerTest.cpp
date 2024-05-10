@@ -417,5 +417,5 @@ int main()
         outputBatch.push_back(denseLayer7out);
     }
     writeMatrixToCSV("./weights1/output.csv",outputBatch);
-    //writeMatrixToCSV("./output2.csv",outputBatch);
+    //writeMatrixToCSV("./output3.csv",outputBatch);
 }
