@@ -11,6 +11,7 @@
 #include <fstream>
 #include <sstream>
 #include <string>
+#include <chrono>
 
 template <typename T>
 void printBits(T value) 
@@ -101,20 +102,23 @@ void writeMatrixToCSV(const std::string& filename, const std::vector<std::vector
 
 int main()
 {
-    
-    std::string layer0Weights = "./weights1/layer_0/weights.csv";
-    std::string layer0Biases = "./weights1/layer_0/biases.csv";
-    std::string layer2Weights = "./weights1/layer_2/weights.csv";
-    std::string layer2Biases = "./weights1/layer_2/biases.csv";
-    std::string layer4Weights = "./weights1/layer_4/weights.csv";
-    std::string layer4Biases = "./weights1/layer_4/biases.csv";
-    std::string layer6Weights = "./weights1/layer_6/weights.csv";
-    std::string layer6Biases = "./weights1/layer_6/biases.csv";
-    std::string layer7Weights = "./weights1/layer_7/weights.csv";
-    std::string layer7Biases = "./weights1/layer_7/biases.csv";
-
-    std::string inputBatches = "./weights1/batch.csv";
     /*
+    std::string layer0Weights = "./forward_pass_test/layer_0/weights.csv";
+    std::string layer0Biases = "./forward_pass_test/layer_0/biases.csv";
+    std::string layer2Weights = "./forward_pass_test/layer_2/weights.csv";
+    std::string layer2Biases = "./forward_pass_test/layer_2/biases.csv";
+    std::string layer4Weights = "./forward_pass_test/layer_4/weights.csv";
+    std::string layer4Biases = "./forward_pass_test/layer_4/biases.csv";
+    std::string layer6Weights = "./forward_pass_test/layer_6/weights.csv";
+    std::string layer6Biases = "./forward_pass_test/layer_6/biases.csv";
+    std::string layer7Weights = "./forward_pass_test/layer_7/weights.csv";
+    std::string layer7Biases = "./forward_pass_test/layer_7/biases.csv";
+
+    std::string inputBatches = "./forward_pass_test/batch.csv";
+    /*/
+    std::vector<size_t> timings;
+
+    auto startReadCSV = std::chrono::steady_clock::now();
 
     std::string layer0Weights = "./weight_increment_test_3/iteration_4/layer_0/weights.csv";
     std::string layer0Biases = "./weight_increment_test_3/iteration_4/layer_0/biases.csv";
@@ -127,7 +131,7 @@ int main()
     std::string layer7Weights = "./weight_increment_test_3/iteration_4/layer_7/weights.csv";
     std::string layer7Biases = "./weight_increment_test_3/iteration_4/layer_7/biases.csv";
 
-    std::string inputBatches = "./weight_increment_test_3/images_4.csv";*/
+    std::string inputBatches = "./weight_increment_test_3/images_4.csv";
     
 
     ReadParameters layer0(layer0Weights, layer0Biases);
@@ -135,6 +139,16 @@ int main()
     ReadParameters layer4(layer4Weights, layer4Biases);
     ReadParameters layer6(layer6Weights, layer6Biases);
     ReadParameters layer7(layer7Weights, layer7Biases);
+
+    // End time
+    auto endReadCSV = std::chrono::steady_clock::now();
+
+    // Calculate duration
+    auto durationReadCSV = std::chrono::duration_cast<std::chrono::milliseconds>(endReadCSV - startReadCSV);
+
+    // Output the duration
+    size_t ReadCSVTime= durationReadCSV.count();
+    timings.push_back(ReadCSVTime);
 
     /********************* ARCHITECTURE **************************************/
     ConvolutionalLayer conv2d(16,16,40,2,2);    //(InputSizeX, InputSizeY, NumberOfKernels, KernelSizeX, KernelSizeY)
@@ -186,13 +200,24 @@ int main()
             weightsLayer0InputiMatrix.push_back(intermediateWeightMatrix);
         }
 
+
+        auto startL0 = std::chrono::steady_clock::now();
         /******************** RUN LAYER 0 *************************************************/
         conv2d.updateFilters(weightsLayer0InputiMatrix, biasesLayer0Fixed);
         std::vector<Matrix> FMLayer0beforeRelu = conv2d.applyConvolution(singleInputFixedPointMatrix);
         
-        
-        
+        // End time
+        auto endL0 = std::chrono::steady_clock::now();
 
+        // Calculate duration
+        auto durationL0 = std::chrono::duration_cast<std::chrono::milliseconds>(endL0 - startL0);
+
+        // Output the duration
+        size_t L0Time= durationL0.count();
+        //std::cout << "layer 0 " << L0Time << std::endl;
+        timings.push_back(L0Time);
+        
+        auto startRelu0 = std::chrono::steady_clock::now();
         /************************ APPLY ReLU **********************************************************************************/
         std::vector<Matrix> FMLayer0;
         for ( int j = 0 ; j <  FMLayer0beforeRelu.size(); j++)
@@ -200,12 +225,32 @@ int main()
             FMLayer0.push_back(FMLayer0beforeRelu.at(j).applyRelu());
         }
         
-        /******************** Albert jeg skriver ud til dig her *******************************************/
+        // End time
+        auto endRelu0 = std::chrono::steady_clock::now();
+
+        // Calculate duration
+        auto durationRelu0 = std::chrono::duration_cast<std::chrono::milliseconds>(endRelu0 - startRelu0);
+
+        // Output the duration
+        size_t Relu0Time= durationRelu0.count();
+        //std::cout << "Relu 0 " << Relu0Time << std::endl;
+        timings.push_back(Relu0Time);
         
-        
+        auto startPool0 = std::chrono::steady_clock::now();
+
         /******************** MAX_POOLING_1*****************************************************/
         std::vector<Matrix> pooledFMLayer0 = max_pooling2d.applyMaxPooling(FMLayer0);
         
+        // End time
+        auto endPool0 = std::chrono::steady_clock::now();
+
+        // Calculate duration
+        auto durationPool0 = std::chrono::duration_cast<std::chrono::milliseconds>(endRelu0 - startRelu0);
+
+        // Output the duration
+        size_t Pool0Time= durationPool0.count();
+        //std::cout << "Pool 0 " << Pool0Time << std::endl;
+        timings.push_back(Pool0Time);
         
         /************************ TUNCATE FXP **********************************************************************************/
         std::vector<Matrix> FMLayer0out;
@@ -236,6 +281,10 @@ int main()
 
         //std::cout << std::endl << ParametersForLayer2.weights.size() << std::endl;
 
+
+        auto startL2 = std::chrono::steady_clock::now();
+        
+        
         for (int j = 0; j < ParametersForLayer2.weights.size(); j++)
         {
             //std::cout << j << std::endl;
@@ -251,6 +300,8 @@ int main()
                 weightsLayer2InputiMatrix.push_back(intermediateWeightMatrix);
                 
             }
+
+
             //std::cout << weightsLayer2InputiMatrix.at(j)(0,0) << " " << weightsLayer2InputiMatrix.at(j)(0,1) << " " << weightsLayer2InputiMatrix.at(j)(1,0) << " " << weightsLayer2InputiMatrix.at(j)(1,1) << std::endl;
             /******************** RUN LAYER 2 *************************************************/
             /*if (j== 0)
@@ -264,6 +315,17 @@ int main()
             FMLayer2inter.push_back(conv2d_1.applyConvolution(FMLayer0out.at(j)));
         }
         //std::cout << FMLayer2inter.at(0).at(0).numCols() << std::endl;
+
+        // End time
+        auto endL2 = std::chrono::steady_clock::now();
+
+        // Calculate duration
+        auto durationL2 = std::chrono::duration_cast<std::chrono::milliseconds>(endL2 - startL2);
+
+        // Output the duration
+        size_t L2Time= durationL2.count();
+        std::cout << "layer 2 " << L2Time << std::endl;
+        timings.push_back(L2Time);
         /************************* ADD UP ALL FM IN CHANNELS*************************************************************************/
         std::vector<Matrix> FMLayer2beforeRelu;
         for (int j = 0; j < FMLayer2inter.size(); j++)
@@ -278,6 +340,10 @@ int main()
             }
             FMLayer2beforeRelu.push_back(accumulate );
         }
+
+
+        
+
         /************************ APPLY ReLU **********************************************************************************/
         std::vector<Matrix> FMLayer2;
         for ( int j = 0 ; j <  FMLayer2beforeRelu.size(); j++)
@@ -390,9 +456,23 @@ int main()
             
             layer6weightsFixed.push_back(intermediateDenseWeights);
         }
+        auto startL6 = std::chrono::steady_clock::now();
+
         /*************************** RUN DENSE LAYER6 ********************************************************************************/
         //std::cout << "t: " << flattenedOut.at(0) << std::endl;
         std::vector<intmax_t> denseLayer6 = dense.forward(flattenedOut,layer6weightsFixed,layer6biasesFixed);
+
+        // End time
+        auto endL6 = std::chrono::steady_clock::now();
+
+        // Calculate duration
+        auto durationL6 = std::chrono::duration_cast<std::chrono::milliseconds>(endL6 - startL6);
+
+        // Output the duration
+        size_t L6Time= durationL6.count();
+        std::cout << "layer 6 " << L6Time << std::endl;
+        timings.push_back(L6Time);
+
         /************************ TUNCATE FXP **********************************************************************************/
         std::vector<intmax_t> denseLayer6out = converter3.truncateLSBs(denseLayer6,7);      
         
@@ -416,6 +496,6 @@ int main()
         //std::cout << denseLayer7out.at(1)<< std::endl;
         outputBatch.push_back(denseLayer7out);
     }
-    writeMatrixToCSV("./weights1/output.csv",outputBatch);
-    //writeMatrixToCSV("./output2.csv",outputBatch);
+    //writeMatrixToCSV("./forward_pass_test/output.csv",outputBatch);
+    writeMatrixToCSV("./output2.csv",outputBatch);
 }

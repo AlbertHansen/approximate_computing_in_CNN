@@ -8,10 +8,7 @@ ConvolutionalLayer::ConvolutionalLayer(size_t inputSizeX, size_t inputSizeY, siz
     filters.resize(sizes.numFilters);
 }
 
-void ConvolutionalLayer::setRelu(Relu<intmax_t> relu)
-{
-    this->relu = relu;
-}
+
 
 // Apply convolution using the initialized filters
 std::vector<Matrix> ConvolutionalLayer::applyConvolution(const Matrix& input) 
@@ -20,19 +17,21 @@ std::vector<Matrix> ConvolutionalLayer::applyConvolution(const Matrix& input)
     {
         throw std::invalid_argument("Input size does not match initialised size.");
     }
-    
+    Perceptron perceptron(filters.at(0),biases);
     std::vector<Matrix> output;
     for (size_t k = 0; k < sizes.numFilters; k++)
     {
         Matrix featureMap(sizes.inputSizeX - sizes.filterSizeX + 1, sizes.inputSizeY - sizes.filterSizeY + 1);
-
+        perceptron.setWeights(filters.at(k));
         for (size_t i = 0 ; i < featureMap.numCols(); i++)
         {
             for (size_t j = 0 ; j < featureMap.numRows(); j++)
             {
-                Matrix inputSubMatrix = input.extractSubMatrix(i,j,sizes.filterSizeX,sizes.filterSizeY);
-                std::vector<intmax_t> perceptronInput = inputSubMatrix.flatten();
-                Perceptron perceptron(filters.at(k),perceptronInput);
+                //Matrix inputSubMatrix = input.extractSubMatrix(i,j,sizes.filterSizeX,sizes.filterSizeY);
+                //std::vector<intmax_t> perceptronInput = inputSubMatrix.flatten();
+                std::vector<intmax_t> perceptronInput = input.extractSubMatrix(i,j,sizes.filterSizeX,sizes.filterSizeY).flatten();
+                
+                perceptron.setInputs(perceptronInput);
                 featureMap(i,j) = /*relu.ReLU(*/perceptron.compute(biases.at(k))/*)*/;
                 
             }

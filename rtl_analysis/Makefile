@@ -1,12 +1,12 @@
-VLOG_FILE_NAME=./add8se_839/add8se_839.v
-C_FILE_NAME=./add8se_839/add8se_839.c
-TOP_MODULE=add8se_839
+VLOG_FILE_NAME=./mul8s_1L2J/mul8s_1L2J.v
+C_FILE_NAME=./mul8s_1L2J/mul8s_1L2J.c
+TOP_MODULE=mul8s_1L2J
 METRICS=MSE,delay,area_delay
 
 #Map to the specified list of gate types. Supported gates types are:
 #           AND, NAND, OR, NOR, XOR, XNOR, ANDNOT, ORNOT, MUX,
 #           NMUX, AOI3, OAI3, AOI4, OAI4. (NOT will always added)
-GATES=gates
+GATES=AND,NAND,OR,NOR,XOR,XNOR,
 #GATES=NAND
 
 SUPPRESS_FIGURES=1
