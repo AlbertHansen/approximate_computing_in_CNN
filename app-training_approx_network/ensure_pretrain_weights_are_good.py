@@ -73,14 +73,14 @@ def compare_max_indices(file1, file2):
 
 def evaluate_approx():
     subprocess.check_call(['cp weights1/train_images.csv weights1/batch.csv'], shell=True)
-    subprocess.check_call(['/home/ubuntu/approximate_computing_in_CNN/app-training_approx_network/AC_FF_1'])
+    subprocess.check_call(['/home/ubuntu/approximate_computing_in_CNN/app-training_approx_network/AC_FF'])
 
     acc = compare_max_indices('weights1/train_labels.csv', 'weights1/output.csv')
     print(f"From within evaluate_approx: acc = {acc}")
 
     # Call c++ network
     subprocess.check_call(['cp weights1/test_images.csv weights1/batch.csv'], shell=True)
-    subprocess.check_call(['/home/ubuntu/approximate_computing_in_CNN/app-training_approx_network/AC_FF_1'])
+    subprocess.check_call(['/home/ubuntu/approximate_computing_in_CNN/app-training_approx_network/AC_FF'])
 
     acc_val = compare_max_indices('weights1/test_labels.csv', 'weights1/output.csv')
     print(f"From within evaluate_approx: acc_val = {acc_val}")
@@ -89,7 +89,7 @@ def evaluate_approx():
 
 #evaluate_approx()
 #%%
-utils.my_csv.csv_to_weights(model, 'tensorflow_model_weights')
+utils.my_csv.csv_to_weights(model, 'tensorflow_model_weights/tf_model_weights_250')
 
 with open('pretrain_weights_test.csv', 'w') as file:
     writer = csv.writer(file)
@@ -99,3 +99,10 @@ with open('pretrain_weights_test.csv', 'w') as file:
     print(f'Accuracy: {acc}, Accuracy_val: {acc_val}')
     writer.writerow([acc, acc_val])
 # %%
+'''
+Matches: 524/5000
+From within evaluate_approx: acc = 0.1048
+Matches: 118/1000
+From within evaluate_approx: acc_val = 0.118
+Accuracy: 0.1048, Accuracy_val: 0.118
+'''

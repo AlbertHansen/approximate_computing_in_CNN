@@ -89,7 +89,8 @@ def evaluate_approx():
 
 #evaluate_approx()
 #%%
-utils.my_csv.csv_to_weights(model, 'tensorflow_model_weights')
+subprocess.check_call(['cp -r tensorflow_model_weights/tf_model_weights_250/* weights1/'], shell=True)
+utils.my_csv.csv_to_weights(model, 'weights1')
 
 with open('mul8s_1KV9_w_pre.csv', 'w') as file:
     writer = csv.writer(file)
