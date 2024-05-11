@@ -1,7 +1,10 @@
 #include <iostream>
 #include <cstdint>
 #include <vector>
+#include <fstream>
 #include <cstdint>
+#include <string>
+#include <filesystem>
 #include "Evaluator.h"
 
 template <typename T>
@@ -19,7 +22,7 @@ typedef uint64_t (*BinaryOperation)(const uint64_t, const uint64_t);
 //typedef int16_t (*BinaryOperation)(const int8_t, const int8_t);
 
 /*********** Approx adder ***************/
-uint64_t add8se_8VQ(const uint64_t B, const uint64_t A);
+uint64_t add8se_8NH(const uint64_t B, const uint64_t A);
 
 /*********** Accurate adder ***********/
 uint64_t add(const uint64_t B, const uint64_t A) {
@@ -53,7 +56,6 @@ std::vector<intmax_t> convertToSigned(const std::vector<uint64_t>& results, uint
 std::vector<intmax_t> testAllCombinations(BinaryOperation operation) {
     //std::vector<intmax_t> results;
     std::vector<uint64_t> results;
-
     for (intmax_t signedA = -128; signedA <= 127; ++signedA) {
         for (intmax_t signedB = -128; signedB <= 127; ++signedB) {
             uint64_t A = static_cast<uint64_t>(signedA);
@@ -64,16 +66,14 @@ std::vector<intmax_t> testAllCombinations(BinaryOperation operation) {
             results.push_back(result);
             //results.push_back(static_cast<intmax_t>(operation(signedB,signedA)));
         }
+    
     }
-    
-    
     return convertToSigned(results,9);
 }
 
 std::vector<intmax_t> testAllCombinationsAccurate(BinaryOperation operation) {
     //std::vector<uint64_t> results;
     std::vector<intmax_t> results;
-
     for (intmax_t signedA = -128; signedA <= 127; ++signedA) {
         for (intmax_t signedB = -128; signedB <= 127; ++signedB) {
             uint64_t A = static_cast<uint64_t>(signedA);
@@ -100,19 +100,43 @@ void writeVectorToCSV(const std::string& filename, const std::vector<intmax_t>& 
     outfile << std::endl;
     outfile.close();
     std::cout << "Data written to " << filename << std::endl;
+}/*
+
+void writeVectorToCSV(const std::string& filename, const std::vector<intmax_t>& data) {
+    std::ofstream outfile;
+    if (std::filesystem::exists(filename)) {
+        // Append to existing file
+        outfile.open(filename, std::ios_base::app);
+        outfile << std::endl;  // Add new line if file already has data
+    } else {
+        // Create new file
+        outfile.open(filename);
+    }
+
+    // Write data to CSV
+    for (size_t i = 0; i < data.size(); ++i) {
+        outfile << data[i];
+        if (i != data.size() - 1) {
+            outfile << ",";  // Add comma if not the last element
+        }
+    }
+    outfile << std::endl;
+    outfile.close();
+    std::cout << "Data written to " << filename << std::endl;
 }
-
+*/
 int main() {
-    
-    std::vector<intmax_t> Expected = testAllCombinationsAccurate(add);
-    std::vector<intmax_t> Actual = testAllCombinations(add8se_8VQ);
-    
-    writeVectorToCSV("./Error/Error_files/Expected.csv",Expected);
-    writeVectorToCSV("./Error/Error_files/Actual.csv",Actual);
 
-    Evaluator eval_add8se_8R9(Expected,Actual);
-    Metrics mul8s_1KV9_metrics = eval_add8se_8R9.calculateMetrics();
-    eval_add8se_8R9.writeMetricsToCSV("./Error/Error_files/metrics.csv",mul8s_1KV9_metrics);    //(filename, evaluator.metrics)
+    
+        std::vector<intmax_t> Expected = testAllCombinationsAccurate(add);
+        std::vector<intmax_t> Actual = testAllCombinations(add8se_8NH);
+    
+        writeVectorToCSV("./Error/Error_files/Expected.csv",Expected);
+        writeVectorToCSV("./Error/Error_files/Actual.csv",Actual);
+
+        Evaluator eval_add8se_8R9(Expected,Actual);
+        Metrics mul8s_1KV9_metrics = eval_add8se_8R9.calculateMetrics();
+        eval_add8se_8R9.writeMetricsToCSV("./Error/Error_files/metrics.csv",mul8s_1KV9_metrics);    //(filename, evaluator.metrics)
     
 
     /* Display the results (optional)
