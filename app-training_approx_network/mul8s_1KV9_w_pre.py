@@ -98,7 +98,7 @@ with open('mul8s_1KV9_w_pre.csv', 'w') as file:
     writer.writerow(['accuracy', 'accuracy_val', 'time'])
 
     # 5 training epochs with approximate training (STE)
-    for i in range(1):
+    for i in range(15):
         print(f"----- Epoch {i} -----")
         start_epoch = time.time()
         
