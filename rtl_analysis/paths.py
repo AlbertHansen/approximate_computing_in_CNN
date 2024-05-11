@@ -15,7 +15,7 @@ if 'SUPPRESS_FIGURES' in os.environ:
 #%%
 # based on edge-copilot
 delay_ns = {
-    'AND'   : 3,   # https://web.ece.ucsb.edu/Faculty/Johnson/ECE152A/handouts/L4%20-%20Propagation%20Delay,%20Circuit%20Timing%20&%20Adder%20Design.pdf
+    'AND'   : 0.3,   # https://web.ece.ucsb.edu/Faculty/Johnson/ECE152A/handouts/L4%20-%20Propagation%20Delay,%20Circuit%20Timing%20&%20Adder%20Design.pdf
     'NAND'  : 0.15,   # https://electronics.stackexchange.com/questions/197151/how-to-calculate-overall-propagation-time-for-circuitry
     'OR'    : 0.3,   # https://vlsimaster.com/propogation-delay/
     'NOR'   : 0.15,    # https://electronics.stackexchange.com/questions/197151/how-to-calculate-overall-propagation-time-for-circuitry
