@@ -1,6 +1,6 @@
-VLOG_FILE_NAME=./mul8s_1L12/mul8s_1L12.v
-C_FILE_NAME=./mul8s_1L12/mul8s_1L12.c
-TOP_MODULE=mul8s_1L12
+VLOG_FILE_NAME=./add8se_8NH/add8se_8NH.v
+C_FILE_NAME=./add8se_8NH/add8se_8NH.c
+TOP_MODULE=add8se_8NH
 METRICS=MSE,delay,area_delay
 
 #Map to the specified list of gate types. Supported gates types are:
@@ -29,7 +29,7 @@ svg:
 	netlistsvg netlist/netlist.json -o figures/netlist.svg
 
 error_file:
-	g++ -std=c++11 -o ./Error/error_executable ./Error/SingleGateEvaluator.cpp ./Error/Evaluator.cpp $(C_FILE_NAME)
+	g++ -std=c++17 -o ./Error/error_executable ./Error/SingleGateEvaluator.cpp ./Error/Evaluator.cpp $(C_FILE_NAME)
 
 report_gates:
 	TOP_MODULE=$(TOP_MODULE) \

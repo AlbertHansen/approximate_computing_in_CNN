@@ -1,2 +1,2 @@
-NAND,XOR,AND,XNOR,gatecount,transistorcount
-8,5,1,1,15,98
+gatecount,transistorcount
+0,0
