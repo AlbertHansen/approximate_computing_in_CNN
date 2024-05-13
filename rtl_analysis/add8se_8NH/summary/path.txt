@@ -1,0 +1,4 @@
+Number of Gates:	-1
+Total Delay:	0 ns
+Longest path:
+	0

@@ -1,0 +1,19 @@
+Number of Gates:	14
+Total Delay:	2.8499999999999996 ns
+Longest path:
+	B
+	$abc$155$auto$blifparse.cc:371:parse_blif$160
+	$abc$155$auto$blifparse.cc:371:parse_blif$161
+	$abc$155$auto$blifparse.cc:371:parse_blif$162
+	$abc$155$auto$blifparse.cc:371:parse_blif$164
+	$abc$155$auto$blifparse.cc:371:parse_blif$165
+	$abc$155$auto$blifparse.cc:371:parse_blif$167
+	$abc$155$auto$blifparse.cc:371:parse_blif$168
+	$abc$155$auto$blifparse.cc:371:parse_blif$171
+	$abc$155$auto$blifparse.cc:371:parse_blif$173
+	$abc$155$auto$blifparse.cc:371:parse_blif$176
+	$abc$155$auto$blifparse.cc:371:parse_blif$178
+	$abc$155$auto$blifparse.cc:371:parse_blif$181
+	$abc$155$auto$blifparse.cc:371:parse_blif$183
+	$abc$155$auto$blifparse.cc:371:parse_blif$187
+	O
