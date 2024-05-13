@@ -32,17 +32,17 @@ train, test = utils.dataset_manipulation.get_datasets(train_path, test_path, cla
 
 #%% Settings:
 lambda_value = 0.0002
-learning_rate = 0.00005
-epochs = 10
-weights_path = 'weights0/'
-executable_path = 'AC_FF_0'
+sgd_learning_rate = 0.00005
+epochs = 1
+weights_path = 'weights'
+pretrained_weights_path = 'tensorflow_model_weights'
+executable_path = 'AC_FF_mul8s_1L12'
 
 #%% Model
 class ZeroBias(tf.keras.constraints.Constraint):
     def __call__(self, w):
         return tf.zeros_like(w)
 
-lambda_value = 0.0002
 model = models.Sequential([
     layers.Conv2D(40, (2, 2), activation='relu', bias_constraint=ZeroBias(), kernel_regularizer=tf.keras.regularizers.l2(lambda_value)),
     layers.MaxPooling2D((2, 2)),
@@ -57,7 +57,7 @@ model = models.Sequential([
 
 # model = utils.model_manipulation.compile_model(model)
 models = model.compile(
-        optimizer=tf.keras.optimizers.SGD(learning_rate=0.00005, momentum=0.0),
+        optimizer=tf.keras.optimizers.SGD(learning_rate=sgd_learning_rate, momentum=0.0),
         loss=tf.keras.losses.BinaryFocalCrossentropy(),
         metrics=['accuracy']
     )
@@ -85,18 +85,17 @@ def compare_max_indices(file1, file2):
 
 
 def evaluate_approx():
-    subprocess.check_call(['cp weights0/train_images.csv weights0/batch.csv'], shell=True)
-    subprocess.check_call(['//home/ubuntu/approximate_computing_in_CNN/app-training_approx_network/AC_FF_0'])
+    # Call c++ network on train set
+    subprocess.check_call([f'cp {weights_path}/train_images.csv {weights_path}/batch.csv'], shell=True)
+    subprocess.check_call([f'./{executable_path}'], shell=True)
 
-    acc = compare_max_indices('weights0/train_labels.csv', 'weights0/output.csv')
-    print(f"From within evaluate_approx: acc = {acc}")
+    acc = compare_max_indices(f'{weights_path}/train_labels.csv', f'{weights_path}/output.csv')
 
-    # Call c++ network
-    subprocess.check_call(['cp weights0/test_images.csv weights0/batch.csv'], shell=True)
-    subprocess.check_call(['/home/ubuntu/approximate_computing_in_CNN/app-training_approx_network/AC_FF_0'])
+    # Call c++ network on test set
+    subprocess.check_call([f'cp {weights_path}/test_images.csv {weights_path}/batch.csv'], shell=True)
+    subprocess.check_call([f'./{executable_path}'], shell=True)
 
-    acc_val = compare_max_indices('weights0/test_labels.csv', 'weights0/output.csv')
-    print(f"From within evaluate_approx: acc_val = {acc_val}")
+    acc_val = compare_max_indices(f'{weights_path}/test_labels.csv', f'{weights_path}/output.csv')
     
     return acc, acc_val
 
@@ -104,19 +103,22 @@ def find_best_start(model) -> str:
     # Find the best starting point
     best_start = ''
     best_acc = 0
-    for i in range(50, 250, 50):
+    for i in range(50, 251, 50):
         print(f"----- Pretrained Epochs: {i} -----")
-        subprocess.check_call([f'cp -r tensorflow_model_weights/tf_model_weights_{i}/* weights0/'], shell=True)
+        subprocess.check_call([f'cp -r {pretrained_weights_path}/tf_model_weights_{i}/* {weights_path}/'], shell=True)
         acc, acc_val = evaluate_approx()
         print(f'Accuracy: {acc}, Accuracy_val: {acc_val}')
-        if acc_val > best_acc:
-            best_acc = acc_val
+        if acc + acc_val > best_acc:
+            best_acc = acc + acc_val
             best_start = f'tf_model_weights_{i}'
+
+    print("Best starting point: ", best_start)
     return best_start
 
 
 #evaluate_approx()
 #%%
+'''
 with open('mul8s_1KV9_inference_on_weights_intervals.csv', 'w') as file:
     writer = csv.writer(file)
 
@@ -129,4 +131,7 @@ with open('mul8s_1KV9_inference_on_weights_intervals.csv', 'w') as file:
         acc, acc_val = evaluate_approx()
         print(f'Accuracy: {acc}, Accuracy_val: {acc_val}')
         writer.writerow([i, acc, acc_val])
+
+'''
 # %%
+find_best_start(model)
