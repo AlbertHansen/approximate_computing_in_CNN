@@ -102,18 +102,18 @@ void writeMatrixToCSV(const std::string& filename, const std::vector<std::vector
 int main()
 {
     
-    std::string layer0Weights = "./weights1/layer_0/weights.csv";
-    std::string layer0Biases = "./weights1/layer_0/biases.csv";
-    std::string layer2Weights = "./weights1/layer_2/weights.csv";
-    std::string layer2Biases = "./weights1/layer_2/biases.csv";
-    std::string layer4Weights = "./weights1/layer_4/weights.csv";
-    std::string layer4Biases = "./weights1/layer_4/biases.csv";
-    std::string layer6Weights = "./weights1/layer_6/weights.csv";
-    std::string layer6Biases = "./weights1/layer_6/biases.csv";
-    std::string layer7Weights = "./weights1/layer_7/weights.csv";
-    std::string layer7Biases = "./weights1/layer_7/biases.csv";
+    std::string layer0Weights = "./weights/layer_0/weights.csv";
+    std::string layer0Biases = "./weights/layer_0/biases.csv";
+    std::string layer2Weights = "./weights/layer_2/weights.csv";
+    std::string layer2Biases = "./weights/layer_2/biases.csv";
+    std::string layer4Weights = "./weights/layer_4/weights.csv";
+    std::string layer4Biases = "./weights/layer_4/biases.csv";
+    std::string layer6Weights = "./weights/layer_6/weights.csv";
+    std::string layer6Biases = "./weights/layer_6/biases.csv";
+    std::string layer7Weights = "./weights/layer_7/weights.csv";
+    std::string layer7Biases = "./weights/layer_7/biases.csv";
 
-    std::string inputBatches = "./weights1/batch.csv";
+    std::string inputBatches = "./weights/batch.csv";
     /*
 
     std::string layer0Weights = "./weight_increment_test_3/iteration_4/layer_0/weights.csv";
@@ -416,6 +416,6 @@ int main()
         //std::cout << denseLayer7out.at(1)<< std::endl;
         outputBatch.push_back(denseLayer7out);
     }
-    writeMatrixToCSV("./weights1/output.csv",outputBatch);
+    writeMatrixToCSV("./weights/output.csv",outputBatch);
     //writeMatrixToCSV("./output3.csv",outputBatch);
 }
