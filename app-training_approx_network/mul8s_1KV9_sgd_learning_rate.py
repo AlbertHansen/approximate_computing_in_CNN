@@ -72,7 +72,8 @@ def evaluate_approx():
 
 #evaluate_approx()
 #%%
-sgd_learning_rate_values = [0.00001, 0.00003, 0.00005, 0.0001, 0.00015]
+#sgd_learning_rate_values = [0.00001, 0.00003, 0.00005, 0.0001, 0.00015]
+sgd_learning_rate_values = [0.00003, 0.00005, 0.0001, 0.00015]
 
 for learning_rate_value in sgd_learning_rate_values:
     lambda_value = 0.0002
@@ -88,7 +89,7 @@ for learning_rate_value in sgd_learning_rate_values:
     ])
 
     # model = utils.model_manipulation.compile_model(model)
-    model = model.compile(
+    model.compile(
             optimizer=tf.keras.optimizers.SGD(learning_rate=learning_rate_value, momentum=0.0),
             loss=tf.keras.losses.BinaryFocalCrossentropy(),
             metrics=['accuracy']
