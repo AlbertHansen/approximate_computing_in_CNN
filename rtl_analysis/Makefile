@@ -1,12 +1,13 @@
-VLOG_FILE_NAME=./add8se_8NH/add8se_8NH.v
-C_FILE_NAME=./add8se_8NH/add8se_8NH.c
-TOP_MODULE=add8se_8NH
-METRICS=MSE,delay,area_delay
+VLOG_FILE_NAME=./mul8s_1L12/mul8s_1L12.v
+C_FILE_NAME=./mul8s_1L12/mul8s_1L12.c
+TOP_MODULE=mul8s_1L12
+METRICS=ER,Gate_Count,CP_Gates
+COMPARISON_FILES=mul8s_1KV9,mul8s_1L2J,mul8s_1L12
 
 #Map to the specified list of gate types. Supported gates types are:
 #           AND, NAND, OR, NOR, XOR, XNOR, ANDNOT, ORNOT, MUX,
 #           NMUX, AOI3, OAI3, AOI4, OAI4. (NOT will always added)
-GATES=AND,NAND,OR,NOR,XOR,XNOR,
+GATES=OR
 #GATES=NAND
 
 SUPPRESS_FIGURES=1
@@ -50,8 +51,8 @@ histogram:
 
 approximate_tripod:
 	METRICS=$(METRICS) \
-	SUPPRESS_FIGURES=$(SUPPRESS_FIGURES) \
-	python3 ./Error/approximate_tripod.py
+	COMPARISON_FILES=$(COMPARISON_FILES) \
+	python3 ./Error/approximation_tripod.py
 
 analysis: netlist svg error_file report_gates report_paths report_error histogram
 #analysis: netlist svg report_gates report_paths 

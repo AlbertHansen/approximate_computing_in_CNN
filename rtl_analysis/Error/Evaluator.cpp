@@ -104,33 +104,7 @@ double Evaluator::calculateMHD() const {
 }
 
 void Evaluator::writeMetricsToCSV(const std::string& filename, const Metrics& metrics) const {
-        std::ofstream outfile;
-        outfile.open(filename, std::ios_base::app); // Open in append mode
-
-        if (!outfile) {
-            std::cerr << "Error opening file: " << filename << std::endl;
-            return;
-        }
-
-        // Check if file is empty (new file)
-        outfile.seekp(0, std::ios::end);
-        bool isEmpty = (outfile.tellp() == 0);
-        if (isEmpty) {
-            // Write header if file is empty
-            outfile << "mse,mae,wcd,er,mhd" << std::endl;
-        }
-
-        // Write data
-        outfile << metrics.mse << ","
-                << metrics.mae << ","
-                << metrics.wcd << ","
-                << metrics.er << ","
-                << metrics.mhd << std::endl;
-
-        outfile.close();
-        std::cout << "Metrics written to " << filename << std::endl;
         
-        /*
         std::ofstream outfile(filename);
         if (!outfile) {
             std::cerr << "Error opening file: " << filename << std::endl;
@@ -148,5 +122,5 @@ void Evaluator::writeMetricsToCSV(const std::string& filename, const Metrics& me
                 << metrics.mhd << std::endl;
 
         outfile.close();
-        //std::cout << "Metrics written to " << filename << std::endl;*/
+        //std::cout << "Metrics written to " << filename << std::endl;
     }
