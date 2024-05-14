@@ -80,6 +80,10 @@ std::vector<std::vector<float>> readInput(const std::string& filename) {
 
 int main()
 {
+    float t = 3.6;
+    intmax_t res = static_cast<intmax_t>(t);
+    std::cout << res << std::endl;
+    /*
     std::vector<std::vector<float>> inputBatch = readInput("");
 
     FullyConnectedLayer dense(4,1);
@@ -89,5 +93,5 @@ int main()
     std::vector<std::vector<intmax_t>> tW;
     tW.push_back(testWeight);
 
-    std::cout << "hej: " << dense.forward(testInp,tW,testBias).at(0);
+    std::cout << "hej: " << dense.forward(testInp,tW,testBias).at(0);*/
 }

@@ -114,8 +114,8 @@ int main()
     std::string layer7Biases = "./weights/layer_7/biases.csv";
 
     std::string inputBatches = "./weights/batch.csv";
+    
     /*
-
     std::string layer0Weights = "./weight_increment_test_3/iteration_4/layer_0/weights.csv";
     std::string layer0Biases = "./weight_increment_test_3/iteration_4/layer_0/biases.csv";
     std::string layer2Weights = "./weight_increment_test_3/iteration_4/layer_2/weights.csv";
@@ -127,8 +127,8 @@ int main()
     std::string layer7Weights = "./weight_increment_test_3/iteration_4/layer_7/weights.csv";
     std::string layer7Biases = "./weight_increment_test_3/iteration_4/layer_7/biases.csv";
 
-    std::string inputBatches = "./weight_increment_test_3/images_4.csv";*/
-    
+    std::string inputBatches = "./weight_increment_test_3/images_4.csv";
+    */
 
     ReadParameters layer0(layer0Weights, layer0Biases);
     ReadParameters layer2(layer2Weights, layer2Biases);
