@@ -56,14 +56,14 @@ def compare_max_indices(file1, file2):
 
 def evaluate_approx():
     subprocess.check_call(['cp weights/train_images.csv weights/batch.csv'], shell=True)
-    subprocess.check_call(['//home/ubuntu/approximate_computing_in_CNN/app-training_approx_network/AC_FF_0'])
+    subprocess.check_call(['/home/ubuntu/approximate_computing_in_CNN/app-training_approx_network/AC_FF_mul8s_1KV6'])
 
     acc = compare_max_indices('weights/train_labels.csv', 'weights/output.csv')
     # print(f"From within evaluate_approx: acc = {acc}")
 
     # Call c++ network
     subprocess.check_call(['cp weights/test_images.csv weights/batch.csv'], shell=True)
-    subprocess.check_call(['/home/ubuntu/approximate_computing_in_CNN/app-training_approx_network/AC_FF_0'])
+    subprocess.check_call(['/home/ubuntu/approximate_computing_in_CNN/app-training_approx_network/AC_FF_mul8s_1KV6'])
 
     acc_val = compare_max_indices('weights/test_labels.csv', 'weights/output.csv')
     # print(f"From within evaluate_approx: acc_val = {acc_val}")
@@ -97,23 +97,27 @@ for learning_rate_value in sgd_learning_rate_values:
 
     model.build((None, 16, 16, 1))
 
+    
     subprocess.check_call(['cp -r tensorflow_model_weights/tf_model_weights_50/* weights/'], shell=True)
-    utils.my_csv.csv_to_weights(model, 'weights0')
-
+    utils.my_csv.csv_to_weights(model, 'weights')
+    
     with open(f'accurate_multiplier_sgd.csv', 'w') as file:
         writer = csv.writer(file)
 
         writer.writerow(['accuracy', 'accuracy_val', 'time'])
 
+        # verify that the model is starting good...
+        acc, acc_val = evaluate_approx()
+        print(f'Accuracy: {acc}, Accuracy_val: {acc_val}')
+        writer.writerow([acc, acc_val, 0])
+
         # 5 training epochs with approximate training (STE)
-        for i in range(10):
+        for i in range(1):
             print(f"----- Epoch {i}, {learning_rate_value} -----")
             start_epoch = time.time()
             
-            utils.train_0.epoch_approx(model, train)
+            utils.train.epoch_approx(model, train)
             acc, acc_val = evaluate_approx()
             epoch_time = time.time() - start_epoch
             print(f'Accuracy: {acc}, Accuracy_val: {acc_val}, Time: {epoch_time}')
             writer.writerow([acc, acc_val, epoch_time])
-
-# %%

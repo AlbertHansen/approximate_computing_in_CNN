@@ -73,14 +73,14 @@ def compare_max_indices(file1, file2):
 
 def evaluate_approx():
     subprocess.check_call(['cp weights1/train_images.csv weights1/batch.csv'], shell=True)
-    subprocess.check_call(['/home/ubuntu/approximate_computing_in_CNN/app-training_approx_network/AC_FF'])
+    subprocess.check_call(['/home/ubuntu/approximate_computing_in_CNN/app-training_approx_network/AC_FF_mul8s_1KV6'])
 
     acc = compare_max_indices('weights1/train_labels.csv', 'weights1/output.csv')
     print(f"From within evaluate_approx: acc = {acc}")
 
     # Call c++ network
     subprocess.check_call(['cp weights1/test_images.csv weights1/batch.csv'], shell=True)
-    subprocess.check_call(['/home/ubuntu/approximate_computing_in_CNN/app-training_approx_network/AC_FF'])
+    subprocess.check_call(['/home/ubuntu/approximate_computing_in_CNN/app-training_approx_network/AC_FF_mul8s_1KV6'])
 
     acc_val = compare_max_indices('weights1/test_labels.csv', 'weights1/output.csv')
     print(f"From within evaluate_approx: acc_val = {acc_val}")

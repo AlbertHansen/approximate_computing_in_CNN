@@ -96,15 +96,13 @@ def evaluate_approx():
     
     return acc, acc_val
 
-#evaluate_approx()
 #%%
 with open('mul8s_1KV9_inference_on_weights_intervals.csv', 'w') as file:
     writer = csv.writer(file)
 
     writer.writerow(['pretrained_epochs', 'accuracy', 'accuracy_val', 'time'])  
 
-    epochs = [50, 100, 150, 200, 250]
-    for i in epochs:
+    for i in range(10):
         print(f"----- Pretrained Epochs: {i} -----")
         subprocess.check_call([f'cp -r tensorflow_model_weights/tf_model_weights_{i}/* weights0/'], shell=True)
         acc, acc_val = evaluate_approx()
