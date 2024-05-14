@@ -14,6 +14,7 @@ from tensorflow.keras import datasets, layers, models
 
 # import custom functions
 import utils
+import utils.train_mul8s_1L12
 
 #%% Datasets
 # Classes
@@ -33,7 +34,7 @@ train, test = utils.dataset_manipulation.get_datasets(train_path, test_path, cla
 #%% Settings:
 lambda_value = 0.0002
 sgd_learning_rate = 0.00005
-epochs = 1
+epochs = 10
 weights_path = 'weights'
 pretrained_weights_path = 'tensorflow_model_weights'
 executable_path = 'AC_FF_mul8s_1L12'
@@ -99,7 +100,7 @@ def evaluate_approx():
     
     return acc, acc_val
 
-def find_best_start(model) -> str:
+def find_best_start() -> str:
     # Find the best starting point
     best_start = ''
     best_acc = 0
@@ -118,20 +119,49 @@ def find_best_start(model) -> str:
 
 #evaluate_approx()
 #%%
-'''
-with open('mul8s_1KV9_inference_on_weights_intervals.csv', 'w') as file:
+
+# best_start = find_best_start()
+best_start = 'tf_model_weights_50'
+subprocess.check_call([f'cp -r {pretrained_weights_path}/{best_start}/* {weights_path}/'], shell=True)
+with open('mul8s_1L12.csv', 'w') as file:
     writer = csv.writer(file)
 
-    writer.writerow(['pretrained_epochs', 'accuracy', 'accuracy_val', 'time'])  
+    writer.writerow(['accuracy', 'accuracy_val', 'time'])  
 
-    epochs = [50, 100, 150, 200, 250]
-    for i in epochs:
-        print(f"----- Pretrained Epochs: {i} -----")
-        subprocess.check_call([f'cp -r tensorflow_model_weights/tf_model_weights_{i}/* weights0/'], shell=True)
+    for i in range(epochs):
+        print(f"----- Epoch: {i} -----")
+
+        start = time.time()
+        utils.train_mul8s_1L12.epoch_approx(model, train)
         acc, acc_val = evaluate_approx()
-        print(f'Accuracy: {acc}, Accuracy_val: {acc_val}')
-        writer.writerow([i, acc, acc_val])
+        end = time.time()
 
-'''
+        print(f'Accuracy: {acc}, Accuracy_val: {acc_val}, Time: {end-start}')
+        writer.writerow([acc, acc_val, end-start])
+
+
 # %%
-find_best_start(model)
+'''
+----- Pretrained Epochs: 50 -----
+Matches: 496/5000
+Matches: 101/1000
+Accuracy: 0.0992, Accuracy_val: 0.101
+----- Pretrained Epochs: 100 -----
+Matches: 489/5000
+Matches: 100/1000
+Accuracy: 0.0978, Accuracy_val: 0.1
+----- Pretrained Epochs: 150 -----
+Matches: 498/5000
+Matches: 99/1000
+Accuracy: 0.0996, Accuracy_val: 0.099
+----- Pretrained Epochs: 200 -----
+Matches: 490/5000
+Matches: 98/1000
+Accuracy: 0.098, Accuracy_val: 0.098
+----- Pretrained Epochs: 250 -----
+Matches: 483/5000
+Matches: 96/1000
+Accuracy: 0.0966, Accuracy_val: 0.096
+Best starting point:  tf_model_weights_50
+'tf_model_weights_50'
+'''
