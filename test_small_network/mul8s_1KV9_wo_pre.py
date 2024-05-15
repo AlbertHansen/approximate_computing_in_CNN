@@ -39,7 +39,7 @@ lambda_value = 0.0002
 model = models.Sequential([
     layers.Conv2D(40, (2, 2), activation='relu', bias_constraint=ZeroBias(), kernel_regularizer=tf.keras.regularizers.l2(lambda_value)),
     layers.MaxPooling2D((2, 2)),
-    layers.Conv2D(2, (2, 2), activation='relu', bias_constraint=ZeroBias(), kernel_regularizer=tf.keras.regularizers.l2(lambda_value)),
+    layers.Conv2D(40, (2, 2), activation='relu', bias_constraint=ZeroBias(), kernel_regularizer=tf.keras.regularizers.l2(lambda_value)),
     layers.MaxPooling2D((2, 2)),
     layers.Conv2D(40, (2, 2), activation='relu', bias_constraint=ZeroBias(), kernel_regularizer=tf.keras.regularizers.l2(lambda_value)),
     layers.Flatten(),
@@ -50,9 +50,7 @@ model = models.Sequential([
 
 model = utils.model_manipulation.compile_model(model)
 model.build((None, 16, 16, 1))
-model.summary()
-
-
+# model.summary()
 
 #%%
 def compare_max_indices(file1, file2):
@@ -74,84 +72,36 @@ def compare_max_indices(file1, file2):
 
 
 def evaluate_approx():
-    subprocess.check_call(['cp weights/train_images.csv weights/batch.csv'], shell=True)
-    subprocess.check_call(['./AC_FF_adamax_accurate'])
+    subprocess.check_call(['cp weights2/train_images.csv weights2/batch.csv'], shell=True)
+    subprocess.check_call(['/home/ubuntu/approximate_computing_in_CNN/app-training_approx_network/AC_FF_2'])
 
-    acc = compare_max_indices('weights/train_labels.csv', 'weights/output.csv')
+    acc = compare_max_indices('weights2/train_labels.csv', 'weights2/output.csv')
     print(f"From within evaluate_approx: acc = {acc}")
 
     # Call c++ network
-    subprocess.check_call(['cp weights/test_images.csv weights/batch.csv'], shell=True)
-    subprocess.check_call(['./AC_FF_adamax_accurate'])
+    subprocess.check_call(['cp weights2/test_images.csv weights2/batch.csv'], shell=True)
+    subprocess.check_call(['/home/ubuntu/approximate_computing_in_CNN/app-training_approx_network/AC_FF_2'])
 
-    acc_val = compare_max_indices('weights/test_labels.csv', 'weights/output.csv')
+    acc_val = compare_max_indices('weights2/test_labels.csv', 'weights2/output.csv')
     print(f"From within evaluate_approx: acc_val = {acc_val}")
     
     return acc, acc_val
 
-def find_max_weight_and_val():
-    input = tf.ones(shape=(1, 16, 16, 1))
-
-    max_values = []
-    max_weights = []
-    
-    for i, layer in enumerate(model.layers):
-        if i == 0:
-            x = layer(input)
-        else:
-            x = layer(x)
-        
-        max_values.append(tf.reduce_max(x).numpy())
-        try: 
-            max_weights.append(tf.reduce_max(layer.get_weights()[0]).numpy())
-        except IndexError:
-            max_weights.append(0.0)
-
-    max_values = np.array(max_values)
-    max_weights = np.array(max_weights)
-
-    print('Max value: ', max(max_values.flatten()))
-    print('Max weight:', max(max_weights.flatten()))
-
 #evaluate_approx()
 #%%
-with open('2_kernels_in_2nd_convlayer.csv', 'w') as file:
+with open('mul8s_1KV9_wo_pre.csv', 'w') as file:
     writer = csv.writer(file)
 
-    writer.writerow(['epoch', 'accuracy', 'accuracy_val', 'time'])
+    writer.writerow(['accuracy', 'accuracy_val', 'time'])
 
     # 5 training epochs with approximate training (STE)
-    for i in range(1):
+    for i in range(15):
         print(f"----- Epoch {i} -----")
+        start_epoch = time.time()
         
-        start_epoch = time.time()
-        utils.train.epoch(model, train)     
-        epoch_time = time.time() - start_epoch
-        find_max_weight_and_val()
-
-        loss, acc = model.evaluate(train)
-        loss_val, acc_val = model.evaluate(test)
-
-        print(f'Accuracy: {acc}, Accuracy_val: {acc_val}, Time: {epoch_time}')
-        writer.writerow([acc, acc_val, epoch_time])
-
-        if i % 5 == 0:
-            acc, acc_val = evaluate_approx()
-            epoch_time = time.time() - start_epoch
-            print(f'Accuracy: {acc}, Accuracy_val: {acc_val}, Time: {epoch_time}')
-            writer.writerow([i, acc, acc_val, epoch_time])
-
-    for i in range(1):
-        print(f"----- Epoch {i+45} -----")
-
-        start_epoch = time.time()
-        utils.train.epoch_approx(model, train)     
-        epoch_time = time.time() - start_epoch
-        find_max_weight_and_val()
-
+        utils.train_2.epoch_approx(model, train)
         acc, acc_val = evaluate_approx()
         epoch_time = time.time() - start_epoch
         print(f'Accuracy: {acc}, Accuracy_val: {acc_val}, Time: {epoch_time}')
-        writer.writerow([i+45, acc, acc_val, epoch_time])
+        writer.writerow([acc, acc_val, epoch_time])
 # %%
-
