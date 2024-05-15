@@ -89,6 +89,30 @@ def evaluate_approx():
     
     return acc, acc_val
 
+def find_max_weight_and_val():
+    input = tf.ones(shape=(1, 16, 16, 1))
+
+    max_values = []
+    max_weights = []
+    
+    for i, layer in enumerate(model.layers):
+        if i == 0:
+            x = layer(input)
+        else:
+            x = layer(x)
+        
+        max_values.append(tf.reduce_max(x).numpy())
+        try: 
+            max_weights.append(tf.reduce_max(layer.get_weights()[0]).numpy())
+        except IndexError:
+            max_weights.append(0.0)
+
+    max_values = np.array(max_values)
+    max_weights = np.array(max_weights)
+
+    print('Max value: ', max(max_values.flatten()))
+    print('Max weight:', max(max_weights.flatten()))
+
 #evaluate_approx()
 #%%
 with open('2_kernels_in_2nd_convlayer_TF.csv', 'w') as file:
@@ -103,6 +127,7 @@ with open('2_kernels_in_2nd_convlayer_TF.csv', 'w') as file:
         start_epoch = time.time()
         utils.train.epoch_approx(model, train)     
         epoch_time = time.time() - start_epoch
+        find_max_weight_and_val()
 
         loss, acc = model.evaluate(train)
         loss_val, acc_val = model.evaluate(test)
@@ -118,3 +143,4 @@ with open('2_kernels_in_2nd_convlayer_TF.csv', 'w') as file:
             writer.writerow([i, acc, acc_val, epoch_time])
         '''
 # %%
+
