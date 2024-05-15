@@ -76,6 +76,7 @@ def evaluate_approx():
 sgd_learning_rate_values = [0.0001]
 
 for learning_rate_value in sgd_learning_rate_values:
+    '''
     lambda_value = 0.0002
     model = models.Sequential([
         layers.Conv2D(40, (2, 2), activation='relu', bias_constraint=ZeroBias(), kernel_regularizer=tf.keras.regularizers.l2(lambda_value)),
@@ -86,6 +87,18 @@ for learning_rate_value in sgd_learning_rate_values:
         layers.Flatten(),
         layers.Dense(40, activation='relu', bias_constraint=ZeroBias()),
         layers.Dense(num_classes, activation='relu', bias_constraint=ZeroBias(), kernel_regularizer=tf.keras.regularizers.l2(lambda_value)),  # OBS!!! last layer will be changed to accommodate no of classes
+    ])
+    '''
+
+    model = models.Sequential([
+        layers.Conv2D(40, (2, 2), activation='relu', bias_constraint=ZeroBias()),
+        layers.MaxPooling2D((2, 2)),
+        layers.Conv2D(40, (2, 2), activation='relu', bias_constraint=ZeroBias()),
+        layers.MaxPooling2D((2, 2)),
+        layers.Conv2D(40, (2, 2), activation='relu', bias_constraint=ZeroBias()),
+        layers.Flatten(),
+        layers.Dense(40, activation='relu', bias_constraint=ZeroBias()),
+        layers.Dense(num_classes, activation='relu', bias_constraint=ZeroBias()),  # OBS!!! last layer will be changed to accommodate no of classes
     ])
 
     # model = utils.model_manipulation.compile_model(model)
@@ -101,7 +114,7 @@ for learning_rate_value in sgd_learning_rate_values:
     subprocess.check_call(['cp -r tensorflow_model_weights/tf_model_weights_50/* weights/'], shell=True)
     utils.my_csv.csv_to_weights(model, 'weights')
     
-    with open(f'accurate_multiplier_sgd.csv', 'w') as file:
+    with open(f'accurate_multiplier_sgd_no_regularisation.csv', 'w') as file:
         writer = csv.writer(file)
 
         writer.writerow(['accuracy', 'accuracy_val', 'time'])
@@ -112,7 +125,7 @@ for learning_rate_value in sgd_learning_rate_values:
         writer.writerow([acc, acc_val, 0])
 
         # 5 training epochs with approximate training (STE)
-        for i in range(1):
+        for i in range(10):
             print(f"----- Epoch {i}, {learning_rate_value} -----")
             start_epoch = time.time()
             
