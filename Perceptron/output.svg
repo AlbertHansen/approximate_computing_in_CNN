@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentScriptType="application/ecmascript" contentStyleType="text/css" height="341px" preserveAspectRatio="none" style="width:658px;height:341px;" version="1.1" viewBox="0 0 658 341" width="658px" zoomAndPan="magnify"><defs><filter height="300%" id="f1je7bw2vuovgb" width="300%" x="-1" y="-1"><feGaussianBlur result="blurOut" stdDeviation="2.0"/><feColorMatrix in="blurOut" result="blurOut2" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .4 0"/><feOffset dx="4.0" dy="4.0" in="blurOut2" result="blurOut3"/><feBlend in="SourceGraphic" in2="blurOut3" mode="normal"/></filter></defs><g><!--MD5=[d76e532afacb46d220f97a2a2c9592e1]
+class ConvolutionalLayer--><rect fill="#FEFECE" filter="url(#f1je7bw2vuovgb)" height="150.4375" id="ConvolutionalLayer" style="stroke: #A80036; stroke-width: 1.5;" width="641" x="6" y="8"/><ellipse cx="263.75" cy="24" fill="#ADD1B2" rx="11" ry="11" style="stroke: #A80036; stroke-width: 1.0;"/><path d="M266.7188,29.6406 Q266.1406,29.9375 265.5,30.0781 Q264.8594,30.2344 264.1563,30.2344 Q261.6563,30.2344 260.3281,28.5938 Q259.0156,26.9375 259.0156,23.8125 Q259.0156,20.6875 260.3281,19.0313 Q261.6563,17.375 264.1563,17.375 Q264.8594,17.375 265.5,17.5313 Q266.1563,17.6875 266.7188,17.9844 L266.7188,20.7031 Q266.0938,20.125 265.5,19.8594 Q264.9063,19.5781 264.2813,19.5781 Q262.9375,19.5781 262.25,20.6563 Q261.5625,21.7188 261.5625,23.8125 Q261.5625,25.9063 262.25,26.9844 Q262.9375,28.0469 264.2813,28.0469 Q264.9063,28.0469 265.5,27.7813 Q266.0938,27.5 266.7188,26.9219 L266.7188,29.6406 Z "/><text fill="#000000" font-family="sans-serif" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="117" x="284.25" y="28.1543">ConvolutionalLayer</text><line style="stroke: #A80036; stroke-width: 1.5;" x1="7" x2="646" y1="40" y2="40"/><rect fill="none" height="6" style="stroke: #C82930; stroke-width: 1.0;" width="6" x="14" y="48"/><text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="71" x="26" y="54.2104">sizes : Sizes</text><rect fill="none" height="6" style="stroke: #C82930; stroke-width: 1.0;" width="6" x="14" y="60.8047"/><text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="177" x="26" y="67.0151">biases : std::vector&lt;intmax_t&gt;</text><rect fill="none" height="6" style="stroke: #C82930; stroke-width: 1.0;" width="6" x="14" y="73.6094"/><text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="251" x="26" y="79.8198">filters : std::vector&lt;std::vector&lt;intmax_t&gt;&gt;</text><line style="stroke: #A80036; stroke-width: 1.5;" x1="7" x2="646" y1="86.4141" y2="86.4141"/><ellipse cx="17" cy="97.4141" fill="#84BE84" rx="3" ry="3" style="stroke: #038048; stroke-width: 1.0;"/><text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="615" x="26" y="100.6245">ConvolutionalLayer(size_t inputSizeX, size_t inputSizeY, size_t numFilters, size_t filterSizeX, size_t filterSizeY)</text><ellipse cx="17" cy="110.2188" fill="#84BE84" rx="3" ry="3" style="stroke: #038048; stroke-width: 1.0;"/><text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="340" x="26" y="113.4292">applyConvolution(const Matrix&amp; input) : std::vector&lt;Matrix&gt;</text><ellipse cx="17" cy="123.0234" fill="#84BE84" rx="3" ry="3" style="stroke: #038048; stroke-width: 1.0;"/><text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="254" x="26" y="126.2339">getBiases() : std::vector&lt;intmax_t&gt; {query}</text><ellipse cx="17" cy="135.8281" fill="#84BE84" rx="3" ry="3" style="stroke: #038048; stroke-width: 1.0;"/><text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="329" x="26" y="139.0386">getFilters() : std::vector&lt;std::vector&lt;intmax_t&gt;&gt; {query}</text><ellipse cx="17" cy="148.6328" fill="#84BE84" rx="3" ry="3" style="stroke: #038048; stroke-width: 1.0;"/><text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="573" x="26" y="151.8433">updateFilters(const std::vector&lt;Matrix&gt;&amp; newFilters, const std::vector&lt;intmax_t&gt; newBiases) : void</text><!--MD5=[0150d03006d5975ebe1afea6d4831270]
+class ConvolutionalLayer::Sizes--><rect fill="#FEFECE" filter="url(#f1je7bw2vuovgb)" height="112.0234" id="ConvolutionalLayer::Sizes" style="stroke: #A80036; stroke-width: 1.5;" width="188" x="232.5" y="218"/><ellipse cx="247.5" cy="234" fill="#ADD1B2" rx="11" ry="11" style="stroke: #A80036; stroke-width: 1.0;"/><path d="M250.4688,239.6406 Q249.8906,239.9375 249.25,240.0781 Q248.6094,240.2344 247.9063,240.2344 Q245.4063,240.2344 244.0781,238.5938 Q242.7656,236.9375 242.7656,233.8125 Q242.7656,230.6875 244.0781,229.0313 Q245.4063,227.375 247.9063,227.375 Q248.6094,227.375 249.25,227.5313 Q249.9063,227.6875 250.4688,227.9844 L250.4688,230.7031 Q249.8438,230.125 249.25,229.8594 Q248.6563,229.5781 248.0313,229.5781 Q246.6875,229.5781 246,230.6563 Q245.3125,231.7188 245.3125,233.8125 Q245.3125,235.9063 246,236.9844 Q246.6875,238.0469 248.0313,238.0469 Q248.6563,238.0469 249.25,237.7813 Q249.8438,237.5 250.4688,236.9219 L250.4688,239.6406 Z "/><text fill="#000000" font-family="sans-serif" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="156" x="261.5" y="238.1543">ConvolutionalLayer::Sizes</text><line style="stroke: #A80036; stroke-width: 1.5;" x1="233.5" x2="419.5" y1="250" y2="250"/><ellipse cx="243.5" cy="261" fill="none" rx="3" ry="3" style="stroke: #038048; stroke-width: 1.0;"/><text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="100" x="252.5" y="264.2104">filterSizeX : size_t</text><ellipse cx="243.5" cy="273.8047" fill="none" rx="3" ry="3" style="stroke: #038048; stroke-width: 1.0;"/><text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="100" x="252.5" y="277.0151">filterSizeY : size_t</text><ellipse cx="243.5" cy="286.6094" fill="none" rx="3" ry="3" style="stroke: #038048; stroke-width: 1.0;"/><text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="102" x="252.5" y="289.8198">inputSizeX : size_t</text><ellipse cx="243.5" cy="299.4141" fill="none" rx="3" ry="3" style="stroke: #038048; stroke-width: 1.0;"/><text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="102" x="252.5" y="302.6245">inputSizeY : size_t</text><ellipse cx="243.5" cy="312.2188" fill="none" rx="3" ry="3" style="stroke: #038048; stroke-width: 1.0;"/><text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="104" x="252.5" y="315.4292">numFilters : size_t</text><line style="stroke: #A80036; stroke-width: 1.5;" x1="233.5" x2="419.5" y1="322.0234" y2="322.0234"/><!--MD5=[6e4955b46cac7d530b2bc5696d32759d]
+reverse link ConvolutionalLayer to ConvolutionalLayer::Sizes--><path d="M326.5,173.22 C326.5,188.41 326.5,203.78 326.5,217.76 " fill="none" id="ConvolutionalLayer&lt;-ConvolutionalLayer::Sizes" style="stroke: #A80036; stroke-width: 1.0;"/><ellipse cx="326.5" cy="166.16" fill="#FFFFFF" rx="8" ry="8" style="stroke: #A80036; stroke-width: 1.0;"/><line style="stroke: #A80036; stroke-width: 1.0;" x1="326.5" x2="326.5" y1="174.16" y2="158.16"/><line style="stroke: #A80036; stroke-width: 1.0;" x1="318.5" x2="334.5" y1="166.16" y2="166.16"/><!--MD5=[b19c11fdf2163a571e1bf500aba9f03c]
+@startuml
+
+
+
+
+
+
+class ConvolutionalLayer {
+	+ConvolutionalLayer(size_t inputSizeX, size_t inputSizeY, size_t numFilters, size_t filterSizeX, size_t filterSizeY)
+	-sizes : Sizes
+	+applyConvolution(const Matrix& input) : std::vector<Matrix>
+	-biases : std::vector<intmax_t>
+	+getBiases() : std::vector<intmax_t> {query}
+	-filters : std::vector<std::vector<intmax_t>>
+	+getFilters() : std::vector<std::vector<intmax_t>> {query}
+	+updateFilters(const std::vector<Matrix>& newFilters, const std::vector<intmax_t> newBiases) : void
+}
+
+
+class ConvolutionalLayer::Sizes {
+	+filterSizeX : size_t
+	+filterSizeY : size_t
+	+inputSizeX : size_t
+	+inputSizeY : size_t
+	+numFilters : size_t
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.ConvolutionalLayer +- - .ConvolutionalLayer::Sizes
+
+
+
+
+@enduml
+
+PlantUML version 1.2020.02(Sun Mar 01 11:22:07 CET 2020)
+(GPL source distribution)
+Java Runtime: OpenJDK Runtime Environment
+JVM: OpenJDK 64-Bit Server VM
+Java Version: 11.0.22+7-post-Ubuntu-0ubuntu222.04.1
+Operating System: Linux
+Default Encoding: UTF-8
+Language: en
+Country: US
+--></g></svg>
