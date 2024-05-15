@@ -85,7 +85,7 @@ def iteration_approx(model, batch):
     grads = tape.gradient(loss_value, model.trainable_weights)
     model.optimizer.apply_gradients(zip(grads, model.trainable_weights))
 
-    return labels_approximated, labels_predicted_untouched
+    return loss_value
 
 #def iteration(model, batch, labels_approximated):
 def iteration(model, batch):
@@ -179,9 +179,12 @@ def epoch_approx(model, dataset):
     Returns:
         None
     """
+
+    loss_epoch = []
     for batch in tqdm.tqdm(dataset):
         iteration_approx(model, batch)
         #my_csv.tensor_to_csv(diff, f'runs/labels_test/labels_approx_{i}')
+    # print("Loss epoch: ", loss_epoch)
 
 def obscure_tensor(tensor):
     """
