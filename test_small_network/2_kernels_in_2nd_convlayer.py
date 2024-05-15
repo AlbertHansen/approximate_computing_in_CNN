@@ -115,6 +115,7 @@ def find_max_weight_and_val():
 
 #evaluate_approx()
 #%%
+'''
 with open('2_kernels_in_2nd_convlayer.csv', 'w') as file:
     writer = csv.writer(file)
 
@@ -145,6 +146,7 @@ with open('2_kernels_in_2nd_convlayer.csv', 'w') as file:
     writer.writerow([44, acc, acc_val, epoch_time])
 
     utils.my_csv.weights_to_csv(model, '2_kernels_45_epochs_start')
+    subprocess.check_call(['cp -r 2_kernels_45_epochs_start/* weights/'], shell=True)
     print("WEIGHT HAVE BEEN PRINTED")
 
     for i in range(5):
@@ -162,5 +164,160 @@ with open('2_kernels_in_2nd_convlayer.csv', 'w') as file:
         print("\n---------------------------------------------------------------------------\n")
 
         writer.writerow([i+45, acc, acc_val, epoch_time])
+'''
 # %%
+'''
+lambda_value = 0.0002
+model = models.Sequential([
+    layers.Conv2D(40, (2, 2), activation='relu', bias_constraint=ZeroBias(), kernel_regularizer=tf.keras.regularizers.l2(lambda_value)),
+    layers.MaxPooling2D((2, 2)),
+    layers.Conv2D(2, (2, 2), activation='relu', bias_constraint=ZeroBias(), kernel_regularizer=tf.keras.regularizers.l2(lambda_value)),
+    layers.MaxPooling2D((2, 2)),
+    layers.Conv2D(40, (2, 2), activation='relu', bias_constraint=ZeroBias(), kernel_regularizer=tf.keras.regularizers.l2(lambda_value)),
+    layers.Flatten(),
+    layers.Dense(40, activation='relu', bias_constraint=ZeroBias()),
+    layers.Dense(num_classes, activation='relu', bias_constraint=ZeroBias(), kernel_regularizer=tf.keras.regularizers.l2(lambda_value)),  # OBS!!! last layer will be changed to accommodate no of classes
+])
 
+
+model.compile(
+        optimizer=tf.keras.optimizers.SGD(learning_rate=0.00005, momentum=0.0),
+        loss=tf.keras.losses.BinaryFocalCrossentropy(),
+        metrics=['accuracy']
+    )
+model.build((None, 16, 16, 1))
+model.summary()
+
+utils.my_csv.csv_to_weights(model, '2_kernels_45_epochs_start')
+subprocess.check_call(['cp -r 2_kernels_45_epochs_start/* weights/'], shell=True)
+
+with open('2_kernels_in_2nd_convlayer_sgd.csv', 'w') as file:
+    writer = csv.writer(file)
+    writer.writerow(['epoch', 'accuracy', 'accuracy_val', 'time'])
+
+    start_epoch = time.time()
+    acc, acc_val = evaluate_approx()
+    epoch_time = time.time() - start_epoch
+    print(f'Accuracy: {acc}, Accuracy_val: {acc_val}, Time: {epoch_time}')
+    writer.writerow([44, acc, acc_val, epoch_time])
+
+    for i in range(5):
+        print(f"----- Epoch {i+45} -----")
+
+        start_epoch = time.time()
+        utils.train.epoch_approx(model, train)     
+        epoch_time = time.time() - start_epoch
+
+        acc, acc_val = evaluate_approx()
+
+        print("\n---------------------------------------------------------------------------\n")
+        print(f'Accuracy: {acc}, Accuracy_val: {acc_val}, Time: {epoch_time}')
+        find_max_weight_and_val()
+        print("\n---------------------------------------------------------------------------\n")
+
+        writer.writerow([i+45, acc, acc_val, epoch_time])
+'''
+#%%
+
+
+lambda_value = 0.0002
+model = models.Sequential([
+    layers.Conv2D(40, (2, 2), activation='relu', bias_constraint=ZeroBias(), kernel_regularizer=tf.keras.regularizers.l2(lambda_value)),
+    layers.MaxPooling2D((2, 2)),
+    layers.Conv2D(2, (2, 2), activation='relu', bias_constraint=ZeroBias(), kernel_regularizer=tf.keras.regularizers.l2(lambda_value)),
+    layers.MaxPooling2D((2, 2)),
+    layers.Conv2D(40, (2, 2), activation='relu', bias_constraint=ZeroBias(), kernel_regularizer=tf.keras.regularizers.l2(lambda_value)),
+    layers.Flatten(),
+    layers.Dense(40, activation='relu', bias_constraint=ZeroBias()),
+    layers.Dense(num_classes, activation='relu', bias_constraint=ZeroBias(), kernel_regularizer=tf.keras.regularizers.l2(lambda_value)),  # OBS!!! last layer will be changed to accommodate no of classes
+])
+
+
+model.compile(
+        optimizer=tf.keras.optimizers.SGD(learning_rate=0.0005, momentum=0.0),
+        loss=tf.keras.losses.BinaryFocalCrossentropy(),
+        metrics=['accuracy']
+    )
+model.build((None, 16, 16, 1))
+model.summary()
+
+utils.my_csv.csv_to_weights(model, '2_kernels_45_epochs_start')
+subprocess.check_call(['cp -r 2_kernels_45_epochs_start/* weights/'], shell=True)
+
+with open('2_kernels_in_2nd_convlayer_sgd_0.0005.csv', 'w') as file:
+    writer = csv.writer(file)
+    writer.writerow(['epoch', 'accuracy', 'accuracy_val', 'time'])
+
+    start_epoch = time.time()
+    acc, acc_val = evaluate_approx()
+    epoch_time = time.time() - start_epoch
+    print(f'Accuracy: {acc}, Accuracy_val: {acc_val}, Time: {epoch_time}')
+    writer.writerow([44, acc, acc_val, epoch_time])
+
+    for i in range(5):
+        print(f"----- Epoch {i+45} -----")
+
+        start_epoch = time.time()
+        utils.train.epoch_approx(model, train)     
+        epoch_time = time.time() - start_epoch
+
+        acc, acc_val = evaluate_approx()
+
+        print("\n---------------------------------------------------------------------------\n")
+        print(f'Accuracy: {acc}, Accuracy_val: {acc_val}, Time: {epoch_time}')
+        find_max_weight_and_val()
+        print("\n---------------------------------------------------------------------------\n")
+
+        writer.writerow([i+45, acc, acc_val, epoch_time])
+
+#%%
+
+lambda_value = 0.0002
+model = models.Sequential([
+    layers.Conv2D(40, (2, 2), activation='relu', bias_constraint=ZeroBias(), kernel_regularizer=tf.keras.regularizers.l2(lambda_value)),
+    layers.MaxPooling2D((2, 2)),
+    layers.Conv2D(2, (2, 2), activation='relu', bias_constraint=ZeroBias(), kernel_regularizer=tf.keras.regularizers.l2(lambda_value)),
+    layers.MaxPooling2D((2, 2)),
+    layers.Conv2D(40, (2, 2), activation='relu', bias_constraint=ZeroBias(), kernel_regularizer=tf.keras.regularizers.l2(lambda_value)),
+    layers.Flatten(),
+    layers.Dense(40, activation='relu', bias_constraint=ZeroBias()),
+    layers.Dense(num_classes, activation='relu', bias_constraint=ZeroBias(), kernel_regularizer=tf.keras.regularizers.l2(lambda_value)),  # OBS!!! last layer will be changed to accommodate no of classes
+])
+
+
+model.compile(
+        optimizer='adamax',
+        loss=tf.keras.losses.BinaryFocalCrossentropy(),
+        metrics=['accuracy']
+    )
+model.build((None, 16, 16, 1))
+model.summary()
+
+utils.my_csv.csv_to_weights(model, '2_kernels_45_epochs_start')
+subprocess.check_call(['cp -r 2_kernels_45_epochs_start/* weights/'], shell=True)
+
+with open('2_kernels_in_2nd_convlayer_adamax_restart.csv', 'w') as file:
+    writer = csv.writer(file)
+    writer.writerow(['epoch', 'accuracy', 'accuracy_val', 'time'])
+
+    start_epoch = time.time()
+    acc, acc_val = evaluate_approx()
+    epoch_time = time.time() - start_epoch
+    print(f'Accuracy: {acc}, Accuracy_val: {acc_val}, Time: {epoch_time}')
+    writer.writerow([44, acc, acc_val, epoch_time])
+
+    for i in range(5):
+        print(f"----- Epoch {i+45} -----")
+
+        start_epoch = time.time()
+        utils.train.epoch_approx(model, train)     
+        epoch_time = time.time() - start_epoch
+
+        acc, acc_val = evaluate_approx()
+
+        print("\n---------------------------------------------------------------------------\n")
+        print(f'Accuracy: {acc}, Accuracy_val: {acc_val}, Time: {epoch_time}')
+        find_max_weight_and_val()
+        print("\n---------------------------------------------------------------------------\n")
+
+        writer.writerow([i+45, acc, acc_val, epoch_time])
