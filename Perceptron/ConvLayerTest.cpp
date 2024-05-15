@@ -156,19 +156,15 @@ int main()
 
     for (int i = 0; i < inputBatch.size(); i++)
     {
-        //std::cout << inputBatch.at(i).at(1) << std::endl;
         /*  Get the i'th input in fixed point  */
         std::vector<intmax_t> singleInputFixedPoint = converter.convertToFixedPoint(inputBatch.at(i));
-        
-        //std::cout << singleInputFixedPoint.at(1) << std::endl;
-        
         
         Matrix singleInputFixedPointMatrix(16,16,singleInputFixedPoint);
         
         /********************* LAYER 0 INSTANTIATE *******************************************/
         size_t partitionSize = 4;
         LayerParams ParametersForLayer0 = layer0.getLayer();
-            /******************** BIAS TO FXP ******************************************************************/
+        /******************** BIAS TO FXP ******************************************************************/
         std::vector<intmax_t> biasesLayer0Fixed = converter.convertToFixedPoint(ParametersForLayer0.biases);
         
         std::vector<std::vector<float>> weightsLayer0Inputi;
@@ -176,7 +172,6 @@ int main()
         {
             weightsLayer0Inputi = PartitionUtility::partitionVector(ParametersForLayer0.weights.at(j), partitionSize);
         }
-        
 
         std::vector<Matrix> weightsLayer0InputiMatrix;
         for (int j = 0; j < weightsLayer0Inputi.size(); j++)

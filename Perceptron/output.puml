@@ -1,0 +1,51 @@
+@startuml
+
+
+
+
+
+/' Objects '/
+
+class ConvolutionalLayer {
+	+ConvolutionalLayer(size_t inputSizeX, size_t inputSizeY, size_t numFilters, size_t filterSizeX, size_t filterSizeY)
+	-sizes : Sizes
+	+applyConvolution(const Matrix& input) : std::vector<Matrix>
+	-biases : std::vector<intmax_t>
+	+getBiases() : std::vector<intmax_t> {query}
+	-filters : std::vector<std::vector<intmax_t>>
+	+getFilters() : std::vector<std::vector<intmax_t>> {query}
+	+updateFilters(const std::vector<Matrix>& newFilters, const std::vector<intmax_t> newBiases) : void
+}
+
+
+class ConvolutionalLayer::Sizes {
+	+filterSizeX : size_t
+	+filterSizeY : size_t
+	+inputSizeX : size_t
+	+inputSizeY : size_t
+	+numFilters : size_t
+}
+
+
+
+
+
+/' Inheritance relationships '/
+
+
+
+
+/' Aggregation relationships '/
+
+
+
+
+
+/' Nested objects '/
+
+.ConvolutionalLayer +-- .ConvolutionalLayer::Sizes
+
+
+
+
+@enduml

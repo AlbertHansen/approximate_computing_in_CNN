@@ -47,6 +47,7 @@ void ConvolutionalLayer::updateFilters(const std::vector<Matrix>& newFilters, co
 {
     if (newFilters.size() != sizes.numFilters) 
     {
+        std::cout << newFilters.size() << std::endl;
         throw std::invalid_argument("Number of new filters does not match the current number of filters.");
     }
     for (size_t k = 0; k < newFilters.size(); k++)
