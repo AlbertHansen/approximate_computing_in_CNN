@@ -73,7 +73,7 @@ def evaluate_approx():
 #evaluate_approx()
 #%%
 #sgd_learning_rate_values = [0.00001, 0.00003, 0.00005, 0.0001, 0.00015]
-sgd_learning_rate_values = [0.0001]
+sgd_learning_rate_values = [0.00005]
 
 for learning_rate_value in sgd_learning_rate_values:
     '''
@@ -113,16 +113,33 @@ for learning_rate_value in sgd_learning_rate_values:
     
     subprocess.check_call(['cp -r tensorflow_model_weights/tf_model_weights_50/* weights/'], shell=True)
     utils.my_csv.csv_to_weights(model, 'weights')
+
+    # 5 training epochs with approximate training (STE)
+    with open(f'accurate_multiplier_sgd_test_0_diff.csv', 'w') as file:
+        writer = csv.writer(file)
+        for i in range(10):
+            print(f"----- Epoch {i}, {learning_rate_value} -----")
+            
+            start_epoch = time.time()
+            utils.train.epoch_approx(model, train)     
+            epoch_time = time.time() - start_epoch
+
+            loss, acc = model.evaluate(train)
+            loss_val, acc_val = model.evaluate(test)
+
+            print(f'Accuracy: {acc}, Accuracy_val: {acc_val}, Time: {epoch_time}')
+            writer.writerow([acc, acc_val, epoch_time])
     
-    with open(f'accurate_multiplier_sgd_no_regularisation.csv', 'w') as file:
+    '''
+    with open(f'accurate_multiplier_sgd.csv', 'w') as file:
         writer = csv.writer(file)
 
         writer.writerow(['accuracy', 'accuracy_val', 'time'])
 
         # verify that the model is starting good...
-        acc, acc_val = evaluate_approx()
-        print(f'Accuracy: {acc}, Accuracy_val: {acc_val}')
-        writer.writerow([acc, acc_val, 0])
+        #acc, acc_val = evaluate_approx()
+        #print(f'Accuracy: {acc}, Accuracy_val: {acc_val}')
+        #writer.writerow([acc, acc_val, 0])
 
         # 5 training epochs with approximate training (STE)
         for i in range(10):
@@ -134,3 +151,6 @@ for learning_rate_value in sgd_learning_rate_values:
             epoch_time = time.time() - start_epoch
             print(f'Accuracy: {acc}, Accuracy_val: {acc_val}, Time: {epoch_time}')
             writer.writerow([acc, acc_val, epoch_time])
+    '''
+
+# %%

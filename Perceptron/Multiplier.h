@@ -8,15 +8,10 @@
 class Multiplier {
 public:
     // Multiply two numbers
-    int16_t multiply(int8_t a, int8_t b) 
+    intmax_t multiply(intmax_t a, intmax_t b) 
     {
         return a * b;
     }
-
-
-
-
-
 
 int16_t mul8s_1KV9(int8_t A, int8_t B)
 {
