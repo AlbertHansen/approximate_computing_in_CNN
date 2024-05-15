@@ -62,16 +62,19 @@ def iteration_approx(model, batch):
     images, labels = batch
 
     # save batch and weights
-    my_csv.tensor_to_csv(images, 'weights/batch')
-    my_csv.weights_to_csv(model, 'weights')
+    #my_csv.tensor_to_csv(images, 'weights/batch')
+    #my_csv.weights_to_csv(model, 'weights')
 
     # Call c++ network
-    subprocess.check_call(['/home/ubuntu/approximate_computing_in_CNN/app-training_approx_network/AC_FF_mul8s_1KV6'])
-    labels_approximated = my_csv.csv_to_tensor('weights/output.csv')
+    #subprocess.check_call(['/home/ubuntu/approximate_computing_in_CNN/app-training_approx_network/AC_FF_mul8s_1KV6'])
+    # labels_approximated = my_csv.csv_to_tensor('weights/output.csv')
 
     # Use GradientTape() for auto differentiation, FORWARD PASS(ES)
     with tf.GradientTape() as tape:     # OBS! tape will not be destroyed when exiting this scope
         labels_predicted = model(images)
+        
+        labels_approximated = labels_predicted # OBSOBSOBSOBSOBSOBSOBSOBSOBSOBSOBS
+
         labels_predicted_untouched = labels_predicted
         diff             = labels_predicted - labels_approximated
         diff             = obscure_tensor(diff) # remove dependencies from weights to diff
@@ -177,7 +180,7 @@ def epoch_approx(model, dataset):
         None
     """
     for batch in tqdm.tqdm(dataset):
-        diff = iteration_approx(model, batch)
+        iteration_approx(model, batch)
         #my_csv.tensor_to_csv(diff, f'runs/labels_test/labels_approx_{i}')
 
 def obscure_tensor(tensor):
