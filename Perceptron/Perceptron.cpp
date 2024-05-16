@@ -26,7 +26,7 @@ intmax_t Perceptron::compute(intmax_t bias) {
     }
     intmax_t result = bias;
     for (uint16_t i = 0; i < weights.size(); ++i) {
-        result = adder.add(result, multiplier.multiply(weights.at(i), inputs.at(i)));
+        result = adder.add(result, multiplier.mul8s_1KV8(weights.at(i), inputs.at(i)));
         //result = adder.add(result, static_cast<intmax_t>(multiplier.mul8s_1KV9(static_cast<int8_t>(weights.at(i)), static_cast<int8_t>(inputs.at(i)))));
         
         //std::cout << "W: " << weights.at(i) << " I: " << inputs.at(i) << " R: " << result << std::endl;

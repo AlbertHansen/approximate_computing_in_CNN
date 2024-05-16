@@ -1,5 +1,4 @@
 #include "FullyConnectedLayer.h"
-#include "Relu.h"
 #include "FixedPointConverter.h"
 #include <iostream>  // For debugging
 
@@ -12,7 +11,7 @@ FullyConnectedLayer::FullyConnectedLayer(size_t inputLength, size_t outputLength
     perceptrons.reserve(outputSize);  // Reserve space for outputSize perceptrons
 }
 
-void FullyConnectedLayer::setRelu(Relu<intmax_t> relu)
+void FullyConnectedLayer::setRelu(ActivationFunction<intmax_t> relu)
 {
     this->relu = relu;
 }

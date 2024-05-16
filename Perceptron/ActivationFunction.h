@@ -1,10 +1,10 @@
-#ifndef RELU_H
-#define RELU_H
+#ifndef ACTIVATIONFUNCTION_H
+#define ACTIVATIONFUNCTION_H
 
 #include <iostream>
 
 template <typename T> 
-class Relu {
+class ActivationFunction {
 public:
     // Bitwise ReLU
     intmax_t ReLU(T u) const {  // Add 'const' qualifier to the method
@@ -15,6 +15,10 @@ public:
         }
         
         return u;
+    }
+
+    intmax_t sigmoid(intmax_t ) const {
+        return 1 / (1 + exp(-u));
     }
 };
 

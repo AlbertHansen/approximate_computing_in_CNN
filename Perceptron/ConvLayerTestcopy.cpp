@@ -11,6 +11,7 @@
 #include <fstream>
 #include <sstream>
 #include <string>
+#include <chrono>
 
 template <typename T>
 void printBits(T value) 
@@ -101,6 +102,7 @@ void writeMatrixToCSV(const std::string& filename, const std::vector<std::vector
 
 int main()
 {
+    //auto startL2 = std::chrono::steady_clock::now();
     
     std::string layer0Weights = "./weights/layer_0/weights.csv";
     std::string layer0Biases = "./weights/layer_0/biases.csv";
@@ -127,8 +129,8 @@ int main()
     std::string layer7Weights = "./small_network_weights/layer_7/weights.csv";
     std::string layer7Biases = "./small_network_weights/layer_7/biases.csv";
 
-    std::string inputBatches = "./small_network_weights/images.csv";
-   */
+    std::string inputBatches = "./small_network_weights/images.csv";*/
+   
 
     ReadParameters layer0(layer0Weights, layer0Biases);
     ReadParameters layer2(layer2Weights, layer2Biases);
@@ -146,9 +148,9 @@ int main()
     FullyConnectedLayer dense1(40,10);         //(InputNodes, OutputNodes)
 
     /********************* FIXEDPOINT CONVERTER *******************************/
-    FixedPointConverter<intmax_t> converter(1, 20);
-    FixedPointConverter<double> converter2(4, 20); // int type, 4 decimal bits, 4 fractional bits
-    FixedPointConverter<intmax_t> converter3(4, 40);
+    FixedPointConverter<intmax_t> converter(1, 5);
+    FixedPointConverter<double> converter2(4, 5); // int type, 4 decimal bits, 4 fractional bits
+    FixedPointConverter<intmax_t> converter3(4, 10);
     /********************* READ INPUT ****************************************/
     std::vector<std::vector<float>> inputBatch = readInput(inputBatches);
 
@@ -172,7 +174,6 @@ int main()
         {
             weightsLayer0Inputi = PartitionUtility::partitionVector(ParametersForLayer0.weights.at(j), partitionSize);
         }
-
         std::vector<Matrix> weightsLayer0InputiMatrix;
         for (int j = 0; j < weightsLayer0Inputi.size(); j++)
         {
@@ -180,45 +181,25 @@ int main()
             Matrix intermediateWeightMatrix(2,2,converter.convertToFixedPoint(weightsLayer0Inputi.at(j)));
             weightsLayer0InputiMatrix.push_back(intermediateWeightMatrix);
         }
-
         /******************** RUN LAYER 0 *************************************************/
         conv2d.updateFilters(weightsLayer0InputiMatrix, biasesLayer0Fixed);
         std::vector<Matrix> FMLayer0beforeRelu = conv2d.applyConvolution(singleInputFixedPointMatrix);
-        
-        
-        
-
         /************************ APPLY ReLU **********************************************************************************/
         std::vector<Matrix> FMLayer0;
         for ( int j = 0 ; j <  FMLayer0beforeRelu.size(); j++)
         {
             FMLayer0.push_back(FMLayer0beforeRelu.at(j).applyRelu());
         }
-        
-        /******************** Albert jeg skriver ud til dig her *******************************************/
-        
-        
         /******************** MAX_POOLING_1*****************************************************/
         std::vector<Matrix> pooledFMLayer0 = max_pooling2d.applyMaxPooling(FMLayer0);
-        
-        
         /************************ TUNCATE FXP **********************************************************************************/
         std::vector<Matrix> FMLayer0out;
         for (int j = 0; j < pooledFMLayer0.size(); j++)
         {
             Matrix truncateMatrixLayer0(pooledFMLayer0.at(j).numRows(),pooledFMLayer0.at(j).numCols());
-            truncateMatrixLayer0.unflatten(converter3.truncateLSBs(pooledFMLayer0.at(j).flatten(), 20));
+            truncateMatrixLayer0.unflatten(converter3.truncateLSBs(pooledFMLayer0.at(j).flatten(), 5));
             FMLayer0out.push_back(truncateMatrixLayer0);
         }
-
-        /*
-        std::vector<double> test = converter2.convertToDouble(FMLayer0out.at(0).flatten());
-        for (int j = 0; j < test.size(); j++)
-        {
-            std::cout << test.at(j) << " " ;
-        }
-        std::cout << std::endl;*/
-
         /******************* LAYER 2 INSTANTIATE *************************************************************/
         LayerParams ParametersForLayer2 = layer2.getLayer();
         
@@ -227,70 +208,40 @@ int main()
         std::vector<intmax_t> zeroBias(ParametersForLayer2.weights.size(),0);
 
         std::vector<std::vector<std::vector<float>>> weightsLayer2Inputi(ParametersForLayer2.weights.size());
-        
         std::vector<std::vector<Matrix>> FMLayer2inter;
-
-        //std::cout << std::endl << ParametersForLayer2.weights.size() << std::endl;
 
         for (int j = 0; j < ParametersForLayer2.weights.size(); j++)
         {
-            
-            //std::cout << j << std::endl;
             weightsLayer2Inputi.at(j) = PartitionUtility::partitionVector(ParametersForLayer2.weights.at(j), partitionSize);
-            //std::cout << weightsLayer2Inputi.at(0).at(0).size() << std::endl;
-            //std::cout << weightsLayer2Inputi.at(j).at(j).at(0) << " "<< weightsLayer2Inputi.at(j).at(j).at(1) << " "<< weightsLayer2Inputi.at(j).at(j).at(2) << " "<< weightsLayer2Inputi.at(j).at(j).at(3) << " " << std::endl;
-
             std::vector<Matrix> weightsLayer2InputiMatrix;
             for (int p = 0; p < weightsLayer2Inputi.at(j).size(); p++)
             {
-                //std::cout << p << std::endl;
-            
-                //std::cout << "W: " << weightsLayer2Inputi.at(j).at(1).at(0) << std::endl;
                 Matrix intermediateWeightMatrix(2,2,converter.convertToFixedPoint(weightsLayer2Inputi.at(j).at(p)));
                 weightsLayer2InputiMatrix.push_back(intermediateWeightMatrix);
-                
+    
             }
-            //std::cout << weightsLayer2InputiMatrix.size() << std::endl;
-            //std::cout << weightsLayer2InputiMatrix.at(j)(0,0) << " " << weightsLayer2InputiMatrix.at(j)(0,1) << " " << weightsLayer2InputiMatrix.at(j)(1,0) << " " << weightsLayer2InputiMatrix.at(j)(1,1) << std::endl;
             /******************** RUN LAYER 2 *************************************************/
-            /*if (j== 0)
-            {
-                conv2d_1.updateFilters(weightsLayer2InputiMatrix, biasesLayer2Fixed);
-            } 
-            else
-            {}*/
-            
             conv2d_1.updateFilters(weightsLayer2InputiMatrix,zeroBias);
-            
             FMLayer2inter.push_back(conv2d_1.applyConvolution(FMLayer0out.at(j)));
         }
-        //std::cout << FMLayer2inter.at(0).size() << std::endl;
         /************************* ADD UP ALL FM IN CHANNELS*************************************************************************/
         std::vector<Matrix> FMLayer2beforeRelu;
         for (int p = 0; p < FMLayer2inter.at(0).size(); p++)
         {
-            //std::cout << "hej" << std::endl;
             Matrix accumulate(FMLayer2inter.at(0).at(0).numRows(),FMLayer2inter.at(0).at(0).numCols());
             
             for (int j = 0; j < FMLayer2inter.size(); j++)
             {
-                
-                //Matrix accumulate(FMLayer2inter.at(j).at(0).numRows(),FMLayer2inter.at(j).at(0).numCols());
                 accumulate = accumulate + FMLayer2inter.at(j).at(p);
-                //accumulate = accumulate + biasesLayer2Fixed.at(j);
-                //std::cout << FMLayer2inter.at(j).size() << std::endl;
             }
             FMLayer2beforeRelu.push_back(accumulate);
-            
         }
-        //std::cout << "hej1" << std::endl;
         /************************ APPLY ReLU **********************************************************************************/
         std::vector<Matrix> FMLayer2;
         for ( int j = 0 ; j <  FMLayer2beforeRelu.size(); j++)
         {
             FMLayer2.push_back(FMLayer2beforeRelu.at(j).applyRelu());
         }
-        
         /************************ POOLING NR. 2 ****************************************************************************************/
         std::vector<Matrix> pooledFMLayer2 = max_pooling2d.applyMaxPooling(FMLayer2);
         /************************ TUNCATE FXP **********************************************************************************/
@@ -298,14 +249,9 @@ int main()
         for (int j = 0; j < pooledFMLayer2.size(); j++)
         {
             Matrix truncateMatrixLayer2(pooledFMLayer2.at(j).numRows(),pooledFMLayer2.at(j).numCols());
-            truncateMatrixLayer2.unflatten(converter3.truncateLSBs(pooledFMLayer2.at(j).flatten(), 20));
+            truncateMatrixLayer2.unflatten(converter3.truncateLSBs(pooledFMLayer2.at(j).flatten(), 5));
             FMLayer2out.push_back(truncateMatrixLayer2);
         }
-        
-
-        
-
-        //std::cout << FMLayer2inter.size() << std::endl;
         /******************* LAYER 4 INSTANTIATE *************************************************************/
         LayerParams ParametersForLayer4 = layer4.getLayer();
         
@@ -318,27 +264,16 @@ int main()
         for (int j = 0; j < ParametersForLayer4.weights.size(); j++)
         {
             weightsLayer4Inputi.at(j) = PartitionUtility::partitionVector(ParametersForLayer4.weights.at(j), partitionSize);
-        
-
             std::vector<Matrix> weightsLayer4InputiMatrix;
             for (int p = 0; p < weightsLayer4Inputi.at(j).size(); p++)
             {
                 Matrix intermediateWeightMatrix(2,2,converter.convertToFixedPoint(weightsLayer4Inputi.at(j).at(p)));
                 weightsLayer4InputiMatrix.push_back(intermediateWeightMatrix);
             }
-            /******************** RUN LAYER 4 *************************************************/
-            /*if (j== 0)
-            {
-                conv2d_2.updateFilters(weightsLayer4InputiMatrix, biasesLayer4Fixed);
-            } 
-            else
-            {}*/
-                conv2d_2.updateFilters(weightsLayer4InputiMatrix,zeroBias);
-            //std::cout << weightsLayer4InputiMatrix.size() << std::endl;
+            /******************** RUN LAYER 4 *************************************************/          
+            conv2d_2.updateFilters(weightsLayer4InputiMatrix,zeroBias);
             FMLayer4inter.push_back(conv2d_2.applyConvolution(FMLayer2out.at(j)));
-        }
-        //std::cout << FMLayer4inter.at(0).size() << std::endl;
-        
+        }        
         /************************* ADD UP ALL FM IN CHANNELS*************************************************************************/
         std::vector<Matrix> FMLayer4beforeRelu;
         
@@ -353,21 +288,14 @@ int main()
             }
             FMLayer4beforeRelu.push_back(accumulate );
         }
-        
         /************************ APPLY ReLU **********************************************************************************/
         std::vector<std::vector<intmax_t>> FMLayer4;
         for ( int j = 0 ; j <  FMLayer4beforeRelu.size(); j++)
         {
             FMLayer4.push_back((FMLayer4beforeRelu.at(j).applyRelu()).flatten());
         }
-        
-        
-
         /************************* FLATTEN FEATURE MAPS ********************************************************************/
-        
-        // Flatten the nested vector into a single vector using for loops
         std::vector<intmax_t> flattenedVector;
-        //flattenedVector.reserve(totalSize);  // Reserve space for efficiency
         for (int p = 0; p < FMLayer4.size(); p++) 
         {
             flattenedVector.push_back(FMLayer4.at(p).at(0));
@@ -384,12 +312,8 @@ int main()
         {
             flattenedVector.push_back(FMLayer4.at(p).at(3));
         }
-
         /************************ TUNCATE FXP **********************************************************************************/
-        std::vector<intmax_t> flattenedOut = converter3.truncateLSBs(flattenedVector,20);      
-        
-        
-
+        std::vector<intmax_t> flattenedOut = converter3.truncateLSBs(flattenedVector,5);      
         /**************************** DENSE LAYER6 INIT *******************************************************************************/
         LayerParams layer6Params = layer6.getLayer();
         /**************************** FXP CONVERSION *********************************************************************************/
@@ -402,13 +326,9 @@ int main()
             layer6weightsFixed.push_back(intermediateDenseWeights);
         }
         /*************************** RUN DENSE LAYER6 ********************************************************************************/
-        //std::cout << "t: " << flattenedOut.at(0) << std::endl;
         std::vector<intmax_t> denseLayer6 = dense.forward(flattenedOut,layer6weightsFixed,layer6biasesFixed);
         /************************ TUNCATE FXP **********************************************************************************/
-        std::vector<intmax_t> denseLayer6out = converter3.truncateLSBs(denseLayer6,20);      
-        
-        
-        
+        std::vector<intmax_t> denseLayer6out = converter3.truncateLSBs(denseLayer6,5);  
         /**************************** DENSE LAYER7 INIT *******************************************************************************/
         LayerParams layer7Params = layer7.getLayer();
         /**************************** FXP CONVERSION *********************************************************************************/
@@ -423,10 +343,9 @@ int main()
         /*************************** RUN DENSE LAYER7 ********************************************************************************/
         std::vector<intmax_t> denseLayer7 = dense1.forward(denseLayer6out,layer7weightsFixed,layer7biasesFixed);
         /************************ TUNCATE FXP **********************************************************************************/
-        std::vector<double> denseLayer7out = converter2.convertToDouble(converter3.truncateLSBs(denseLayer7,20));
-        //std::cout << denseLayer7out.at(1)<< std::endl;
+        std::vector<double> denseLayer7out = converter2.convertToDouble(converter3.truncateLSBs(denseLayer7,5));
         outputBatch.push_back(denseLayer7out);
     }
     writeMatrixToCSV("./weights/output.csv",outputBatch);
-    //writeMatrixToCSV("./output3.csv",outputBatch);
+    //writeMatrixToCSV("./output2.csv",outputBatch);
 }
