@@ -119,7 +119,7 @@ def find_max_weight_and_val():
 utils.my_csv.csv_to_weights(model, '2_kernels_45_epochs_start')
 subprocess.check_call(['cp -r 2_kernels_45_epochs_start/* weights/'], shell=True)
 
-with open('mul_6b.csv', 'w') as file:
+with open('mul8s_1KV8.csv', 'w') as file:
     writer = csv.writer(file)
     writer.writerow(['epoch', 'accuracy', 'accuracy_val', 'time'])
 
