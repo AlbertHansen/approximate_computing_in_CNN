@@ -618,6 +618,9 @@ int16_t mul8s_1KV8(int8_t A, int8_t B)
   return P;
 }
 
+
+
+
 int16_t mul8s_1KVP(int8_t A, int8_t B)
 {
   int16_t P, P_;
@@ -859,7 +862,6 @@ int16_t mul8s_1L12(int8_t A, int8_t B)
   P |= (S_8_6 & 1) << 14;
   P |= (S_8_7 & 1) << 15;
   return P;
-};
-
+}
 };
 #endif
