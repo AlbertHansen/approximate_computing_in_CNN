@@ -254,7 +254,7 @@ with open('2_kernels_in_2nd_convlayer_sgd_0.0005.csv', 'w') as file:
     print(f'Accuracy: {acc}, Accuracy_val: {acc_val}, Time: {epoch_time}')
     writer.writerow([44, acc, acc_val, epoch_time])
 
-    for i in range(5):
+    for i in range(10):
         print(f"----- Epoch {i+45} -----")
 
         start_epoch = time.time()
@@ -306,7 +306,7 @@ with open('2_kernels_in_2nd_convlayer_adamax_restart.csv', 'w') as file:
     print(f'Accuracy: {acc}, Accuracy_val: {acc_val}, Time: {epoch_time}')
     writer.writerow([44, acc, acc_val, epoch_time])
 
-    for i in range(5):
+    for i in range(10):
         print(f"----- Epoch {i+45} -----")
 
         start_epoch = time.time()
