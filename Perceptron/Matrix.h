@@ -3,7 +3,7 @@
 
 #include <vector>
 #include <iostream>
-#include "Relu.h"
+#include "ActivationFunction.h"
 
 class Matrix {
 private:
@@ -11,7 +11,7 @@ private:
     size_t rows;
     size_t cols;
 
-    Relu<intmax_t> relu;
+    ActivationFunction<intmax_t> relu;
 
 public:
     Matrix(size_t rows, size_t cols);
