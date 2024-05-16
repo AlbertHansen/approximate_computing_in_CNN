@@ -16,10 +16,6 @@ public:
         
         return u;
     }
-
-    intmax_t sigmoid(intmax_t ) const {
-        return 1 / (1 + exp(-u));
-    }
 };
 
 #endif
