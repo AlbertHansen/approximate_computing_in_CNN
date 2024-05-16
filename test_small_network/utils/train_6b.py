@@ -13,7 +13,7 @@ def iteration_gradient_test(model, batch):
     Args:
         model (tf.keras.Model): The CNN model.
         batch (tuple): A tuple containing the input images and corresponding labels.
-        labels_approximated (tf.Tensor): The approximated labels.
+        labels_approximated (tf.Tensor): The approximated labels. 
 
     Returns:
         None

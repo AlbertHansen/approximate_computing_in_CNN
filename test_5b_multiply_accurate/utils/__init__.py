@@ -3,10 +3,6 @@ from . import dataset_manipulation
 from . import model_manipulation
 from . import timehistory
 from . import train
-from . import train_6b
-from . import train_0
-from . import train_1
-from . import train_2
 
 '''
 import pkgutil
