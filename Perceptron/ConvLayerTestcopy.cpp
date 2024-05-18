@@ -148,10 +148,10 @@ int main()
     FullyConnectedLayer dense1(40,10);         //(InputNodes, OutputNodes)
 
     /********************* FIXEDPOINT CONVERTER *******************************/
-    size_t fracBits = 2;
-    FixedPointConverter<intmax_t> converter(6, fracBits);
-    FixedPointConverter<double> converter2(6, fracBits); // int type, 4 decimal bits, 4 fractional bits
-    FixedPointConverter<intmax_t> converter3(12, 2*fracBits);
+    size_t fracBits = 4;
+    FixedPointConverter<intmax_t> converter(4, fracBits);
+    FixedPointConverter<double> converter2(4, fracBits); // int type, 4 decimal bits, 4 fractional bits
+    FixedPointConverter<intmax_t> converter3(8, 2*fracBits);
     
     /********************* READ INPUT ****************************************/
     std::vector<std::vector<float>> inputBatch = readInput(inputBatches);
