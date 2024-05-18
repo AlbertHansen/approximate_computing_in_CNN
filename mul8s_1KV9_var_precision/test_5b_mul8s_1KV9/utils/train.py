@@ -66,7 +66,7 @@ def iteration_approx(model, batch):
     my_csv.weights_to_csv(model, 'weights')
 
     # Call c++ network
-    subprocess.check_call(['/home/ubuntu/approximate_computing_in_CNN/test_5b_mul8s_1KV9/AC_FF_5b_mul8s_1KV9'])
+    subprocess.check_call(['/home/ubuntu/approximate_computing_in_CNN/mul8s_1KV9_var_precision/test_5b_mul8s_1KV9/AC_FF_5b_mul8s_1KV9'])
     labels_approximated = my_csv.csv_to_tensor('weights/output.csv')
 
     # Use GradientTape() for auto differentiation, FORWARD PASS(ES)
