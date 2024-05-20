@@ -115,31 +115,32 @@ def find_max_weight_and_val():
 
 #evaluate_approx()
 #%%
-utils.my_csv.csv_to_weights(model, '2_kernels_45_epochs_start')
-subprocess.check_call(['cp -r 2_kernels_45_epochs_start/* weights/'], shell=True)
+for i in range(4):
+    utils.my_csv.csv_to_weights(model, '2_kernels_45_epochs_start')
+    subprocess.check_call(['cp -r 2_kernels_45_epochs_start/* weights/'], shell=True)
 
-with open('mul_5b_accurate.csv', 'w') as file:
-    writer = csv.writer(file)
-    writer.writerow(['epoch', 'accuracy', 'accuracy_val', 'time'])
-
-    start_epoch = time.time()
-    acc, acc_val = evaluate_approx()
-    epoch_time = time.time() - start_epoch
-    print(f'Accuracy: {acc}, Accuracy_val: {acc_val}, Time: {epoch_time}')
-    writer.writerow([44, acc, acc_val, epoch_time])
-
-    for i in range(10):
-        print(f"----- Epoch {i+45} -----")
+    with open(f'run_{i}_mul_5b_accurate.csv', 'w') as file:
+        writer = csv.writer(file)
+        writer.writerow(['epoch', 'accuracy', 'accuracy_val', 'time'])
 
         start_epoch = time.time()
-        utils.train.epoch_approx(model, train)     
-        epoch_time = time.time() - start_epoch
-
         acc, acc_val = evaluate_approx()
-
-        print("\n---------------------------------------------------------------------------\n")
+        epoch_time = time.time() - start_epoch
         print(f'Accuracy: {acc}, Accuracy_val: {acc_val}, Time: {epoch_time}')
-        find_max_weight_and_val()
-        print("\n---------------------------------------------------------------------------\n")
+        writer.writerow([44, acc, acc_val, epoch_time])
 
-        writer.writerow([i+45, acc, acc_val, epoch_time])
+        for i in range(10):
+            print(f"----- Epoch {i+45} -----")
+
+            start_epoch = time.time()
+            utils.train.epoch_approx(model, train)     
+            epoch_time = time.time() - start_epoch
+
+            acc, acc_val = evaluate_approx()
+
+            print("\n---------------------------------------------------------------------------\n")
+            print(f'Accuracy: {acc}, Accuracy_val: {acc_val}, Time: {epoch_time}')
+            find_max_weight_and_val()
+            print("\n---------------------------------------------------------------------------\n")
+
+            writer.writerow([i+45, acc, acc_val, epoch_time])
