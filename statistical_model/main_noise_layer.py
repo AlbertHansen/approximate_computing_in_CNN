@@ -174,8 +174,6 @@ def flatten(lst):
 #%% Main
 def main() -> None:
 
-    
-    
         
     # Classes
     num_classes = 10
@@ -194,10 +192,10 @@ def main() -> None:
     # Make distribution of input images
     input_pmf = dataset_pmf(train)
     # Error Distribution
-    pmfs = make_pmfs('error_mul8s_1kv9.csv', input_pmf)
+    pmfs = make_pmfs('error_mul8s_1kv8.csv', input_pmf)
 
     
-    i = 6
+    i = 5 ############### OBS OBS OBS CHANGED TO 5 #####################
     print(f"----------- {i} bits for precision -----------")
     lambda_value = 0.0002
     model = models.Sequential([
@@ -226,10 +224,10 @@ def main() -> None:
     '''
 
     
-    csv_to_weights(model, f'2_kernels_45_epochs_start')
+    csv_to_weights(model, f'1KV8_10_finetune_5b')
     weights_to_csv(model, f'is_it_read_properly')
     accuracies = []
-    for i in range(45):
+    for i in range(3):
         accuracies.append(evaluate_model(model, test))
 
     print(accuracies)

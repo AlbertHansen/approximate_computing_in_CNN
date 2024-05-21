@@ -138,8 +138,8 @@ class NoisyConv2D(tf.keras.layers.Layer):
             for filt in range(self.filters):
                 # sample from distribution
                 # filter_noise = self.filter_error_distributions[filt].rvs(*self.filter_error_params[filt], size=outputs.shape[0:-1]) / (2 ** self.precision_bits)
-                # filter_noise = self.filter_error_distributions[filt].rvs(*self.filter_error_params[filt], size=outputs.shape[0:-1]) / (2 ** (2 * self.precision_bits))
-                filter_noise = self.filter_error_distributions[filt].rvs(*self.filter_error_params[filt], size=outputs.shape[0:-1]) / (2 ** 13)
+                filter_noise = self.filter_error_distributions[filt].rvs(*self.filter_error_params[filt], size=outputs.shape[0:-1]) / (2 ** (2 * self.precision_bits))
+                # filter_noise = self.filter_error_distributions[filt].rvs(*self.filter_error_params[filt], size=outputs.shape[0:-1]) / (2 ** 13)
                 noise[:, :, :, filt] = filter_noise
 
             # Add noise
@@ -289,8 +289,8 @@ class NoisyDense(tf.keras.layers.Layer):
                 # sample from distribution
                 if self.perceptron_error_distributions:
                     # noise[:, perceptron] = self.perceptron_error_distributions[perceptron].rvs(*self.perceptron_error_params[perceptron], size=outputs.shape[0]) / (2 ** self.precision_bits)
-                    # noise[:, perceptron] = self.perceptron_error_distributions[perceptron].rvs(*self.perceptron_error_params[perceptron], size=outputs.shape[0]) / (2 ** (2 * self.precision_bits))
-                    noise[:, perceptron] = self.perceptron_error_distributions[perceptron].rvs(*self.perceptron_error_params[perceptron], size=outputs.shape[0]) / (2 ** 13)
+                    noise[:, perceptron] = self.perceptron_error_distributions[perceptron].rvs(*self.perceptron_error_params[perceptron], size=outputs.shape[0]) / (2 ** (2 * self.precision_bits))
+                    # noise[:, perceptron] = self.perceptron_error_distributions[perceptron].rvs(*self.perceptron_error_params[perceptron], size=outputs.shape[0]) / (2 ** 13)
 
             # Add noise
             outputs = outputs + tf.convert_to_tensor(noise, dtype=tf.float32)
