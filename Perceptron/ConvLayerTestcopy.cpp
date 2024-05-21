@@ -103,7 +103,7 @@ void writeMatrixToCSV(const std::string& filename, const std::vector<std::vector
 int main()
 {
     //auto startL2 = std::chrono::steady_clock::now();
-    /*
+    
     std::string layer0Weights = "./weights/layer_0/weights.csv";
     std::string layer0Biases = "./weights/layer_0/biases.csv";
     std::string layer2Weights = "./weights/layer_2/weights.csv";
@@ -116,7 +116,7 @@ int main()
     std::string layer7Biases = "./weights/layer_7/biases.csv";
 
     std::string inputBatches = "./weights/batch.csv";
-    /*/
+    /*
     
     std::string layer0Weights = "./small_network_weights/layer_0/weights.csv";
     std::string layer0Biases = "./small_network_weights/layer_0/biases.csv";
@@ -129,7 +129,7 @@ int main()
     std::string layer7Weights = "./small_network_weights/layer_7/weights.csv";
     std::string layer7Biases = "./small_network_weights/layer_7/biases.csv";
 
-    std::string inputBatches = "./small_network_weights/images.csv";
+    std::string inputBatches = "./small_network_weights/images.csv";*/
    
 
     ReadParameters layer0(layer0Weights, layer0Biases);
@@ -348,6 +348,6 @@ int main()
         std::vector<double> denseLayer7out = converter2.convertToDouble(converter3.truncateLSBs(denseLayer7,fracBits));
         outputBatch.push_back(denseLayer7out);
     }
-    //writeMatrixToCSV("./weights/output.csv",outputBatch);
-    writeMatrixToCSV("./output2.csv",outputBatch);
+    writeMatrixToCSV("./weights/output.csv",outputBatch);
+    //writeMatrixToCSV("./output2.csv",outputBatch);
 }
