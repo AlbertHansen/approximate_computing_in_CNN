@@ -18,7 +18,7 @@ def convolve_pmfs(pmf_dict, b_indexes) -> dict:
     combined_pmf = pmf_dict[b_indexes[0]].copy()
     
     # Convolve the PMFs for the remaining b-indexes
-    for b_index in b_indexes:
+    for b_index in b_indexes[1:]:
 
         current_pmf = pmf_dict[b_index]
         
@@ -39,48 +39,6 @@ def convolve_pmfs(pmf_dict, b_indexes) -> dict:
     
     return combined_pmf
 
-''' --------- Fit PMFs to distributions ---------
-# SHOULD BE USED, HOWEVER, IT IS VERY SLOW
-
-# Evaluate goodness of fit
-def evaluate_fit(distribution, params, data):
-    # Generate a PDF from the fitted distribution
-    pdf_fitted = distribution.pdf(data, *params[:-2], loc=params[-2], scale=params[-1])
-    
-    # Compute the K-S statistic
-    D, p_value = stats.kstest(data, distribution.cdf, args=params)
-    
-    return D, p_value
-
-def fit_pmfs(convolved_pmf) -> tuple:
-    distributions = {
-        'norm': stats.norm
-    }
-
-    samples = []
-    for error_sum, prob_sum in convolved_pmf.items():
-        num_samples = int(prob_sum * 1000000)  # Scale to get a sizable sample
-        samples.extend([error_sum] * num_samples)
-    samples = np.array(samples)
-
-    # Fit each distribution to the sample data
-    best_fit_p_value = 1
-    best_fit_params = None  
-    best_fit_distribution = None
-    for distribution in distributions.values():
-        params = distribution.fit(samples)
-
-        start  = time.time()
-        D, p_value = evaluate_fit(distribution, params, samples)
-        del D
-        
-        if p_value < best_fit_p_value:
-            best_fit_p_value = p_value
-            best_fit_params  = params
-            best_fit_distribution = distribution
-
-    return best_fit_distribution, best_fit_params
-'''
 def fit_pmfs(convolved_pmf) -> tuple:
     """
     Fits a probability mass function (PMF) to the given convolved PMF.
@@ -94,8 +52,7 @@ def fit_pmfs(convolved_pmf) -> tuple:
 
     samples = []
     for error_sum, prob_sum in convolved_pmf.items():
-        # num_samples = int(prob_sum * 1000000)  # Scale to get a sizable sample
-        num_samples = int(prob_sum * 10000)  # Scale to get a sizable sample
+        num_samples = int(prob_sum * 1000000)  # Scale to get a sizable sample
         samples.extend([error_sum] * num_samples)
     samples = np.array(samples)
 
@@ -215,7 +172,7 @@ class NoisyConv2D(tf.keras.layers.Layer):
         for filt in range(self.filters):
             weights = self.kernel[:, :, :, filt]            # Get weights for perceptron, kernel.shape = (kernel_height, kernel_width, nr_input_channels, nr_filters)
             weights = tf.reshape(weights, [-1])             # Flatten to 1D
-            weights = weights * (2 ** self.precision_bits)  # Scale to integer
+            weights = weights * (2 ** 7)  # Scale to integer
             weights = weights + 128                         # Shift to positive
             weights = tf.cast(weights, tf.int32)            # Quantize
 
@@ -223,11 +180,11 @@ class NoisyConv2D(tf.keras.layers.Layer):
             filter_error_pmf = convolve_pmfs(self.error_pmfs, weights.numpy())
             distribution, fit_params = fit_pmfs(filter_error_pmf)
             
+            # emulate 8 bits right-shift
             mean, variance = fit_params
-            mean = mean / 100
-            variance = variance / 100
-            fit_params = (mean, variance)
-            print(fit_params)
+            mean = mean / (2 ** self.precision_bits)
+            variance = variance / (2 ** self.precision_bits)
+            fit_params = (mean, variance)         
 
             # Store distribution and fit parameters
             self.filter_error_distributions[filt] = distribution
@@ -360,7 +317,7 @@ class NoisyDense(tf.keras.layers.Layer):
         """
         for perceptron in range(self.units):
             weights = self.kernel[:, perceptron]            # Get weights for perceptron, kernel.shape = (inputs, perceptrons)
-            weights = weights * (2 ** self.precision_bits)  # Scale to integer
+            weights = weights * (2 ** 7)  # Scale to integer
             weights = weights + 128                         # Shift to positive
             weights = tf.cast(weights, tf.int32)            # Quantize
 
@@ -368,13 +325,11 @@ class NoisyDense(tf.keras.layers.Layer):
             perceptron_error_pmf = convolve_pmfs(self.error_pmfs, weights.numpy()) ############## HERE IT GOES WRONG ##################
             distribution, fit_params = fit_pmfs(perceptron_error_pmf)
             
-            '''
+            
             mean, variance = fit_params
-            mean = mean / 100
-            variance = variance / 100
-            fit_params = (mean, variance)
-            print(fit_params)
-            '''
+            mean = mean / (2 ** self.precision_bits)
+            variance = variance / (2 ** self.precision_bits)
+            fit_params = (mean, variance)            
             
             # Store distribution and fit parameters
             self.perceptron_error_distributions[perceptron] = distribution
@@ -395,3 +350,58 @@ class NoisyDense(tf.keras.layers.Layer):
 
     def compute_output_shape(self):
         return (None, self.units)
+    
+
+
+
+
+
+
+
+
+
+
+############################################################################################################
+
+''' --------- Fit PMFs to distributions ---------
+# SHOULD BE USED, HOWEVER, IT IS VERY SLOW
+
+# Evaluate goodness of fit
+def evaluate_fit(distribution, params, data):
+    # Generate a PDF from the fitted distribution
+    pdf_fitted = distribution.pdf(data, *params[:-2], loc=params[-2], scale=params[-1])
+    
+    # Compute the K-S statistic
+    D, p_value = stats.kstest(data, distribution.cdf, args=params)
+    
+    return D, p_value
+
+def fit_pmfs(convolved_pmf) -> tuple:
+    distributions = {
+        'norm': stats.norm
+    }
+
+    samples = []
+    for error_sum, prob_sum in convolved_pmf.items():
+        num_samples = int(prob_sum * 1000000)  # Scale to get a sizable sample
+        samples.extend([error_sum] * num_samples)
+    samples = np.array(samples)
+
+    # Fit each distribution to the sample data
+    best_fit_p_value = 1
+    best_fit_params = None  
+    best_fit_distribution = None
+    for distribution in distributions.values():
+        params = distribution.fit(samples)
+
+        start  = time.time()
+        D, p_value = evaluate_fit(distribution, params, samples)
+        del D
+        
+        if p_value < best_fit_p_value:
+            best_fit_p_value = p_value
+            best_fit_params  = params
+            best_fit_distribution = distribution
+
+    return best_fit_distribution, best_fit_params
+'''

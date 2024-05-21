@@ -3,16 +3,41 @@ import tensorflow as tf
 import tensorflow_datasets as tfds
 import tqdm as tqdm
 import pandas as pd
+import math
+import matplotlib.pyplot as plt
 from NoisyLayers import * 
 from dataset_manipulation import *
 from test_custom_layers import * 
+from collections import defaultdict
 from tensorflow.keras import layers, models
 from my_csv import weights_to_csv, csv_to_weights
 from sklearn.metrics import accuracy_score
 
 
 #%% Functions
-def make_pmfs(filename: str) -> dict:
+def dataset_pmf(dataset) -> dict:
+    # test_noisy_layers()
+    images, labels = debatch_dataset(dataset)
+    images = images * (2 ** 7) 
+    images = images + 128
+    images = images[0].flatten()
+    images = [math.floor(value) for value in images]
+
+    # Step 3: Create a distribution
+    distribution = defaultdict(int)
+    for value in images:
+        distribution[value] += 1
+    
+    # dict(distribution)
+
+    # Step 4: Create a PMF
+    pmf = {}
+    for key, value in distribution.items():
+        pmf[key] = value / len(images)
+
+    return pmf
+
+def make_pmfs(filename: str, input_pmf) -> dict:
 
     # Read the CSV file
     data = pd.read_csv(filename, header=None)
@@ -25,12 +50,22 @@ def make_pmfs(filename: str) -> dict:
         error_distributions = row.values
         
         # Calculate unique values and frequencies
-        unique_values, value_counts = np.unique(error_distributions, return_counts=True)
-        freq = value_counts / len(error_distributions)
-        
+        # Initialize the dictionary to hold lists of indices for each unique value
+        index_dict = {}
+
+# Populate the dictionary with indices
+        for idx, value in enumerate(error_distributions):
+            if value not in index_dict:
+                if idx in input_pmf.keys():
+                    index_dict[value] = input_pmf[idx]
+                else:
+                    index_dict[value] = 0
+            if idx in input_pmf.keys():
+                index_dict[value] = index_dict[value] + input_pmf[idx]
+
         # Combine unique values and frequencies into a list of tuples
-        pmf = dict(zip(unique_values, freq))  # Store as dictionary for easier manipulation
-        pmf_dict[index] = pmf
+        
+        pmf_dict[index] = index_dict
 
     return pmf_dict
 
@@ -129,13 +164,22 @@ def evaluate_model(model, dataset):
     
     return accuracy.numpy()
 
+def flatten(lst):
+    flattened_list = []
+    for element in lst:
+        if isinstance(element, list):
+            flattened_list.extend(flatten(element))
+        else:
+            flattened_list.append(element)
+    return flattened_list
+
+
 
 #%% Main
 def main() -> None:
-    # test_noisy_layers()
 
-    # Error Distribution
-    pmfs = make_pmfs('error_mul8s_1kv9.csv')
+    
+    
         
     # Classes
     num_classes = 10
@@ -151,7 +195,12 @@ def main() -> None:
     test_path =  '/home/ubuntu/tensorflow_datasets/cifar100_grey_16x16_LANCZOS3/test'
     train, test = get_datasets(train_path, test_path, classes_to_keep, 32)
 
+    # Make distribution of input images
+    input_pmf = dataset_pmf(train)
+    # Error Distribution
+    pmfs = make_pmfs('error_mul8s_1kv9.csv', input_pmf)
 
+    
     i = 6
     print(f"----------- {i} bits for precision -----------")
     lambda_value = 0.0002
@@ -177,12 +226,17 @@ def main() -> None:
 
     csv_to_weights(model, f'2_kernels_45_epochs_start')
     weights_to_csv(model, f'is_it_read_properly')
-    print(evaluate_model(model, test))
+    accuracies = []
+    for i in range(3):
+        accuracies.append(evaluate_model(model, test))
+
+    print(accuracies)
 
     # print(evaluate_model(model, test))
     # print(model.evaluate(test))
 
     # history = model.fit(train, epochs=50, validation_data=test)
+    
     
 
 
