@@ -30,7 +30,7 @@ uint64_t add(const uint64_t B, const uint64_t A) {
     return result;  // Convert result back to uint64_t before returning
 }
 /*********** Approx multiplier ***************/
-int16_t mul8s_1KV8(const int8_t B, const int8_t A);
+int16_t mul8s_1L2J(const int8_t B, const int8_t A);
 
 /*********** Accurate multiplier ***********/
 int16_t mult(const int8_t B, const int8_t A) {
@@ -53,10 +53,12 @@ std::vector<intmax_t> convertToSigned(const std::vector<uint64_t>& results, uint
     return signedResults;
 }
 
-std::vector<intmax_t> testAllCombinations(BinaryOperation operation) {
-    std::vector<intmax_t> results;
+std::vector<std::vector<intmax_t>> testAllCombinations(BinaryOperation operation) {
+    std::vector<std::vector<intmax_t>> results;
+    
     //std::vector<uint64_t> results;
     for (intmax_t signedA = -128; signedA <= 127; ++signedA) {
+        std::vector<intmax_t> result;
         for (intmax_t signedB = -128; signedB <= 127; ++signedB) {
             //uint64_t A = static_cast<uint64_t>(signedA);
             //uint64_t B = static_cast<uint64_t>(signedB);
@@ -64,40 +66,51 @@ std::vector<intmax_t> testAllCombinations(BinaryOperation operation) {
             
             //uint64_t result = operation(B, A); // Note the order of arguments
             //results.push_back(result);
-            results.push_back(static_cast<intmax_t>(operation(signedB,signedA)));
+            result.push_back(static_cast<intmax_t>(operation(signedB,signedA)));
         }
-    
+        results.push_back(result);
     }
     return /*convertToSigned(*/results;
 }
 
-std::vector<intmax_t> testAllCombinationsAccurate(BinaryOperation operation) {
+std::vector<std::vector<intmax_t>> testAllCombinationsAccurate(BinaryOperation operation) {
     //std::vector<uint64_t> results;
-    std::vector<intmax_t> results;
+    std::vector<std::vector<intmax_t>> results;
+    
     for (intmax_t signedA = -128; signedA <= 127; ++signedA) {
+        std::vector<intmax_t> result;
         for (intmax_t signedB = -128; signedB <= 127; ++signedB) {
             //uint64_t A = static_cast<uint64_t>(signedA);
             //uint64_t B = static_cast<uint64_t>(signedB);
             
 
-            uint64_t result = operation(signedB, signedA); // Note the order of arguments
+            uint64_t result1 = operation(signedB, signedA); // Note the order of arguments
             
-            results.push_back((intmax_t)result);
+            result.push_back((intmax_t)result1);
         }
+        results.push_back(result);
     }
     return results;
 }
 
-void writeVectorToCSV(const std::string& filename, const std::vector<intmax_t>& data) {
+void writeVectorToCSV(const std::string& filename, const std::vector<std::vector<intmax_t>>& data) {
     std::ofstream outfile(filename);
-    // Write data to CSV
-    for (size_t i = 0; i < data.size(); ++i) {
-        outfile << data[i];
-        if (i != data.size() - 1) {
-            outfile << ",";  // Add comma if not the last element
-        }
+    
+    if (!outfile.is_open()) {
+        std::cerr << "Error opening file: " << filename << std::endl;
+        return;
     }
-    outfile << std::endl;
+
+    for (const auto& row : data) {
+        for (size_t i = 0; i < row.size(); ++i) {
+            outfile << row[i];
+            if (i != row.size() - 1) {
+                outfile << ",";  // Add comma if not the last element
+            }
+        }
+        outfile << std::endl;  // Move to the next line for the next inner vector
+    }
+
     outfile.close();
     std::cout << "Data written to " << filename << std::endl;
 }/*
@@ -128,16 +141,28 @@ void writeVectorToCSV(const std::string& filename, const std::vector<intmax_t>& 
 int main() {
 
     
-        std::vector<intmax_t> Expected = testAllCombinationsAccurate(mult);
-        std::vector<intmax_t> Actual = testAllCombinations(mul8s_1KV8);
+        std::vector<std::vector<intmax_t>> Expected = testAllCombinationsAccurate(mult);
+        std::vector<std::vector<intmax_t>> Actual = testAllCombinations(mul8s_1L2J);
+        std::vector<std::vector<intmax_t>> Error;
+        for (int j = 0; j < Expected.size(); ++j)
+        {
+            std::vector<intmax_t> err;
+            for(int i = 0; i < Expected.at(j).size(); ++i)
+            {
+                err.push_back(Actual.at(j).at(i)-Expected.at(j).at(i));
+            }
+            Error.push_back(err);
+        }
     
         writeVectorToCSV("./Error/Error_files/Expected.csv",Expected);
         writeVectorToCSV("./Error/Error_files/Actual.csv",Actual);
+        writeVectorToCSV("./Error/Error_files/Error.csv",Error);
 
+        /*
         Evaluator eval_add8se_8R9(Expected,Actual);
         Metrics mul8s_1KV9_metrics = eval_add8se_8R9.calculateMetrics();
         eval_add8se_8R9.writeMetricsToCSV("./Error/Error_files/metrics.csv",mul8s_1KV9_metrics);    //(filename, evaluator.metrics)
-    
+        */
 
     /* Display the results (optional)
     for (const auto& row : Expected) {
