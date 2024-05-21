@@ -37,11 +37,11 @@ cm = 1/2.54                                     # centimeters in inches
 colors = dc(1)
 
 # Load data from CSV files
-actual = np.loadtxt("./Error/Error_files/Actual.csv", delimiter=",")
-expected = np.loadtxt("./Error/Error_files/Expected.csv", delimiter=",")
+# actual = np.loadtxt("./Error/Error_files/Actual.csv", delimiter=",")
+# expected = np.loadtxt("./Error/Error_files/Expected.csv", delimiter=",")
 
 # Calculate the difference
-diff = expected - actual
+diff = np.loadtxt("./Error/Error_files/Error.csv", delimiter=",")
 
 # Count for bins
 unique_values, value_counts = np.unique(diff, return_counts=True)
