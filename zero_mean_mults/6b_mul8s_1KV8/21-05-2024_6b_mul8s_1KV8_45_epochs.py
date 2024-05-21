@@ -75,14 +75,14 @@ def compare_max_indices(file1, file2):
 
 def evaluate_approx():
     subprocess.check_call(['cp weights/train_images.csv weights/batch.csv'], shell=True)
-    subprocess.check_call(['./AC_FF_6b_mul8s_1KV9'])
+    subprocess.check_call(['./AC_FF_6b_mul8s_1KV8'])
 
     acc = compare_max_indices('weights/train_labels.csv', 'weights/output.csv')
     print(f"From within evaluate_approx: acc = {acc}")
 
     # Call c++ network
     subprocess.check_call(['cp weights/test_images.csv weights/batch.csv'], shell=True)
-    subprocess.check_call(['./AC_FF_6b_mul8s_1KV9'])
+    subprocess.check_call(['./AC_FF_6b_mul8s_1KV8'])
 
     acc_val = compare_max_indices('weights/test_labels.csv', 'weights/output.csv')
     print(f"From within evaluate_approx: acc_val = {acc_val}")
@@ -118,7 +118,7 @@ def find_max_weight_and_val():
 utils.my_csv.csv_to_weights(model, '2_kernels_45_epochs_start')
 subprocess.check_call(['cp -r 2_kernels_45_epochs_start/* weights/'], shell=True)
 
-with open('5b_mul8s_1KV9_run_0.csv', 'w') as file:
+with open('6b_mul8s_1KV8_45_epochs.csv', 'w') as file:
     writer = csv.writer(file)
     writer.writerow(['epoch', 'accuracy', 'accuracy_val', 'time'])
 
