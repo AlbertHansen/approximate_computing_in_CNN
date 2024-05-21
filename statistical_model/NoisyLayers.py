@@ -137,7 +137,9 @@ class NoisyConv2D(tf.keras.layers.Layer):
             
             for filt in range(self.filters):
                 # sample from distribution
-                filter_noise = self.filter_error_distributions[filt].rvs(*self.filter_error_params[filt], size=outputs.shape[0:-1]) / (2 ** self.precision_bits)
+                # filter_noise = self.filter_error_distributions[filt].rvs(*self.filter_error_params[filt], size=outputs.shape[0:-1]) / (2 ** self.precision_bits)
+                # filter_noise = self.filter_error_distributions[filt].rvs(*self.filter_error_params[filt], size=outputs.shape[0:-1]) / (2 ** (2 * self.precision_bits))
+                filter_noise = self.filter_error_distributions[filt].rvs(*self.filter_error_params[filt], size=outputs.shape[0:-1]) / (2 ** 13)
                 noise[:, :, :, filt] = filter_noise
 
             # Add noise
@@ -180,11 +182,13 @@ class NoisyConv2D(tf.keras.layers.Layer):
             filter_error_pmf = convolve_pmfs(self.error_pmfs, weights.numpy())
             distribution, fit_params = fit_pmfs(filter_error_pmf)
             
+            '''
             # emulate 8 bits right-shift
             mean, variance = fit_params
             mean = mean / (2 ** self.precision_bits)
             variance = variance / (2 ** self.precision_bits)
-            fit_params = (mean, variance)         
+            fit_params = (mean, variance)   
+            '''      
 
             # Store distribution and fit parameters
             self.filter_error_distributions[filt] = distribution
@@ -284,7 +288,9 @@ class NoisyDense(tf.keras.layers.Layer):
 
                 # sample from distribution
                 if self.perceptron_error_distributions:
-                    noise[:, perceptron] = self.perceptron_error_distributions[perceptron].rvs(*self.perceptron_error_params[perceptron], size=outputs.shape[0]) / (2 ** self.precision_bits)
+                    # noise[:, perceptron] = self.perceptron_error_distributions[perceptron].rvs(*self.perceptron_error_params[perceptron], size=outputs.shape[0]) / (2 ** self.precision_bits)
+                    # noise[:, perceptron] = self.perceptron_error_distributions[perceptron].rvs(*self.perceptron_error_params[perceptron], size=outputs.shape[0]) / (2 ** (2 * self.precision_bits))
+                    noise[:, perceptron] = self.perceptron_error_distributions[perceptron].rvs(*self.perceptron_error_params[perceptron], size=outputs.shape[0]) / (2 ** 13)
 
             # Add noise
             outputs = outputs + tf.convert_to_tensor(noise, dtype=tf.float32)
@@ -325,11 +331,12 @@ class NoisyDense(tf.keras.layers.Layer):
             perceptron_error_pmf = convolve_pmfs(self.error_pmfs, weights.numpy()) ############## HERE IT GOES WRONG ##################
             distribution, fit_params = fit_pmfs(perceptron_error_pmf)
             
-            
+            '''
             mean, variance = fit_params
             mean = mean / (2 ** self.precision_bits)
             variance = variance / (2 ** self.precision_bits)
             fit_params = (mean, variance)            
+            '''
             
             # Store distribution and fit parameters
             self.perceptron_error_distributions[perceptron] = distribution

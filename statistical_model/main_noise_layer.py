@@ -154,14 +154,10 @@ def evaluate_model(model, dataset):
     if len(merged_labels.shape) == 1:
         merged_labels = tf.one_hot(merged_labels, depth=10)
 
-    # Calculate accuracy
-    print(predictions)
-    print(tf.argmax(predictions, axis=1))
-    print(tf.argmax(merged_labels, axis=1))
-
     correct_predictions = tf.equal(tf.argmax(predictions, axis=1), tf.argmax(merged_labels, axis=1))
     accuracy = tf.reduce_mean(tf.cast(correct_predictions, tf.float32))
     
+    print(f'Accuracy: {accuracy.numpy()}')
     return accuracy.numpy()
 
 def flatten(lst):
@@ -224,14 +220,19 @@ def main() -> None:
     model.build((None, 16, 16, 1))
     model.summary()
 
+    '''
+    rnd_images = tf.random.normal((10, 16, 16, 1))
+    model(rnd_images)
+    '''
+
+    
     csv_to_weights(model, f'2_kernels_45_epochs_start')
     weights_to_csv(model, f'is_it_read_properly')
     accuracies = []
-    for i in range(3):
+    for i in range(45):
         accuracies.append(evaluate_model(model, test))
 
     print(accuracies)
-
     # print(evaluate_model(model, test))
     # print(model.evaluate(test))
 
