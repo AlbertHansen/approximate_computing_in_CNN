@@ -103,7 +103,7 @@ void writeMatrixToCSV(const std::string& filename, const std::vector<std::vector
 int main()
 {
     //auto startL2 = std::chrono::steady_clock::now();
-    
+    /*
     std::string layer0Weights = "./weights/layer_0/weights.csv";
     std::string layer0Biases = "./weights/layer_0/biases.csv";
     std::string layer2Weights = "./weights/layer_2/weights.csv";
@@ -116,7 +116,7 @@ int main()
     std::string layer7Biases = "./weights/layer_7/biases.csv";
 
     std::string inputBatches = "./weights/batch.csv";
-    /*
+    /*/
     
     std::string layer0Weights = "./small_network_weights/layer_0/weights.csv";
     std::string layer0Biases = "./small_network_weights/layer_0/biases.csv";
@@ -129,7 +129,7 @@ int main()
     std::string layer7Weights = "./small_network_weights/layer_7/weights.csv";
     std::string layer7Biases = "./small_network_weights/layer_7/biases.csv";
 
-    std::string inputBatches = "./small_network_weights/images.csv";*/
+    std::string inputBatches = "./small_network_weights/images.csv";
    
 
     ReadParameters layer0(layer0Weights, layer0Biases);
@@ -148,10 +148,10 @@ int main()
     FullyConnectedLayer dense1(40,10);         //(InputNodes, OutputNodes)
 
     /********************* FIXEDPOINT CONVERTER *******************************/
-    size_t fracBits = 4;
-    FixedPointConverter<intmax_t> converter(4, fracBits);
-    FixedPointConverter<double> converter2(4, fracBits); // int type, 4 decimal bits, 4 fractional bits
-    FixedPointConverter<intmax_t> converter3(8, 2*fracBits);
+    size_t fracBits = 6;
+    FixedPointConverter<intmax_t> converter(6, fracBits);
+    FixedPointConverter<double> converter2(6, fracBits); // int type, 4 decimal bits, 4 fractional bits
+    FixedPointConverter<intmax_t> converter3(12, 2*fracBits);
     
     /********************* READ INPUT ****************************************/
     std::vector<std::vector<float>> inputBatch = readInput(inputBatches);
@@ -348,6 +348,6 @@ int main()
         std::vector<double> denseLayer7out = converter2.convertToDouble(converter3.truncateLSBs(denseLayer7,fracBits));
         outputBatch.push_back(denseLayer7out);
     }
-    writeMatrixToCSV("./weights/output.csv",outputBatch);
-    //writeMatrixToCSV("./output2.csv",outputBatch);
+    //writeMatrixToCSV("./weights/output.csv",outputBatch);
+    writeMatrixToCSV("./output2.csv",outputBatch);
 }
