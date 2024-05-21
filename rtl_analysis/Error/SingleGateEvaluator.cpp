@@ -30,7 +30,7 @@ uint64_t add(const uint64_t B, const uint64_t A) {
     return result;  // Convert result back to uint64_t before returning
 }
 /*********** Approx multiplier ***************/
-int16_t mul8s_1KV9(const int8_t B, const int8_t A);
+int16_t mul8s_1KV8(const int8_t B, const int8_t A);
 
 /*********** Accurate multiplier ***********/
 int16_t mult(const int8_t B, const int8_t A) {
@@ -57,7 +57,7 @@ std::vector<std::vector<intmax_t>> testAllCombinations(BinaryOperation operation
     std::vector<std::vector<intmax_t>> results;
     
     //std::vector<std::vector<uint64_t>> results;
-    for (intmax_t signedA = 0; signedA <= 127; ++signedA) {
+    for (intmax_t signedA = -128; signedA <= 127; ++signedA) {
         std::vector<intmax_t> result;
         //std::vector<uint64_t> result;
         for (intmax_t signedB = -128; signedB <= 127; ++signedB) {
@@ -78,7 +78,7 @@ std::vector<std::vector<intmax_t>> testAllCombinationsAccurate(BinaryOperation o
     //std::vector<uint64_t> results;
     std::vector<std::vector<intmax_t>> results;
     
-    for (intmax_t signedA = 0; signedA <= 127; ++signedA) {
+    for (intmax_t signedA = -128; signedA <= 127; ++signedA) {
         std::vector<intmax_t> result;
         for (intmax_t signedB = -128; signedB <= 127; ++signedB) {
             //uint64_t A = static_cast<uint64_t>(signedA);
@@ -143,7 +143,7 @@ int main() {
 
     
         std::vector<std::vector<intmax_t>> Expected = testAllCombinationsAccurate(mult);
-        std::vector<std::vector<intmax_t>> Actual = testAllCombinations(mul8s_1KV9);
+        std::vector<std::vector<intmax_t>> Actual = testAllCombinations(mul8s_1KV8);
         std::vector<std::vector<intmax_t>> Error;
         for (int j = 0; j < Expected.at(0).size(); ++j)
         {
