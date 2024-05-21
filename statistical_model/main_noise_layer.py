@@ -224,7 +224,7 @@ def main() -> None:
     '''
 
     
-    csv_to_weights(model, f'1KV8_10_finetune_5b')
+    csv_to_weights(model, f'2_kernels_45_epochs_start')
     weights_to_csv(model, f'is_it_read_properly')
     accuracies = []
     for i in range(3):
