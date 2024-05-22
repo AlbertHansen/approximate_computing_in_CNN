@@ -20,15 +20,18 @@ import matplotlib.lines as mlines
 
 #%% Load data
 labels = [
-    'mul8s_1KV9'
+    #'1KV8',
+    '1KV9'
 ]
 
 file_paths_stat = [
+    #'mul8s_1kv8_stats_and_approx.csv',
     'mul8s_1kv9_stats_and_approx.csv'
 ]
 
 
 file_paths_approx = [
+    #'1KV8_weights/mul8s_1KV8_ref_accuracy.csv',
     '1KV9_weights/mul8s_1KV9_ref_accuracy.csv'
 ]
 
@@ -83,6 +86,43 @@ fig, ax = plt.subplots(figsize=(17.01*cm, 6*cm))
 epochs_stat = data_stat[0]['epoch']
 epochs_approx = data_approx[0]['epoch'] + 1
 for df_stat, df_approx, label, color in zip(data_stat, data_approx, labels, colors): 
+    ax.plot(list(epochs_approx), list(df_approx['accuracy']), label=f'{label}-approx: accuracy', linestyle='-', color=color)
+    ax.plot(list(epochs_approx), list(df_approx['accuracy_val']), label=f'{label}-approx: accuracy_val', linestyle=':', color=color)
+    # ax.scatter(epochs_stat, df_stat['accuracy'], label=f'{label}-stat: accuracy', color=color, marker="1", s=150)
+    # ax.scatter(epochs_stat, df_stat['accuracy_val'], label=f'{label}-stat: accuracy_val', color=color, marker="2", s=150)
+
+df = pd.read_csv('1KV8_weights/mul8s_1KV8_ref_accuracy.csv')
+ax.plot(list(df['epoch']), list(df['accuracy']), label=f'1KV8-approx: accuracy', linestyle='-', color='black')
+ax.plot(list(df['epoch']), list(df['accuracy_val']), label=f'1KV8-approx: accuracy_val', linestyle=':', color='black')
+
+
+ax.set_xlim(44, 86)
+ax.grid(True)
+ax.set_xlabel('Epochs [.]')
+ax.set_ylabel('Accuracy [.]')
+    
+ax.legend(bbox_to_anchor=(1.4, 1.1), loc='upper center', ncol=1)
+
+
+# Save and show
+# plt.savefig('classes_accuracy.pdf', bbox_inches='tight')
+#plt.savefig('../../../98-diagrams/04-training_approx_network/small_network/adamax_and_sgd_does_it_train.pdf', bbox_inches='tight')
+plt.show()
+plt.close()
+#%%%%%%%%%%%%%%%%%%%%% Plot 15 Approximate Epochs %%%%%%%%%%%%%%%%%%%%%
+# Create a new figure
+# gc = gridspec.GridSpec(1, 5)
+fig, ax = plt.subplots(figsize=(17.01*cm, 6*cm))
+
+# Create layout
+#axs = []
+#axs.append(fig.add_subplot(gc[0, 0:4]))
+#axs.append(fig.add_subplot(gc[0, 4]))
+
+# Plot 'accuracy' and 'val_accuracy' for each DataFrame
+epochs_stat = data_stat[0]['epoch']
+epochs_approx = data_approx[0]['epoch'] + 1
+for df_stat, df_approx, label, color in zip(data_stat, data_approx, labels, colors): 
     # ax.plot(list(epochs_approx), list(df_approx['accuracy']), label=f'{label}-approx: accuracy', linestyle='-', color=color)
     ax.plot(list(epochs_approx), list(df_approx['accuracy_val']), label=f'{label}-approx: accuracy_val', linestyle=':', color=color)
     # ax.scatter(epochs_stat, df_stat['accuracy'], label=f'{label}-stat: accuracy', color=color, marker="1", s=150)
@@ -102,4 +142,4 @@ ax.legend(bbox_to_anchor=(1.4, 1.1), loc='upper center', ncol=1)
 #plt.savefig('../../../98-diagrams/04-training_approx_network/small_network/adamax_and_sgd_does_it_train.pdf', bbox_inches='tight')
 plt.show()
 plt.close()
-# %%
+
