@@ -190,7 +190,7 @@ def main() -> None:
     with open('mul8s_1kv8_stats_and_approx.csv', 'w') as file:
         writer = csv.writer(file)
 
-        for j in range(5, 10):
+        for j in range(10):
 
             csv_to_weights(model, f'1KV8_weights/save_{45 + j*5}')
 
