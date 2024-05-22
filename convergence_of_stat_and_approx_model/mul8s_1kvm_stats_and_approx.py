@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 import csv
 from NoisyLayers import * 
 from dataset_manipulation import *
-from test_custom_layers import * 
+# from test_custom_layers import * 
 from collections import defaultdict
 from tensorflow.keras import layers, models
 from my_csv import weights_to_csv, csv_to_weights
@@ -187,10 +187,10 @@ def main() -> None:
     model.build((None, 16, 16, 1))
     model.summary()
 
-    with open('mul8s_1kvm_stats_and_approx.csv', 'r') as file:
+    with open('mul8s_1kvm_stats_and_approx.csv', 'w') as file:
         writer = csv.writer(file)
 
-        for j in range(5):
+        for j in range(10):
 
             csv_to_weights(model, f'1KVM_weights/save_{45 + j*5}')
 
