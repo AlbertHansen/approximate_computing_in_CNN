@@ -188,7 +188,7 @@ def main() -> None:
     model.summary()
 
     with open('mul8s_1kv8_stats_and_approx.csv', 'r') as file:
-        write = csv.writer(file)
+        writer = csv.writer(file)
 
         for j in range(5):
 
@@ -197,7 +197,7 @@ def main() -> None:
             for k in range(5):
                 accuracy = evaluate_model(model, train)
                 accuracy_val = evaluate_model(model, test)
-                write.writerow([45 + j*5, accuracy, accuracy_val])
+                writer.writerow([45 + j*5, accuracy, accuracy_val])
 
 if __name__ == "__main__":
     main()
