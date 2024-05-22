@@ -120,7 +120,7 @@ class NoisyConv2D(tf.keras.layers.Layer):
         Returns:
             Tensor: The output tensor after applying the noisy convolution.
         """
-        print("Call NoisyConv2D")
+        # print("Call NoisyConv2D")
 
         # perform convolution
         outputs = tf.nn.conv2d( 
@@ -133,7 +133,7 @@ class NoisyConv2D(tf.keras.layers.Layer):
         try:
             # Generate noise
             noise = np.zeros(shape=outputs.shape)
-            self.calculate_filter_error_fit()
+            # self.calculate_filter_error_fit() # OBSOBS NOT NECESSARY FOR THIS SPECIFIC CASE
             
             for filt in range(self.filters):
                 # sample from distribution
@@ -275,14 +275,14 @@ class NoisyDense(tf.keras.layers.Layer):
             tf.Tensor: Output tensor after applying the layer operation.
 
         """
-        print("Call NoisyDense")
+        # print("Call NoisyDense")
         # perform dense operation
         outputs = tf.matmul(inputs, self.kernel) # + self.bias
         
         try:
             # Generate noise
             noise = np.zeros(shape=outputs.shape)
-            self.calculate_perceptron_error_fit()
+            # self.calculate_perceptron_error_fit() # Not necessary for this specific implementation
             
             for perceptron in range(self.units):
 

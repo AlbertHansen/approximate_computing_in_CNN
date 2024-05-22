@@ -3,15 +3,14 @@ import tensorflow as tf
 import tensorflow_datasets as tfds
 import tqdm as tqdm
 import pandas as pd
-import math
-import matplotlib.pyplot as plt
 import csv
+import subprocess
 from NoisyLayers import * 
 from dataset_manipulation import *
 # from test_custom_layers import * 
 from collections import defaultdict
 from tensorflow.keras import layers, models
-from my_csv import weights_to_csv, csv_to_weights
+from my_csv import weights_to_csv, csv_to_weights, tensor_to_csv
 from sklearn.metrics import accuracy_score
 
 
@@ -142,62 +141,112 @@ def flatten(lst):
 
 #%% Main
 def main() -> None:
-
-        
-    # Classes
-    num_classes = 10
-    classes_to_keep = range(num_classes)
-
-    # which classes are left?
-    cifar100, info = tfds.load('cifar100', with_info=True)
-    del cifar100
-    label_names = info.features['label'].names
-    print(label_names[0:num_classes])
-
-    # import local datasets and preprocess them
-    train_path = '/home/ubuntu/tensorflow_datasets/cifar100_grey_16x16_LANCZOS3/train'
-    test_path =  '/home/ubuntu/tensorflow_datasets/cifar100_grey_16x16_LANCZOS3/test'
-    train, test = get_datasets(train_path, test_path, classes_to_keep, 32)
-
-    # Make distribution of input images
-    # Error Distribution
-    pmfs = make_pmfs('error_mul8s_1kv8.csv')
-
-    
-    i = 6 # 6 bits for precision
-    print(f"----------- {i} bits for precision -----------")
+    # settings
+    pb = 6
     lambda_value = 0.0002
-    model = models.Sequential([
-        NoisyConv2D(40, (2, 2), error_pmfs=pmfs, precision_bits=i, activation='relu', kernel_regularizer=tf.keras.regularizers.l2(lambda_value)),
-        layers.MaxPooling2D((2, 2)),
-        NoisyConv2D(2, (2, 2), error_pmfs=pmfs, precision_bits=i, activation='relu', kernel_regularizer=tf.keras.regularizers.l2(lambda_value)),
-        layers.MaxPooling2D((2, 2)),
-        NoisyConv2D(40, (2, 2), error_pmfs=pmfs, precision_bits=i, activation='relu', kernel_regularizer=tf.keras.regularizers.l2(lambda_value)),
-        layers.Flatten(),
-        NoisyDense(40, error_pmfs=pmfs, precision_bits=i, activation='relu', kernel_regularizer=tf.keras.regularizers.l2(lambda_value)),
-        NoisyDense(num_classes, error_pmfs=pmfs, precision_bits=i, activation='relu', kernel_regularizer=tf.keras.regularizers.l2(lambda_value)),  # OBS!!! last layer will be changed to accommodate no of classes
-    ])
+    number_of_images = 1000
+    samplesize = 1000
 
-    model.compile(
-        optimizer='adamax',
-        loss=tf.keras.losses.BinaryFocalCrossentropy(),
-        metrics=['accuracy']
-    )
+    ###########################################################################
+    # Generate random inputs for the models
+    ###########################################################################
+    images = tf.random.uniform((number_of_images, 16, 16, 1))
+    tensor_to_csv(images, 'input')
 
-    model.build((None, 16, 16, 1))
-    model.summary()
+    ###########################################################################
+    # Loop over weights
+    ###########################################################################
+    weight_folders = [
+        '1KV8_weights',
+        '1KV9_weights'
+    ]
+    approximate_multiplier_executables = [
+        'AC_FF_6b_mul8s_1KV8',
+        'AC_FF_6b_mul8s_1KV9'
+    ]
+    error_files = [
+        'error_mul8s_1kv8.csv',
+        'error_mul8s_1kv9.csv'
+    ]
+    error_pmfs = [make_pmfs(filename) for filename in error_files]
 
-    with open('mul8s_1kv8_stats_and_approx.csv', 'w') as file:
-        writer = csv.writer(file)
+    epochs = [45, 50, 55, 60, 65, 70, 75, 80, 85]
+    for folder, executable, pmfs in zip(weight_folders, approximate_multiplier_executables, error_pmfs):
+        for epoch in epochs:
+            print('\n++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
+            print(f'Folder: {folder}, Epoch: {epoch}')
+            print('++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n')
+            ###########################################################################
+            # TensorFlow model - No noise
+            ###########################################################################
+            model = models.Sequential([
+                layers.Conv2D(40, (2, 2), activation='relu', use_bias=False, kernel_regularizer=tf.keras.regularizers.l2(lambda_value)),
+                layers.MaxPooling2D((2, 2)),
+                layers.Conv2D(2, (2, 2), activation='relu', use_bias=False, kernel_regularizer=tf.keras.regularizers.l2(lambda_value)),
+                layers.MaxPooling2D((2, 2)),
+                layers.Conv2D(40, (2, 2), activation='relu', use_bias=False, kernel_regularizer=tf.keras.regularizers.l2(lambda_value)),
+                layers.Flatten(),
+                layers.Dense(40, activation='relu', use_bias=False, kernel_regularizer=tf.keras.regularizers.l2(lambda_value)),
+                layers.Dense(10, activation='relu', use_bias=False, kernel_regularizer=tf.keras.regularizers.l2(lambda_value)),  # OBS!!! last layer will be changed to accommodate no of classes
+            ])
 
-        for j in range(5):
+            model.compile(
+                optimizer='adamax',
+                loss=tf.keras.losses.BinaryFocalCrossentropy(),
+                metrics=['accuracy']
+            )
 
-            csv_to_weights(model, f'1KV8_weights/save_{45 + j*5}')
+            model.build((None, 16, 16, 1))
+            # model.summary()
 
-            for k in range(5):
-                accuracy = evaluate_model(model, train)
-                accuracy_val = evaluate_model(model, test)
-                writer.writerow([45 + j*5, accuracy, accuracy_val])
+            csv_to_weights(model, f'{folder}/save_{epoch}')
+            predictions = model(images)
+            tensor_to_csv(predictions, f'accurate_predictions/{folder}/save_{epoch}.csv')
+
+            ###########################################################################
+            # C++ model - With Approximate Multipliers
+            ###########################################################################
+            subprocess.check_call([f'cp -r {folder}/save_{epoch}/* weights/'], shell=True)
+            subprocess.check_call([f'cp input.csv weights/batch.csv'], shell=True)
+            subprocess.check_call([f'./{executable}'], shell=True)
+            subprocess.check_call([f'cp weights/output.csv approximate_predictions/{folder}/save_{epoch}.csv'], shell=True)
+
+            ###########################################################################
+            # TensorFlow model - With Noise
+            ###########################################################################    
+
+            # create model
+            model_noise = models.Sequential([
+                NoisyConv2D(40, (2, 2), error_pmfs=pmfs, precision_bits=pb, activation='relu', kernel_regularizer=tf.keras.regularizers.l2(lambda_value)),
+                layers.MaxPooling2D((2, 2)),
+                NoisyConv2D(2, (2, 2), error_pmfs=pmfs, precision_bits=pb, activation='relu', kernel_regularizer=tf.keras.regularizers.l2(lambda_value)),
+                layers.MaxPooling2D((2, 2)),
+                NoisyConv2D(40, (2, 2), error_pmfs=pmfs, precision_bits=pb, activation='relu', kernel_regularizer=tf.keras.regularizers.l2(lambda_value)),
+                layers.Flatten(),
+                NoisyDense(40, error_pmfs=pmfs, precision_bits=pb, activation='relu', kernel_regularizer=tf.keras.regularizers.l2(lambda_value)),
+                NoisyDense(10, error_pmfs=pmfs, precision_bits=pb, activation='relu', kernel_regularizer=tf.keras.regularizers.l2(lambda_value)),  # OBS!!! last layer will be changed to accommodate no of classes
+            ])
+
+            model_noise.compile(
+                optimizer='adamax',
+                loss=tf.keras.losses.BinaryFocalCrossentropy(),
+                metrics=['accuracy']
+            )
+
+            model_noise.build((None, 16, 16, 1))
+            # model_noise.summary()
+
+            csv_to_weights(model_noise, f'{folder}/save_{epoch}')
+            
+            # loop over each images
+            for i in range(number_of_images):
+                print(f'image {i}')
+                image = images[i, :, :, :]                      # original image in tensor, however, this removes a dimension 
+                image = tf.expand_dims(image, axis=0)           # add the dimension back
+                image = tf.tile(image, [samplesize, 1, 1, 1])   # repeat the image samplesize times
+
+                predictions = model_noise(image)
+                tensor_to_csv(predictions, f'statistical_predictions/{folder}/save_{epoch}/image_{i}')
 
 if __name__ == "__main__":
     main()

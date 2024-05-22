@@ -43,7 +43,7 @@ def epoch(model, dataset):
     Args:
         model: The neural network model.
         dataset: The dataset to train on.
-
+ 
     Returns:
         None
     """
