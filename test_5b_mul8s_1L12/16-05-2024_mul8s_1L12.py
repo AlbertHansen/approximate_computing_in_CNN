@@ -115,11 +115,11 @@ def find_max_weight_and_val():
 
 #evaluate_approx()
 #%%
-for i in range(4):
+for i in range(5):
     utils.my_csv.csv_to_weights(model, '2_kernels_45_epochs_start')
     subprocess.check_call(['cp -r 2_kernels_45_epochs_start/* weights/'], shell=True)
 
-    with open(f'run_{i}_mul8s_1KV6.csv', 'w') as file:
+    with open(f'run_{i}_mul8s_1L12.csv', 'w') as file:
         writer = csv.writer(file)
         writer.writerow(['epoch', 'accuracy', 'accuracy_val', 'time'])
 
@@ -129,7 +129,7 @@ for i in range(4):
         print(f'Accuracy: {acc}, Accuracy_val: {acc_val}, Time: {epoch_time}')
         writer.writerow([44, acc, acc_val, epoch_time])
 
-        for i in range(5):
+        for i in range(10):
             print(f"----- Epoch {i+45} -----")
 
             start_epoch = time.time()
