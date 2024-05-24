@@ -5,7 +5,7 @@ import scipy.stats as stats
 import matplotlib.pyplot as plt
 
 # Read the CSV file
-filename = 'Error_mul8s_1KVM.csv'  # Replace with your CSV file name
+filename = 'Error_mul8s_1KV9.csv'  # Replace with your CSV file name
 data = pd.read_csv(filename, header=None)
 
 # Dictionary to store PMFs for each row (each b value)
@@ -86,6 +86,7 @@ def plot_fitted_distributions(convolved_pmf, fit_results):
     plt.ylabel('Probability')
     plt.legend()
     plt.title('Convolved PMF and Fitted Distributions')
+    # plt.savefig('1KV9.pdf', bbox_inches='tight')
     plt.show()
 
 # Example: Convolving PMFs for a list of b indexes
