@@ -20,18 +20,18 @@ import matplotlib.lines as mlines
 
 #%% Load data
 labels = [
-    #'1KV8',
+    '1KV8',
     '1KV9'
 ]
 
 file_paths_stat = [
-    #'mul8s_1kv8_stats_and_approx.csv',
+    'mul8s_1kv8_stats_and_approx.csv',
     'mul8s_1kv9_stats_and_approx.csv'
 ]
 
 
 file_paths_approx = [
-    #'1KV8_weights/mul8s_1KV8_ref_accuracy.csv',
+    '1KV8_weights/mul8s_1KV8_ref_accuracy.csv',
     '1KV9_weights/mul8s_1KV9_ref_accuracy.csv'
 ]
 
@@ -91,10 +91,11 @@ for df_stat, df_approx, label, color in zip(data_stat, data_approx, labels, colo
     # ax.scatter(epochs_stat, df_stat['accuracy'], label=f'{label}-stat: accuracy', color=color, marker="1", s=150)
     # ax.scatter(epochs_stat, df_stat['accuracy_val'], label=f'{label}-stat: accuracy_val', color=color, marker="2", s=150)
 
+'''
 df = pd.read_csv('1KV8_weights/mul8s_1KV8_ref_accuracy.csv')
 ax.plot(list(df['epoch']), list(df['accuracy']), label=f'1KV8-approx: accuracy', linestyle='-', color='black')
 ax.plot(list(df['epoch']), list(df['accuracy_val']), label=f'1KV8-approx: accuracy_val', linestyle=':', color='black')
-
+'''
 
 ax.set_xlim(44, 86)
 ax.grid(True)
@@ -143,3 +144,5 @@ ax.legend(bbox_to_anchor=(1.4, 1.1), loc='upper center', ncol=1)
 plt.show()
 plt.close()
 
+
+# %%

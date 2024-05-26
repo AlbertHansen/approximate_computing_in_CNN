@@ -80,6 +80,78 @@ def epoch(model, dataset):
         print(f'it {i}')
         iteration(model, batch)
 
+<<<<<<< HEAD
+def obscure_tensor(tensor):
+    """
+    Converts a TensorFlow tensor to a NumPy array and then converts it back to a TensorFlow tensor.
+
+    Args:
+        tensor (tf.Tensor): The input TensorFlow tensor.
+
+    Returns:
+        tf.Tensor: The converted TensorFlow tensor.
+
+    """
+    numpy_array = tensor.numpy()
+    return tf.convert_to_tensor(numpy_array, dtype=tf.float32)
+
+
+def noisy_iteration(noisy_model, model, batch):
+    """
+    Perform one iteration of training.
+
+    Args:
+        model: The neural network model.
+        batch: The batch of data containing images and labels.
+
+    Returns:
+        None
+    """
+    # unpack batch
+    images, labels = batch
+
+    # noise model weights -> model weights
+    for noisy_layer, layer in zip(noisy_model.layers, model.layers):
+        layer.set_weights(noisy_layer.get_weights())
+
+    # noisy predictions
+    labels_noisy = noisy_model(images)
+
+    # Use GradientTape() for auto differentiation, FORWARD PASS(ES)
+    with tf.GradientTape() as tape:     # OBS! tape will not be destroyed when exiting this scope
+        labels_predicted = model(images)
+        diff = labels_predicted - labels_noisy
+        diff = obscure_tensor(diff) # remove dependencies from weights to diff
+        labels_predicted = labels_predicted - diff
+        loss_value       = model.compute_loss(images, labels, labels_predicted)
+
+    # Perform gradient descent, BACKWARD PASS(ES)
+    grads = tape.gradient(loss_value, model.trainable_weights)
+    # print(grads)
+    model.optimizer.apply_gradients(zip(grads, model.trainable_weights))
+
+    # model weights -> noisy model weights
+    for noisy_layer, layer in zip(noisy_model.layers, model.layers):
+        noisy_layer.set_weights(layer.get_weights())
+
+def noisy_epoch(noisy_model, model, dataset):
+    """
+    Perform one epoch of training.
+
+    Args:
+        model: The neural network model.
+        dataset: The dataset to train on.
+
+    Returns:
+        None
+    """
+    # Iterate over each batch in the dataset
+    for i, batch in enumerate(tqdm.tqdm(dataset)):
+        # print(f'noisy - it {i}')
+        noisy_iteration(noisy_model, model, batch)
+
+=======
+>>>>>>> 47d2039f7af34a40ee3264e90aedcff57159511d
 def debatch_dataset(dataset):
     """
     Debatch a dataset.
@@ -176,7 +248,11 @@ def main() -> None:
         i = 6
         print(f"----------- {i} bits for precision -----------")
         lambda_value = 0.0002
+<<<<<<< HEAD
+        noisy_model = models.Sequential([
+=======
         model = models.Sequential([
+>>>>>>> 47d2039f7af34a40ee3264e90aedcff57159511d
             NoisyConv2D(40, (2, 2), error_pmfs=pmfs, precision_bits=i, activation='relu', kernel_regularizer=tf.keras.regularizers.l2(lambda_value)),
             layers.MaxPooling2D((2, 2)),
             NoisyConv2D(2, (2, 2), error_pmfs=pmfs, precision_bits=i, activation='relu', kernel_regularizer=tf.keras.regularizers.l2(lambda_value)),
@@ -187,18 +263,65 @@ def main() -> None:
             NoisyDense(num_classes, error_pmfs=pmfs, precision_bits=i, activation='relu', kernel_regularizer=tf.keras.regularizers.l2(lambda_value)),  # OBS!!! last layer will be changed to accommodate no of classes
         ])
 
+<<<<<<< HEAD
+
+        noisy_model.compile(
+            optimizer='adamax',
+            loss=tf.keras.losses.BinaryFocalCrossentropy(),
+            metrics=['accuracy']
+        )
+
+        noisy_model.build((None, 16, 16, 1))
+
+        model = models.Sequential([
+            layers.Conv2D(40, (2, 2), use_bias=False, activation='relu', kernel_regularizer=tf.keras.regularizers.l2(lambda_value)),
+            layers.MaxPooling2D((2, 2)),
+            layers.Conv2D(2, (2, 2), use_bias=False, activation='relu', kernel_regularizer=tf.keras.regularizers.l2(lambda_value)),
+            layers.MaxPooling2D((2, 2)),
+            layers.Conv2D(40, (2, 2),  use_bias=False, activation='relu', kernel_regularizer=tf.keras.regularizers.l2(lambda_value)),
+            layers.Flatten(),
+            layers.Dense(40,  use_bias=False, activation='relu', kernel_regularizer=tf.keras.regularizers.l2(lambda_value)),
+            layers.Dense(num_classes,  use_bias=False, activation='relu', kernel_regularizer=tf.keras.regularizers.l2(lambda_value)),  # OBS!!! last layer will be changed to accommodate no of classes
+        ])
+
+=======
+>>>>>>> 47d2039f7af34a40ee3264e90aedcff57159511d
         model.compile(
             optimizer='adamax',
             loss=tf.keras.losses.BinaryFocalCrossentropy(),
             metrics=['accuracy']
         )
 
+<<<<<<< HEAD
+
+        model.build((None, 16, 16, 1))
+        # model.summary()
+
+        csv_to_weights(model, '2_kernels_45_epochs_start')
+        csv_to_weights(noisy_model, '2_kernels_45_epochs_start')
+=======
         model.build((None, 16, 16, 1))
         model.summary()
+>>>>>>> 47d2039f7af34a40ee3264e90aedcff57159511d
 
         with open(f'{weight_path}_accuracy.csv', 'w') as file:
             writer = csv.writer(file)
 
+<<<<<<< HEAD
+            for j in range(45):
+                print(f'----- Epoch {j} -----')
+                noisy_epoch(noisy_model, model, train)
+                accuracy = evaluate_model(model, train)
+                accuracy_val = evaluate_model(model, test)
+                writer.writerow([45 + j, accuracy, accuracy_val])
+
+                if j % 5 == 0:
+                    print(f"Saving weights: {j}")
+                    try: 
+                        weights_to_csv(model, f'{weight_path}/save_{45+j}')
+                    except:
+                        print("Error saving weights")
+=======
             for j in range(2):
                 print(f'----- Epoch {j} -----')
                 epoch(model, train)
@@ -208,6 +331,7 @@ def main() -> None:
 
                 if j % 5 == 0:
                     csv_to_weights(model, f'{weight_path}/save_{45+j*5}')
+>>>>>>> 47d2039f7af34a40ee3264e90aedcff57159511d
 
 
 if __name__ == "__main__":
