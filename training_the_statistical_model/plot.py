@@ -20,18 +20,28 @@ import matplotlib.lines as mlines
 
 #%% Load data
 labels = [
+<<<<<<< HEAD
     '1KV8',
     '1KV9'
 ]
 
 file_paths_stat = [
     'mul8s_1kv8_stats_and_approx.csv',
+=======
+    'mul8s_1KV9'
+]
+
+file_paths_stat = [
+>>>>>>> 47d2039f7af34a40ee3264e90aedcff57159511d
     'mul8s_1kv9_stats_and_approx.csv'
 ]
 
 
 file_paths_approx = [
+<<<<<<< HEAD
     '1KV8_weights/mul8s_1KV8_ref_accuracy.csv',
+=======
+>>>>>>> 47d2039f7af34a40ee3264e90aedcff57159511d
     '1KV9_weights/mul8s_1KV9_ref_accuracy.csv'
 ]
 
@@ -86,6 +96,7 @@ fig, ax = plt.subplots(figsize=(17.01*cm, 6*cm))
 epochs_stat = data_stat[0]['epoch']
 epochs_approx = data_approx[0]['epoch'] + 1
 for df_stat, df_approx, label, color in zip(data_stat, data_approx, labels, colors): 
+<<<<<<< HEAD
     ax.plot(list(epochs_approx), list(df_approx['accuracy']), label=f'{label}-approx: accuracy', linestyle='-', color=color)
     ax.plot(list(epochs_approx), list(df_approx['accuracy_val']), label=f'{label}-approx: accuracy_val', linestyle=':', color=color)
     # ax.scatter(epochs_stat, df_stat['accuracy'], label=f'{label}-stat: accuracy', color=color, marker="1", s=150)
@@ -124,6 +135,8 @@ fig, ax = plt.subplots(figsize=(17.01*cm, 6*cm))
 epochs_stat = data_stat[0]['epoch']
 epochs_approx = data_approx[0]['epoch'] + 1
 for df_stat, df_approx, label, color in zip(data_stat, data_approx, labels, colors): 
+=======
+>>>>>>> 47d2039f7af34a40ee3264e90aedcff57159511d
     # ax.plot(list(epochs_approx), list(df_approx['accuracy']), label=f'{label}-approx: accuracy', linestyle='-', color=color)
     ax.plot(list(epochs_approx), list(df_approx['accuracy_val']), label=f'{label}-approx: accuracy_val', linestyle=':', color=color)
     # ax.scatter(epochs_stat, df_stat['accuracy'], label=f'{label}-stat: accuracy', color=color, marker="1", s=150)
@@ -143,6 +156,9 @@ ax.legend(bbox_to_anchor=(1.4, 1.1), loc='upper center', ncol=1)
 #plt.savefig('../../../98-diagrams/04-training_approx_network/small_network/adamax_and_sgd_does_it_train.pdf', bbox_inches='tight')
 plt.show()
 plt.close()
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> 47d2039f7af34a40ee3264e90aedcff57159511d
 # %%
