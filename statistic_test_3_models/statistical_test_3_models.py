@@ -10,7 +10,7 @@ from dataset_manipulation import *
 # from test_custom_layers import * 
 from collections import defaultdict
 from tensorflow.keras import layers, models
-from my_csv import weights_to_csv, csv_to_weights, tensor_to_csv
+from my_csv import weights_to_csv, csv_to_weights, tensor_to_csv, csv_to_tensor
 from sklearn.metrics import accuracy_score
 
 
@@ -141,6 +141,9 @@ def flatten(lst):
 
 #%% Main
 def main() -> None:
+    # installed_packages = [d.project_name for d in pkg_resources.working_set]
+    # print_versions(globals())
+    
     # settings
     pb = 6
     lambda_value = 0.0002
@@ -150,8 +153,11 @@ def main() -> None:
     ###########################################################################
     # Generate random inputs for the models
     ###########################################################################
-    images = tf.random.uniform((number_of_images, 16, 16, 1))
-    tensor_to_csv(images, 'input')
+    # images = tf.random.uniform((number_of_images, 16, 16, 1))
+    # tensor_to_csv(images, 'input')
+    images = csv_to_tensor('input.csv')
+    tensor_to_csv(images, 'read_input')
+
 
     ###########################################################################
     # Loop over weights
@@ -176,6 +182,7 @@ def main() -> None:
             print('\n++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
             print(f'Folder: {folder}, Epoch: {epoch}')
             print('++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n')
+            '''
             ###########################################################################
             # TensorFlow model - No noise
             ###########################################################################
@@ -210,7 +217,8 @@ def main() -> None:
             subprocess.check_call([f'cp input.csv weights/batch.csv'], shell=True)
             subprocess.check_call([f'./{executable}'], shell=True)
             subprocess.check_call([f'cp weights/output.csv approximate_predictions/{folder}/save_{epoch}.csv'], shell=True)
-
+            '''
+            
             ###########################################################################
             # TensorFlow model - With Noise
             ###########################################################################    

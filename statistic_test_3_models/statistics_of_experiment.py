@@ -5,21 +5,33 @@ import scipy.stats as sp
 import matplotlib.pyplot as plt
 from statsmodels.distributions.empirical_distribution import ECDF
 #%%
-
-
 # Reading the CSV files
 epoch_acc_pred = pd.read_csv('./accurate_predictions/1KV9_weights/save_45.csv.csv', header=None)
 epoch_det_pred = pd.read_csv('./approximate_predictions/1KV9_weights/save_45.csv', header=None)
 
+# Dictionary to store means
+means_dict = {}
+covariance_matrices = {}
+
 # Iterating over rows of epoch_det_pred
 for image_index, image_det_pred in epoch_det_pred.iterrows():
     # Accessing image index and row data
-    print('hej')
+    print(image_index)
     image_acc_pred = epoch_acc_pred.iloc[:, image_index].values
     image_pro_pred = pd.read_csv(f'./statistical_predictions/1KV9_weights/save_45/image_{image_index}.csv', header=None)
     
     # Calculating mean of each column
-    column_means = image_pro_pred.mean()
+    row_means = image_pro_pred.mean(axis=1)
+
+    # Calculating covariance matrix of each row
+    row_covariance_matrix = image_pro_pred.cov(axis=1)
+    
+    # Storing covariance matrices in the dictionary
+    covariance_matrices[image_index] = row_covariance_matrix
+    
+    # Storing means in the dictionary
+    means_dict[image_index] = row_means
+    
 
     # Your operations using image_acc_pred and image_pro_pred go here
 
