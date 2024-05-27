@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 import csv
 from NoisyLayers import * 
 from dataset_manipulation import *
-# from test_custom_layers import * 
+from test_custom_layers import * 
 from collections import defaultdict
 from tensorflow.keras import layers, models
 from my_csv import weights_to_csv, csv_to_weights, csv_to_tensor, tensor_to_csv
@@ -140,11 +140,12 @@ def flatten(lst):
 
 #%% Main
 def main() -> None:
-    
+    test_noisy_layers()
+    '''
     num_classes = 10
     lambda_value = 0.0002
     model = models.Sequential([
-        layers.Conv2D(40, (2, 2), activation='relu', use_bias=False, kernel_regularizer=tf.keras.regularizers.l2(lambda_value)),
+        layers.Conv2D(40, (2, 2), sactivation='relu', use_bias=False, kernel_regularizer=tf.keras.regularizers.l2(lambda_value)),
         layers.MaxPooling2D((2, 2)),
         layers.Conv2D(2, (2, 2), activation='relu', use_bias=False, kernel_regularizer=tf.keras.regularizers.l2(lambda_value)),
         layers.MaxPooling2D((2, 2)),
@@ -172,7 +173,7 @@ def main() -> None:
             x = layer(x)
         tensor_to_csv(x, f'layer_{i}')
 
-
+    '''
 
     '''
     # Classes

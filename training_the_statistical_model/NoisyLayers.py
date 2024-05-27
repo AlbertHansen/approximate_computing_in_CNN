@@ -120,6 +120,7 @@ class NoisyConv2D(tf.keras.layers.Layer):
         Returns:
             Tensor: The output tensor after applying the noisy convolution.
         """
+        # print("Call NoisyConv2D")
 
         # perform convolution
         outputs = tf.nn.conv2d( 
@@ -132,13 +133,13 @@ class NoisyConv2D(tf.keras.layers.Layer):
         try:
             # Generate noise
             noise = np.zeros(shape=outputs.shape)
-            self.calculate_filter_error_fit()
+            self.calculate_filter_error_fit() # OBSOBS NOT NECESSARY FOR THIS SPECIFIC CASE
             
-            for filt in range(self.filters):
+            for i, filt in enumerate(range(self.filters)):
                 # sample from distribution
                 # filter_noise = self.filter_error_distributions[filt].rvs(*self.filter_error_params[filt], size=outputs.shape[0:-1]) / (2 ** self.precision_bits)
-                filter_noise = self.filter_error_distributions[filt].rvs(*self.filter_error_params[filt], size=outputs.shape[0:-1]) / (2 ** (2 * self.precision_bits))
-                # filter_noise = self.filter_error_distributions[filt].rvs(*self.filter_error_params[filt], size=outputs.shape[0:-1]) / (2 ** 13)
+                # filter_noise = self.filter_error_distributions[filt].rvs(*self.filter_error_params[filt], size=outputs.shape[0:-1]) / (2 ** (2 * self.precision_bits))
+                filter_noise = self.filter_error_distributions[filt].rvs(*self.filter_error_params[filt], size=outputs.shape[0:-1]) / (2 ** 11)
                 noise[:, :, :, filt] = filter_noise
 
             # Add noise
@@ -274,21 +275,22 @@ class NoisyDense(tf.keras.layers.Layer):
             tf.Tensor: Output tensor after applying the layer operation.
 
         """
+        # print("Call NoisyDense")
         # perform dense operation
         outputs = tf.matmul(inputs, self.kernel) # + self.bias
         
         try:
             # Generate noise
             noise = np.zeros(shape=outputs.shape)
-            self.calculate_perceptron_error_fit()
+            self.calculate_perceptron_error_fit() 
             
-            for perceptron in range(self.units):
+            for i, perceptron in enumerate(range(self.units)):
 
                 # sample from distribution
                 if self.perceptron_error_distributions:
                     # noise[:, perceptron] = self.perceptron_error_distributions[perceptron].rvs(*self.perceptron_error_params[perceptron], size=outputs.shape[0]) / (2 ** self.precision_bits)
-                    noise[:, perceptron] = self.perceptron_error_distributions[perceptron].rvs(*self.perceptron_error_params[perceptron], size=outputs.shape[0]) / (2 ** (2 * self.precision_bits))
-                    # noise[:, perceptron] = self.perceptron_error_distributions[perceptron].rvs(*self.perceptron_error_params[perceptron], size=outputs.shape[0]) / (2 ** 13)
+                    # noise[:, perceptron] = self.perceptron_error_distributions[perceptron].rvs(*self.perceptron_error_params[perceptron], size=outputs.shape[0]) / (2 ** (2 * self.precision_bits))
+                    noise[:, perceptron] = self.perceptron_error_distributions[perceptron].rvs(*self.perceptron_error_params[perceptron], size=outputs.shape[0]) / (2 ** 11)
 
             # Add noise
             outputs = outputs + tf.convert_to_tensor(noise, dtype=tf.float32)

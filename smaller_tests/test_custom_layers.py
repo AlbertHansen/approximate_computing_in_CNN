@@ -2,7 +2,7 @@
 import tensorflow as tf
 import tqdm as tqdm
 from NoisyLayers import * 
-from convergence_of_stat_and_approx_model.mul8s_1kv9_stats_and_approx import make_pmfs
+from custom_layers import make_pmfs
 
 #%% functions
 
@@ -66,7 +66,8 @@ def test_noisy_dense_layer(pmfs, iterations=100, perceptons=8, activation_functi
 
 #%% Main
 def test_noisy_layers():
-    pmfs = make_pmfs('256x256_zeros.csv')
+    # pmfs = make_pmfs('256x256_zeros.csv')
+    pmfs = make_pmfs('error_mul8s_1kv8.csv')
 
     test_noisy_conv2d_layer(pmfs, iterations=20, no_filter=10, kernel_dims=(3, 3), activation_function='sigmoid') 
     test_noisy_dense_layer(pmfs, iterations=20, perceptons=10, activation_function='sigmoid')

@@ -80,7 +80,6 @@ def epoch(model, dataset):
         print(f'it {i}')
         iteration(model, batch)
 
-<<<<<<< HEAD
 def obscure_tensor(tensor):
     """
     Converts a TensorFlow tensor to a NumPy array and then converts it back to a TensorFlow tensor.
@@ -150,8 +149,6 @@ def noisy_epoch(noisy_model, model, dataset):
         # print(f'noisy - it {i}')
         noisy_iteration(noisy_model, model, batch)
 
-=======
->>>>>>> 47d2039f7af34a40ee3264e90aedcff57159511d
 def debatch_dataset(dataset):
     """
     Debatch a dataset.
@@ -248,11 +245,7 @@ def main() -> None:
         i = 6
         print(f"----------- {i} bits for precision -----------")
         lambda_value = 0.0002
-<<<<<<< HEAD
         noisy_model = models.Sequential([
-=======
-        model = models.Sequential([
->>>>>>> 47d2039f7af34a40ee3264e90aedcff57159511d
             NoisyConv2D(40, (2, 2), error_pmfs=pmfs, precision_bits=i, activation='relu', kernel_regularizer=tf.keras.regularizers.l2(lambda_value)),
             layers.MaxPooling2D((2, 2)),
             NoisyConv2D(2, (2, 2), error_pmfs=pmfs, precision_bits=i, activation='relu', kernel_regularizer=tf.keras.regularizers.l2(lambda_value)),
@@ -263,7 +256,6 @@ def main() -> None:
             NoisyDense(num_classes, error_pmfs=pmfs, precision_bits=i, activation='relu', kernel_regularizer=tf.keras.regularizers.l2(lambda_value)),  # OBS!!! last layer will be changed to accommodate no of classes
         ])
 
-<<<<<<< HEAD
 
         noisy_model.compile(
             optimizer='adamax',
@@ -284,30 +276,22 @@ def main() -> None:
             layers.Dense(num_classes,  use_bias=False, activation='relu', kernel_regularizer=tf.keras.regularizers.l2(lambda_value)),  # OBS!!! last layer will be changed to accommodate no of classes
         ])
 
-=======
->>>>>>> 47d2039f7af34a40ee3264e90aedcff57159511d
         model.compile(
             optimizer='adamax',
             loss=tf.keras.losses.BinaryFocalCrossentropy(),
             metrics=['accuracy']
         )
 
-<<<<<<< HEAD
 
         model.build((None, 16, 16, 1))
         # model.summary()
 
         csv_to_weights(model, '2_kernels_45_epochs_start')
         csv_to_weights(noisy_model, '2_kernels_45_epochs_start')
-=======
-        model.build((None, 16, 16, 1))
-        model.summary()
->>>>>>> 47d2039f7af34a40ee3264e90aedcff57159511d
 
         with open(f'{weight_path}_accuracy.csv', 'w') as file:
             writer = csv.writer(file)
 
-<<<<<<< HEAD
             for j in range(45):
                 print(f'----- Epoch {j} -----')
                 noisy_epoch(noisy_model, model, train)
@@ -321,17 +305,6 @@ def main() -> None:
                         weights_to_csv(model, f'{weight_path}/save_{45+j}')
                     except:
                         print("Error saving weights")
-=======
-            for j in range(2):
-                print(f'----- Epoch {j} -----')
-                epoch(model, train)
-                accuracy = evaluate_model(model, train)
-                accuracy_val = evaluate_model(model, test)
-                writer.writerow([45 + j*5, accuracy, accuracy_val])
-
-                if j % 5 == 0:
-                    csv_to_weights(model, f'{weight_path}/save_{45+j*5}')
->>>>>>> 47d2039f7af34a40ee3264e90aedcff57159511d
 
 
 if __name__ == "__main__":
