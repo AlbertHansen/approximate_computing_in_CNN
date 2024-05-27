@@ -44,6 +44,8 @@ def tensor_to_csv(tensor, file):
         
         #writer.writerow(tensor.numpy())
 
+    
+
     '''
     with open(path, 'w', newline='') as file:
         writer = csv.writer(file)
@@ -65,24 +67,28 @@ def tensor_to_csv(tensor, file):
             print(f"The tensor has an unexpected shape: {tensor.shape}. Albert Fix Det!")
         writer.writerow(tensor.numpy())
     '''
-        
-def csv_to_tensor(path):
-    """
-    Reads a CSV file and returns a tensor with dtype float32.
 
-    Args:
-        path (str): The file path of the CSV file.
+def csv_to_tensor(csv_file_path):
+    # Read the CSV file into a DataFrame
+    df = pd.read_csv(csv_file_path, header=None)
 
-    Returns:
-        tf.Tensor: The tensor with dtype float32.
-    """
-    df = pd.read_csv(path, header=None)
+    # Convert the DataFrame to a NumPy array
+    data = df.values
 
-    data = df.values.tolist()
+    # Create a numpy array with the desired shape
+    tensor_array = np.zeros((data.shape[0], 16, 16, 1), dtype=np.float32)
 
-    tensor = tf.convert_to_tensor(data, dtype=tf.float32)
+    for i in range(data.shape[0]):
+        for k in range(16):
+            tensor_array[i, :, k,  0] = data[i, k * 16 : k * 16 + 16]
+
+    # Convert the numpy array to a TensorFlow tensor
+    tensor = tf.convert_to_tensor(tensor_array)
 
     return tensor
+
+
+    
 
 def batch_to_csv(batch, path):
     """
