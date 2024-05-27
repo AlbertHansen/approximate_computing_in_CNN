@@ -295,8 +295,8 @@ def main() -> None:
             for j in range(45):
                 print(f'----- Epoch {j} -----')
                 noisy_epoch(noisy_model, model, train)
-                accuracy = evaluate_model(model, train)
-                accuracy_val = evaluate_model(model, test)
+                accuracy = evaluate_model(noisy_model, train)
+                accuracy_val = evaluate_model(noisy_model, test)
                 writer.writerow([45 + j, accuracy, accuracy_val])
 
                 if j % 5 == 0:
