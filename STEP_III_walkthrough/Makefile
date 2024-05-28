@@ -1,8 +1,8 @@
-# VLOG_FILE_NAME=./mul8s_1KV8.v
-VLOG_FILE_NAME=./FloatingMultiplication.v
+VLOG_FILE_NAME=./mul8s_1KV8.v
+# VLOG_FILE_NAME=./FloatingMultiplication.v
 C_FILE_NAME=./mul8s_1KV8.c
-# TOP_MODULE=mul8s_1KV8
-TOP_MODULE=FloatingMultiplication
+TOP_MODULE=mul8s_1KV8
+# TOP_MODULE=FloatingMultiplication
 METRICS=ER,Gate_Count,CP_Gates
 COMPARISON_FILES=mul8s_1KV9,mul8s_1L2J,mul8s_1L12
 
