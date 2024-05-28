@@ -1,20 +1,35 @@
-Number of Gates:	15
-Total Delay:	3.449999999999999 ns
+Number of Gates:	30
+Total Delay:	7.199999999999999 ns
 Longest path:
-	B
-	$abc$92$auto$blifparse.cc:371:parse_blif$93
-	$abc$92$auto$blifparse.cc:371:parse_blif$100
-	$abc$92$auto$blifparse.cc:371:parse_blif$101
-	$abc$92$auto$blifparse.cc:371:parse_blif$104
-	$abc$92$auto$blifparse.cc:371:parse_blif$106
-	$abc$92$auto$blifparse.cc:371:parse_blif$107
-	$abc$92$auto$blifparse.cc:371:parse_blif$112
-	$abc$92$auto$blifparse.cc:371:parse_blif$113
-	$abc$92$auto$blifparse.cc:371:parse_blif$120
-	$abc$92$auto$blifparse.cc:371:parse_blif$121
-	$abc$92$auto$blifparse.cc:371:parse_blif$126
-	$abc$92$auto$blifparse.cc:371:parse_blif$127
-	$abc$92$auto$blifparse.cc:371:parse_blif$136
-	$abc$92$auto$blifparse.cc:371:parse_blif$137
-	$abc$92$auto$blifparse.cc:371:parse_blif$138
+	A
+	$abc$337$auto$blifparse.cc:396:parse_blif$339
+	$abc$337$auto$blifparse.cc:396:parse_blif$350
+	$abc$337$auto$blifparse.cc:396:parse_blif$360
+	$abc$337$auto$blifparse.cc:396:parse_blif$361
+	$abc$337$auto$blifparse.cc:396:parse_blif$366
+	$abc$337$auto$blifparse.cc:396:parse_blif$371
+	$abc$337$auto$blifparse.cc:396:parse_blif$372
+	$abc$337$auto$blifparse.cc:396:parse_blif$373
+	$abc$337$auto$blifparse.cc:396:parse_blif$374
+	$abc$337$auto$blifparse.cc:396:parse_blif$375
+	$abc$337$auto$blifparse.cc:396:parse_blif$393
+	$abc$337$auto$blifparse.cc:396:parse_blif$394
+	$abc$337$auto$blifparse.cc:396:parse_blif$399
+	$abc$337$auto$blifparse.cc:396:parse_blif$400
+	$abc$337$auto$blifparse.cc:396:parse_blif$417
+	$abc$337$auto$blifparse.cc:396:parse_blif$418
+	$abc$337$auto$blifparse.cc:396:parse_blif$423
+	$abc$337$auto$blifparse.cc:396:parse_blif$463
+	$abc$337$auto$blifparse.cc:396:parse_blif$464
+	$abc$337$auto$blifparse.cc:396:parse_blif$465
+	$abc$337$auto$blifparse.cc:396:parse_blif$467
+	$abc$337$auto$blifparse.cc:396:parse_blif$468
+	$abc$337$auto$blifparse.cc:396:parse_blif$473
+	$abc$337$auto$blifparse.cc:396:parse_blif$474
+	$abc$337$auto$blifparse.cc:396:parse_blif$493
+	$abc$337$auto$blifparse.cc:396:parse_blif$494
+	$abc$337$auto$blifparse.cc:396:parse_blif$503
+	$abc$337$auto$blifparse.cc:396:parse_blif$506
+	$abc$337$auto$blifparse.cc:396:parse_blif$507
+	$abc$337$auto$blifparse.cc:396:parse_blif$508
 	O
