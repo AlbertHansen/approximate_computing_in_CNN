@@ -11,28 +11,6 @@ if 'SUPPRESS_FIGURES' in os.environ:
     warnings.filterwarnings("ignore", category=UserWarning)
 
 #%% Transistors required per logic gate:
-
-# Based on edge copilot: 
-'''
-transistor_multiplier = {
-        'NOT'   : 1,    
-        'AND'   : 2,    # http://bear.ces.cwru.edu/eecs_318/eecs_318_5.pdf
-        'NAND'  : 1,    # https://eepower.com/technical-articles/basic-cmos-logic-gates/
-        'OR'    : 1,    # https://eepower.com/technical-articles/basic-cmos-logic-gates/
-        'NOR'   : 1,    # https://eepower.com/technical-articles/basic-cmos-logic-gates/
-        'XOR'   : 5,    # https://forum.allaboutcircuits.com/threads/number-of-cmos-transistors-required-for.43613/
-        'XNOR'  : 5,    # https://www.homemade-circuits.com/how-to-make-logic-gates-using-transistors/
-        'ANDNOT': 3,    # based on 2 for and and 1 for not'ing the output 
-        'ORNOT' : 2,    # based on 1 for or and 1 for not'ing the output 
-        'MUX'   : 8,    # https://electronics.stackexchange.com/questions/141943/determine-the-number-of-transistors-needed-to-build-cmos-circuit
-        'NMUX'  : 8,    # OBS: This is defaulted to the same as MUX
-        'AOI3'  : 12,   # https://electronics.stackexchange.com/questions/141943/determine-the-number-of-transistors-needed-to-build-cmos-circuit
-        'OAI3'  : 12,   # https://electronics.stackexchange.com/questions/141943/determine-the-number-of-transistors-needed-to-build-cmos-circuit
-        'AOI4'  : 16,   # https://en.wikipedia.org/wiki/AND-OR-invert
-        'OAI4'  : 16    # OBS: This is a quess (based on AOI4)
-}
-'''
-
 # CMOS technology https://eepower.com/technical-articles/basic-cmos-logic-gates/#
 transistor_multiplier = {
         'NOT'   : 2,   
