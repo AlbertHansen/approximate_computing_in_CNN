@@ -108,6 +108,7 @@ ax.legend(bbox_to_anchor=(1.4, 1.1), loc='upper center', ncol=1)
 # Save and show
 # plt.savefig('classes_accuracy.pdf', bbox_inches='tight')
 #plt.savefig('../../../98-diagrams/04-training_approx_network/small_network/adamax_and_sgd_does_it_train.pdf', bbox_inches='tight')
+plt.savefig('1kv8_and_1kv9.pdf', bbox_inches='tight')
 plt.show()
 plt.close()
 #%%%%%%%%%%%%%%%%%%%%% Plot 15 Approximate Epochs %%%%%%%%%%%%%%%%%%%%%
@@ -141,6 +142,7 @@ ax.legend(bbox_to_anchor=(1.4, 1.1), loc='upper center', ncol=1)
 # Save and show
 # plt.savefig('classes_accuracy.pdf', bbox_inches='tight')
 #plt.savefig('../../../98-diagrams/04-training_approx_network/small_network/adamax_and_sgd_does_it_train.pdf', bbox_inches='tight')
+plt.savefig('convergence_stat_and_prob.pdf', bbox_inches='tight')
 plt.show()
 plt.close()
 
