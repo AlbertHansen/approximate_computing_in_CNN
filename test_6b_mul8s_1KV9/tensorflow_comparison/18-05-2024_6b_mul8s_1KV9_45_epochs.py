@@ -119,6 +119,7 @@ utils.my_csv.csv_to_weights(model, '2_kernels_45_epochs_start')
 subprocess.check_call(['cp -r 2_kernels_45_epochs_start/* weights/'], shell=True)
 
 for i in range(5):
+    utils.my_csv.csv_to_weights(model, '2_kernels_45_epochs_start')
 
     with open(f'tensorflow_comparison_run_{i}_start.csv', 'w') as file:
         writer = csv.writer(file)
