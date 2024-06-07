@@ -234,79 +234,69 @@ def main() -> None:
     error_file = 'error_mul8s_1kv8.csv'
     pmfs = make_pmfs(error_file)
 
-    # instantiate model, without bias...
-    model = models.Sequential([
-            layers.Conv2D(32, (3, 3), use_bias=False, activation='relu', input_shape=(32, 32, 3)),
-            layers.MaxPooling2D((2, 2)),
-            layers.Conv2D(64, (3, 3), use_bias=False, activation='relu'),
-            layers.MaxPooling2D((2, 2)),
-            layers.Conv2D(64, (3, 3), use_bias=False, activation='relu'),
-            layers.Flatten(),
-            layers.Dense(64, use_bias=False, activation='relu'),
-            layers.Dense(10, use_bias=False)
-    ])
-    model.compile(
-            optimizer='adam',
-            loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
-            metrics=['accuracy']
-    )
-    model.build((None, 32, 32, 3))
-    model.summary()
 
-    history = model.fit(train, epochs=100, validation_data=test)
+    for i in range(5):
+        print(f'----- Run {i} -----')
 
+        # instantiate model, without bias...
+        model = models.Sequential([
+                layers.Conv2D(32, (3, 3), use_bias=False, activation='relu', input_shape=(32, 32, 3)),
+                layers.MaxPooling2D((2, 2)),
+                layers.Conv2D(64, (3, 3), use_bias=False, activation='relu'),
+                layers.MaxPooling2D((2, 2)),
+                layers.Conv2D(64, (3, 3), use_bias=False, activation='relu'),
+                layers.Flatten(),
+                layers.Dense(64, use_bias=False, activation='relu'),
+                layers.Dense(10, use_bias=False)
+        ])
+        model.compile(
+                optimizer='adam',
+                loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
+                metrics=['accuracy']
+        )
+        model.build((None, 32, 32, 3))
+        model.summary()
 
-    '''
-    # instantiate noisy model
-    start = time.time()
-    noisy_model = models.Sequential([
-            NoisyConv2D(32, (3, 3), error_pmfs=pmfs, precision_bits=6, activation='relu'),
-            layers.MaxPooling2D((2, 2)),
-            NoisyConv2D(64, (3, 3), error_pmfs=pmfs, precision_bits=6, activation='relu'),
-            layers.MaxPooling2D((2, 2)),
-            NoisyConv2D(64, (3, 3), error_pmfs=pmfs, precision_bits=6, activation='relu'),
-            layers.Flatten(),
-            NoisyDense(64, error_pmfs=pmfs, precision_bits=6, activation='relu'),
-            NoisyDense(10, error_pmfs=pmfs, precision_bits=6)
-    ])
-    noisy_model.compile(
-            optimizer='adam',
-            loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
-            metrics=['accuracy']
-    )
-    noisy_model.build((None, 32, 32, 3))
-    noisy_model.summary()
-    print(f'Building Noisy Model took - {time.time() - start} s')
+        # instantiate noisy model
+        start = time.time()
+        noisy_model = models.Sequential([
+                NoisyConv2D(32, (3, 3), error_pmfs=pmfs, precision_bits=6, activation='relu'),
+                layers.MaxPooling2D((2, 2)),
+                NoisyConv2D(64, (3, 3), error_pmfs=pmfs, precision_bits=6, activation='relu'),
+                layers.MaxPooling2D((2, 2)),
+                NoisyConv2D(64, (3, 3), error_pmfs=pmfs, precision_bits=6, activation='relu'),
+                layers.Flatten(),
+                NoisyDense(64, error_pmfs=pmfs, precision_bits=6, activation='relu'),
+                NoisyDense(10, error_pmfs=pmfs, precision_bits=6)
+        ])
+        noisy_model.compile(
+                optimizer='adam',
+                loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
+                metrics=['accuracy']
+        )
+        noisy_model.build((None, 32, 32, 3))
+        noisy_model.summary()
+        print(f'Building Noisy Model took - {time.time() - start} s')
 
     
-    # Train the model
-    history = model.fit(train, epochs=1, validation_data=test)
-    noisy_model.set_weights(model.get_weights())
+        # exact
+        history = model.fit(train, epochs=20, validation_data=test)
+        history_df = pd.DataFrame(history.history)
+        history_df.to_csv(f'exact_run_{i}.csv', index=False)
 
-    # save history
-    history_df = pd.DataFrame(history.history)
-    history_df.to_csv('95_model.csv', index=False)
+        # noisy
+        with open(f'noisy_run_{i}.csv', 'w') as file:
+            # reset weights of the exact model
+            model.set_weights(noisy_model.get_weights())
 
-    # last 5 epochs
-    with open('5_model.csv', 'w') as file, open('5_noisy_model.csv', 'w') as file2:
-        writer = csv.writer(file)
-        writer.writerow(['Epoch', 'Accuracy', 'Accuracy Val'])
+            writer = csv.writer(file)
+            writer.writerow(['Epoch', 'Accuracy', 'Accuracy Val'])
 
-        writer2 = csv.writer(file2)
-        writer2.writerow(['Epoch', 'Accuracy', 'Accuracy Val'])
-
-        for j in range(1):
-            print(f'----- Epoch {95 + j} -----')
-            noisy_epoch(noisy_model, model, train)
-            accuracy = evaluate_model(model, train)
-            accuracy_val = evaluate_model(model, test)
-            writer.writerow([95 + j, accuracy, accuracy_val])
-
-            for k in range(25):
-                noisy_accuracy = evaluate_model(noisy_model, train)
-                noisy_accuracy_val = evaluate_model(noisy_model, test)
-                writer.writerow([95 + j, noisy_accuracy, noisy_accuracy_val])
-    '''
+            for j in range(20):
+                noisy_epoch(noisy_model, model, train)
+                accuracy = evaluate_model(noisy_model, train)
+                accuracy_val = evaluate_model(noisy_model, test)
+                writer.writerow([j, accuracy, accuracy_val])
                 
 if __name__ == "__main__":
     main()
