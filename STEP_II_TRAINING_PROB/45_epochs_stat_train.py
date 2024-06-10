@@ -15,7 +15,6 @@ from tensorflow.keras import layers, models
 from my_csv import weights_to_csv, csv_to_weights
 from sklearn.metrics import accuracy_score
 
-
 #%% Functions
 def make_pmfs(filename: str) -> dict:
 
@@ -230,7 +229,8 @@ def main() -> None:
     train, test = get_datasets(train_path, test_path, classes_to_keep, 32)
 
 
-
+    lambda_value = 0.0002
+    pb = 6
 
     for i in range(5):
         # no-noise model
@@ -250,33 +250,44 @@ def main() -> None:
             loss=tf.keras.losses.BinaryFocalCrossentropy(),
             metrics=['accuracy']
         )
-
         model.build((None, 16, 16, 1))
-
-
 
         # noise model
         error_file = 'error_mul8s_1kv8.csv'
         pmfs = make_pmfs(error_file)
-        i = 6
-        print(f"----------- {i} bits for precision -----------")
-        lambda_value = 0.0002
+        print(f"----------- {pb} bits for precision -----------")
         noisy_model = models.Sequential([
-            NoisyConv2D(40, (2, 2), error_pmfs=pmfs, precision_bits=i, activation='relu', kernel_regularizer=tf.keras.regularizers.l2(lambda_value)),
+            NoisyConv2D(40, (2, 2), error_pmfs=pmfs, precision_bits=pb, activation='relu', kernel_regularizer=tf.keras.regularizers.l2(lambda_value)),
             layers.MaxPooling2D((2, 2)),
-            NoisyConv2D(2, (2, 2), error_pmfs=pmfs, precision_bits=i, activation='relu', kernel_regularizer=tf.keras.regularizers.l2(lambda_value)),
+            NoisyConv2D(2, (2, 2), error_pmfs=pmfs, precision_bits=pb, activation='relu', kernel_regularizer=tf.keras.regularizers.l2(lambda_value)),
             layers.MaxPooling2D((2, 2)),
-            NoisyConv2D(40, (2, 2), error_pmfs=pmfs, precision_bits=i, activation='relu', kernel_regularizer=tf.keras.regularizers.l2(lambda_value)),
+            NoisyConv2D(40, (2, 2), error_pmfs=pmfs, precision_bits=pb, activation='relu', kernel_regularizer=tf.keras.regularizers.l2(lambda_value)),
             layers.Flatten(),
-            NoisyDense(40, error_pmfs=pmfs, precision_bits=i, activation='relu', kernel_regularizer=tf.keras.regularizers.l2(lambda_value)),
-            NoisyDense(num_classes, error_pmfs=pmfs, precision_bits=i, activation='relu', kernel_regularizer=tf.keras.regularizers.l2(lambda_value)),  # OBS!!! last layer will be changed to accommodate no of classes
+            NoisyDense(40, error_pmfs=pmfs, precision_bits=pb, activation='relu', kernel_regularizer=tf.keras.regularizers.l2(lambda_value)),
+            NoisyDense(num_classes, error_pmfs=pmfs, precision_bits=pb, activation='relu', kernel_regularizer=tf.keras.regularizers.l2(lambda_value)),  # OBS!!! last layer will be changed to accommodate no of classes
         ])
+
+        noisy_model.compile(
+            optimizer='adamax',
+            loss=tf.keras.losses.BinaryFocalCrossentropy(),
+            metrics=['accuracy']
+        )
+        noisy_model.build((None, 16, 16, 1))
 
         csv_to_weights(model, '2_kernels_45_epochs_start')
         csv_to_weights(noisy_model, '2_kernels_45_epochs_start')
 
+        weights_to_csv(noisy_model, 'test')
+
+
         with open(f'run_{i}_accuracy.csv', 'w') as file:
+            model.set_weights(noisy_model.get_weights())
+
             writer = csv.writer(file)
+            writer.writerow(['Epoch', 'Accuracy', 'Accuracy_val'])
+            accuracy = evaluate_model(noisy_model, train)
+            accuracy_val = evaluate_model(noisy_model, test)
+            writer.writerow([45, accuracy, accuracy_val])
 
             for j in range(45):
                 print(f'----- Epoch {45+j} -----')
