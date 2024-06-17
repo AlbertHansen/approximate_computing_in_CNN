@@ -1,0 +1,60 @@
+function [skewnessTestResult, kurtosisTestResult, skewnessStatistic, kurtosisStatistic] = mardiaTest(data)
+    % Mardia's Test for Multivariate Normality
+    %
+    % Input:
+    %   data: a NxM matrix where N is the number of observations and M is the number of variables
+    %
+    % Output:
+    %   skewnessTestResult: p-value for the skewness test
+    %   kurtosisTestResult: p-value for the kurtosis test
+    %   skewnessStatistic: Mardia's skewness statistic
+    %   kurtosisStatistic: Mardia's kurtosis statistic
+    
+    [N, M] = size(data);  % N is the number of observations, M is the number of variables
+
+    % Calculate the mean and covariance matrix of the data
+    mu = mean(data);
+    Sigma = cov(data);
+
+    % Center the data
+    centeredData = data - mu;
+
+    % Inverse of the covariance matrix
+    Sigma_inv = inv(Sigma);
+
+    % Mardia's skewness
+    skewnessStatistic = 0;
+    for i = 1:N
+        for j = 1:N
+            delta_i = centeredData(i, :);
+            delta_j = centeredData(j, :);
+            skewnessStatistic = skewnessStatistic + (delta_i * Sigma_inv * delta_j')^3;
+        end
+    end
+    skewnessStatistic = skewnessStatistic / (N^2);
+
+    % Mardia's kurtosis
+    kurtosisStatistic = 0;
+    for i = 1:N
+        delta_i = centeredData(i, :);
+        kurtosisStatistic = kurtosisStatistic + (delta_i * Sigma_inv * delta_i')^2;
+    end
+    kurtosisStatistic = kurtosisStatistic / N;
+
+    % Adjusted kurtosis statistic
+    kurtosisStatisticAdjusted = kurtosisStatistic - M * (M + 2);
+
+    % Approximate the p-values using chi-squared distribution
+    skewnessTestResult = 1 - chi2cdf(skewnessStatistic * (N / 6), M * (M + 1) * (M + 2) / 6);
+    kurtosisTestResult = 1 - chi2cdf(kurtosisStatisticAdjusted * sqrt(N * (8 * M * (M + 2)) / 24), 1);
+
+    % Display results
+    fprintf('Mardia''s Skewness Test\n');
+    fprintf('Skewness Statistic: %.4f\n', skewnessStatistic);
+    fprintf('p-value: %.4f\n\n', skewnessTestResult);
+
+    fprintf('Mardia''s Kurtosis Test\n');
+    fprintf('Kurtosis Statistic: %.4f\n', kurtosisStatistic);
+    fprintf('Adjusted Kurtosis Statistic: %.4f\n', kurtosisStatisticAdjusted);
+    fprintf('p-value: %.4f\n', kurtosisTestResult);
+end

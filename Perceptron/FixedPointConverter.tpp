@@ -17,6 +17,7 @@ std::vector<T> FixedPointConverter<T>::convertToFixedPoint(const std::vector<flo
     float scale = std::pow(2.0f, fractionalBits);
     for (float value : input) {
         fixedPointValues.push_back(static_cast<T>(value * scale));
+
     }
 
     return fixedPointValues;
@@ -43,9 +44,14 @@ std::vector<T> FixedPointConverter<T>::truncateLSBs(const std::vector<intmax_t>&
     int shiftBits = fractionalBits - fractionalOut;
     for (intmax_t value : input) {
         T truncatedValue = static_cast<T>(value >> shiftBits);
+        
+        if (static_cast<int>(truncatedValue) >= (int)254)
+        {
+            std::cout << "OVERFLOW!!" << std::endl;
+        } 
         truncatedValues.push_back(truncatedValue);
     }
-
+    
     return truncatedValues;
 }
 

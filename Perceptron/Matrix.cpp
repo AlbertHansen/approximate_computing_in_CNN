@@ -1,5 +1,6 @@
 #include "Matrix.h"
 #include <stdexcept>
+#include <cmath>
 
 Matrix::Matrix(size_t rows, size_t cols) : rows(rows), cols(cols) {
     data.resize(rows, std::vector<intmax_t>(cols, 0.0));
@@ -128,4 +129,23 @@ void Matrix::unflatten(const std::vector<intmax_t>& flattened) {
             data[i][j] = flattened[index++];
         }
     }
+}
+
+void Matrix::printToCSV(const std::string& filename, const int& fracBits) const {
+    std::ofstream outFile(filename);
+    if (!outFile) {
+        throw std::runtime_error("Cannot open file for writing.");
+    }
+
+    for (const auto& row : data) {
+        for (size_t j = 0; j < row.size(); ++j) {
+            outFile << row[j]/std::pow(2.0f, fracBits);
+            if (j < row.size() - 1) {
+                outFile << ",";
+            }
+        }
+        outFile << "\n";
+    }
+
+    outFile.close();
 }

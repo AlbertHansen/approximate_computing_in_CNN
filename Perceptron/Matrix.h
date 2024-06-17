@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <iostream>
+#include <fstream>
 #include "ActivationFunction.h"
 
 class Matrix {
@@ -34,6 +35,8 @@ public:
     std::vector<intmax_t> flatten() const;
 
     void unflatten(const std::vector<intmax_t>& flattened);
+
+    void printToCSV(const std::string& filename, const int& fracBits) const;
 
     Matrix applyRelu() const;
 

@@ -80,7 +80,7 @@ std::vector<std::vector<float>> readInput(const std::string& filename) {
 }
 
 void writeMatrixToCSV(const std::string& filename, const std::vector<std::vector<double>>& matrix) {
-    std::ofstream outputFile(filename);
+    std::ofstream outputFile(filename, std::ios::app); // Open file in append mode
     if (!outputFile.is_open()) {
         std::cerr << "Error: Could not open file " << filename << " for writing." << std::endl;
         return;
@@ -100,10 +100,12 @@ void writeMatrixToCSV(const std::string& filename, const std::vector<std::vector
     //std::cout << "Matrix written to " << filename << " successfully." << std::endl;
 }
 
+
+
 int main()
 {
     //auto startL2 = std::chrono::steady_clock::now();
-    
+    /*
     std::string layer0Weights = "./weights/layer_0/weights.csv";
     std::string layer0Biases = "./weights/layer_0/biases.csv";
     std::string layer2Weights = "./weights/layer_2/weights.csv";
@@ -116,20 +118,20 @@ int main()
     std::string layer7Biases = "./weights/layer_7/biases.csv";
 
     std::string inputBatches = "./weights/batch.csv";
-    /*
+    */
     
-    std::string layer0Weights = "./small_network_weights/layer_0/weights.csv";
-    std::string layer0Biases = "./small_network_weights/layer_0/biases.csv";
-    std::string layer2Weights = "./small_network_weights/layer_2/weights.csv";
-    std::string layer2Biases = "./small_network_weights/layer_2/biases.csv";
-    std::string layer4Weights = "./small_network_weights/layer_4/weights.csv";
-    std::string layer4Biases = "./small_network_weights/layer_4/biases.csv";
-    std::string layer6Weights = "./small_network_weights/layer_6/weights.csv";
-    std::string layer6Biases = "./small_network_weights/layer_6/biases.csv";
-    std::string layer7Weights = "./small_network_weights/layer_7/weights.csv";
-    std::string layer7Biases = "./small_network_weights/layer_7/biases.csv";
+    std::string layer0Weights = "./save_45/layer_0/weights.csv";
+    std::string layer0Biases = "./save_45/layer_0/biases.csv";
+    std::string layer2Weights = "./save_45/layer_2/weights.csv";
+    std::string layer2Biases = "./save_45/layer_2/biases.csv";
+    std::string layer4Weights = "./save_45/layer_4/weights.csv";
+    std::string layer4Biases = "./save_45/layer_4/biases.csv";
+    std::string layer6Weights = "./save_45/layer_6/weights.csv";
+    std::string layer6Biases = "./save_45/layer_6/biases.csv";
+    std::string layer7Weights = "./save_45/layer_7/weights.csv";
+    std::string layer7Biases = "./save_45/layer_7/biases.csv";
 
-    std::string inputBatches = "./small_network_weights/images.csv";*/
+    std::string inputBatches = "./save_45/test_images.csv";
    
 
     ReadParameters layer0(layer0Weights, layer0Biases);
@@ -151,6 +153,7 @@ int main()
     size_t fracBits = 6;
     FixedPointConverter<intmax_t> converter(6, fracBits);
     FixedPointConverter<double> converter2(6, fracBits); // int type, 4 decimal bits, 4 fractional bits
+    FixedPointConverter<double> converter4(12, 2*fracBits);
     FixedPointConverter<intmax_t> converter3(12, 2*fracBits);
     
     /********************* READ INPUT ****************************************/
@@ -158,7 +161,7 @@ int main()
 
     std::vector<std::vector<double>> outputBatch;
 
-    for (int i = 0; i < inputBatch.size(); i++)
+    for (int i = 0; i < /*inputBatch.size()*/1; i++)
     {
         /*  Get the i'th input in fixed point  */
         std::vector<intmax_t> singleInputFixedPoint = converter.convertToFixedPoint(inputBatch.at(i));
@@ -192,6 +195,18 @@ int main()
         {
             FMLayer0.push_back(FMLayer0beforeRelu.at(j).applyRelu());
         }
+        /******************** PRINT THE OUTPUT *****************************************************/
+
+        for (size_t i = 0; i < FMLayer0.size(); ++i) 
+        {
+            // Generate a unique filename for each matrix
+            std::ostringstream filename;
+            filename << "FMLayer0_matrix_" << i << ".csv";
+
+            // Call the printToCSV method
+            FMLayer0[i].printToCSV(filename.str(), 2*fracBits);
+        }
+
         /******************** MAX_POOLING_1*****************************************************/
         std::vector<Matrix> pooledFMLayer0 = max_pooling2d.applyMaxPooling(FMLayer0);
         /************************ TUNCATE FXP **********************************************************************************/
@@ -200,8 +215,9 @@ int main()
         {
             Matrix truncateMatrixLayer0(pooledFMLayer0.at(j).numRows(),pooledFMLayer0.at(j).numCols());
             truncateMatrixLayer0.unflatten(converter3.truncateLSBs(pooledFMLayer0.at(j).flatten(), fracBits));
-            FMLayer0out.push_back(truncateMatrixLayer0);
+            FMLayer0out.push_back(truncateMatrixLayer0);           
         }
+
         /******************* LAYER 2 INSTANTIATE *************************************************************/
         LayerParams ParametersForLayer2 = layer2.getLayer();
         
@@ -330,7 +346,9 @@ int main()
         /*************************** RUN DENSE LAYER6 ********************************************************************************/
         std::vector<intmax_t> denseLayer6 = dense.forward(flattenedOut,layer6weightsFixed,layer6biasesFixed);
         /************************ TUNCATE FXP **********************************************************************************/
+        
         std::vector<intmax_t> denseLayer6out = converter3.truncateLSBs(denseLayer6,fracBits);  
+        
         /**************************** DENSE LAYER7 INIT *******************************************************************************/
         LayerParams layer7Params = layer7.getLayer();
         /**************************** FXP CONVERSION *********************************************************************************/
@@ -345,9 +363,13 @@ int main()
         /*************************** RUN DENSE LAYER7 ********************************************************************************/
         std::vector<intmax_t> denseLayer7 = dense1.forward(denseLayer6out,layer7weightsFixed,layer7biasesFixed);
         /************************ TUNCATE FXP **********************************************************************************/
-        std::vector<double> denseLayer7out = converter2.convertToDouble(converter3.truncateLSBs(denseLayer7,fracBits));
+        std::vector<intmax_t> inter = converter3.truncateLSBs(denseLayer7,fracBits);
+        std::vector<double> denseLayer7out = converter2.convertToDouble(inter);
+
+       
+
         outputBatch.push_back(denseLayer7out);
     }
-    writeMatrixToCSV("./weights/output.csv",outputBatch);
+    //writeMatrixToCSV("./weights/output.csv",outputBatch);
     //writeMatrixToCSV("./output2.csv",outputBatch);
 }

@@ -1,0 +1,100 @@
+% Read the specific CSV files
+acc_epoch = readmatrix("accurate_predictions/1KV9_weights/save_85.csv.csv");
+det_epoch = readmatrix("approximate_predictions/1KV9_weights/save_85.csv")';
+det_error = det_epoch-acc_epoch;
+
+% Define the folder containing the CSV files
+folderPath = './statistical_predictions/1KV9_weights/save_85/';
+
+% Get a list of all CSV files in the folder
+fileList = dir(fullfile(folderPath, '*.csv'));
+
+% Initialize an empty cell array to store data from each CSV file
+pro_error_cell = cell(1, numel(fileList));
+
+% Loop through each CSV file
+for i = 1:numel(fileList)
+    % Read the CSV file
+    filePath = fullfile(folderPath, fileList(i).name);
+    data = readmatrix(filePath); % Assuming the CSV file contains numeric data
+    
+    % Store the data in the cell array
+    %pro_error_cell{i} = data - acc_epoch;
+    pro_error_cell{i} = data-acc_epoch;
+end
+pro_error = cat(2, pro_error_cell{:});
+
+%%
+outputFolder = 'KV9_85';
+if ~exist(outputFolder, 'dir')
+    mkdir(outputFolder);
+end
+for i = 1:10
+    f = figure(Position=[10 10 300 250]); % Create a new figure
+    histogram(det_error(i, :), 20, 'Normalization', 'probability');
+    hold on;
+    histogram(pro_error(i, :), 50, 'Normalization', 'probability');
+    title(['Error Variable ' num2str(i)], 'Interpreter', 'latex');
+    xlabel('Error', 'Interpreter', 'latex');
+    xlim([-2.5 .1]);
+    ylim([0 .2]);
+    ylabel('Probability', 'Interpreter', 'latex');
+    legend({'Approximate Model', 'Probabilistic Model'}, 'Interpreter', 'latex');
+    grid on;
+    hold off;
+
+    % Construct the file name
+    fileName = fullfile(outputFolder, ['KV9_85_' num2str(i) '.pdf']);
+
+    % Export the figure as a PDF using exportgraphics
+    exportgraphics(f, fileName, 'ContentType', 'vector'); % Export to PDF with vector graphics
+
+    % Close the figure to free up memory
+    close(f);
+end
+
+
+%%
+% MLE of the probabilistic error
+
+% Parameters
+lambda = 0.00001; % Regularization parameter, adjust as needed
+
+% Compute the means and covariance matrices
+mu = mean(pro_error, 2);
+Sigma = cov(pro_error');
+
+sample_mean = mean(det_error, 2);
+sample_covariance = cov(det_error');
+
+% Regularize the covariance matrices
+Sigma_regularized = Sigma + lambda * eye(size(Sigma));
+sample_covariance_regularized = sample_covariance + lambda * eye(size(sample_covariance));
+
+% Ensure Sigma_regularized is invertible
+Sigma_inv = inv(Sigma_regularized);
+k = length(mu);
+% Compute the terms of the KL divergence formula with regularized covariance matrices
+trace_term = trace(Sigma_inv * sample_covariance_regularized)-k;
+mean_diff = sample_mean - mu;
+mean_diff_term = mean_diff' * Sigma_inv * mean_diff;
+log_det_term = log(det(Sigma_regularized) / det(sample_covariance_regularized));
+
+% Compute the KL divergence
+KL_divergence = 0.5 * (trace_term + mean_diff_term + log_det_term);
+
+% Display the KL divergence
+disp(['KL divergence: ', num2str(KL_divergence)]);
+
+
+%% 
+
+KL_KV8 = [14.5 14.5 10.5 12.7 13.7 13.9 15 14.8 16.9];
+KL_KV9 
+epochs = [45 50 55 60 65 70 75 80 85];
+
+f = figure(Position=[10 10 900 300]);
+plot(epochs,KL_KV8),
+
+
+
