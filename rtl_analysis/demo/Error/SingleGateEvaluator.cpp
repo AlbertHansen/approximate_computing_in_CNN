@@ -160,11 +160,22 @@ int main() {
         writeVectorToCSV("./Error/Error_files/Actual.csv",Actual);
         writeVectorToCSV("./Error/Error_files/Error.csv",Error);
 
-        /*
-        Evaluator eval_add8se_8R9(Expected,Actual);
+        std::vector<intmax_t> flattened_expected;
+        std::vector<intmax_t> flattened_actual;
+        std::vector<intmax_t> flattened_error;
+
+        for (const auto& vec : Expected) {
+            flattened_expected.insert(flattened_expected.end(), vec.begin(), vec.end());
+        }
+
+        for (const auto& vec : Actual) {
+            flattened_actual.insert(flattened_actual.end(), vec.begin(), vec.end());
+        }
+
+        Evaluator eval_add8se_8R9(flattened_expected,flattened_actual);
         Metrics mul8s_1KV9_metrics = eval_add8se_8R9.calculateMetrics();
         eval_add8se_8R9.writeMetricsToCSV("./Error/Error_files/metrics.csv",mul8s_1KV9_metrics);    //(filename, evaluator.metrics)
-        */
+        
 
     /* Display the results (optional)
     for (const auto& row : Expected) {
