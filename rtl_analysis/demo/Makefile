@@ -1,13 +1,16 @@
-VLOG_FILE_NAME=./mul8s_1KV8/mul8s_1KV8.v
-C_FILE_NAME=./mul8s_1KV8/mul8s_1KV8.c
+VLOG_FILE_NAME=mul8s_1KV8.v
+C_FILE_NAME= mul8s_1KV8.c
 TOP_MODULE=mul8s_1KV8
+
+
+
 METRICS=ER,Gate_Count,CP_Gates
 COMPARISON_FILES=mul8s_1KV9,mul8s_1KVA,mul8s_1KV8
 
 #Map to the specified list of gate types. Supported gates types are:
 #           AND, NAND, OR, NOR, XOR, XNOR, ANDNOT, ORNOT, MUX,
 #           NMUX, AOI3, OAI3, AOI4, OAI4. (NOT will always added)
-GATES=OR
+GATES=AND,NAND,OR,NOR,XOR,XNOR
 #GATES=NAND
 
 SUPPRESS_FIGURES=1
@@ -49,7 +52,7 @@ histogram:
 	SUPPRESS_FIGURES=$(SUPPRESS_FIGURES) \
 	python3 ./Error/make_histogram.py
 
-approximate_tripod:
+comparison:
 	METRICS=$(METRICS) \
 	COMPARISON_FILES=$(COMPARISON_FILES) \
 	python3 ./Error/approximation_tripod.py

@@ -123,7 +123,7 @@ def add_port_edges(graph, driver_list, json_netlist, top_module):
                     gate_delay = delay_ns[gate_type]
                     graph.add_edge(driver_list[net], port_name, weight=gate_delay)
                 except:
-                    print(f"Warning: No gate delay specified for {driver}. Using default value of 0.")
+                    #print(f"Warning: No gate delay specified for {driver}. Using default value of 0.")
                     graph.add_edge(driver_list[net], port_name, weight=0)
 
                 
@@ -165,7 +165,7 @@ def add_cell_edges(graph, driver_list, json_netlist, top_module, delay_ns=delay_
                     #graph[driver][cell_name]['weight'] = gate_delay   
 
                 except KeyError:
-                    print(f"Warning: No gate delay specified for {driver}. Using default value of 0.")
+                    #print(f"Warning: No gate delay specified for {driver}. Using default value of 0.")
                     graph.add_edge(driver, cell_name, weight=0)
                     #graph[driver][cell_name]['weight'] = 0
 
