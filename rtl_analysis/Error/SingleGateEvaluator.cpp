@@ -30,7 +30,7 @@ uint64_t add(const uint64_t B, const uint64_t A) {
     return result;  // Convert result back to uint64_t before returning
 }
 /*********** Approx multiplier ***************/
-int16_t mul8s_1KV8(const int8_t B, const int8_t A);
+int16_t mul8s_1KVM(const int8_t B, const int8_t A);
 
 /*********** Accurate multiplier ***********/
 int16_t mult(const int8_t B, const int8_t A) {
@@ -144,7 +144,7 @@ int main() {
     
         std::vector<std::vector<intmax_t>> Expected = testAllCombinationsAccurate(mult);
         
-        std::vector<std::vector<intmax_t>> Actual = testAllCombinations(mul8s_1KV8);
+        std::vector<std::vector<intmax_t>> Actual = testAllCombinations(mul8s_1KVM);
         std::vector<std::vector<intmax_t>> Error;
         for (int j = 0; j < Expected.at(0).size(); ++j)
         {
